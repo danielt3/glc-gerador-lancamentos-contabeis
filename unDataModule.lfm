@@ -1,0 +1,34 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 440
+  HorizontalOffset = 506
+  VerticalOffset = 247
+  Width = 750
+  object Conexao: TZConnection
+    ControlsCodePage = cCP_UTF8
+    UTF8StringsAsWideField = False
+    AutoEncodeStrings = False
+    Properties.Strings = (
+      'AutoEncodeStrings='
+    )
+    Port = 0
+    Database = 'database.fdb'
+    User = 'sysdba'
+    Password = 'masterkey'
+    Protocol = 'firebird-2.0'
+    left = 60
+    top = 44
+  end
+  object qConsulta: TZQuery
+    Connection = Conexao
+    Params = <>
+    left = 126
+    top = 51
+  end
+  object qExecutar: TZQuery
+    Connection = Conexao
+    Params = <>
+    left = 128
+    top = 120
+  end
+end

@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 576
+  Left = 52
   Height = 624
-  Top = 208
+  Top = 49
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis'
   ClientHeight = 624
@@ -54,7 +54,7 @@ object frmPrincipal: TfrmPrincipal
             ParentColor = False
           end
           object edtCodigoEmpresa: TEdit
-            Left = 56
+            Left = 57
             Height = 23
             Top = 8
             Width = 56
@@ -108,15 +108,6 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Gravar'
             OnClick = btnGravarEmpresaClick
             TabOrder = 5
-          end
-          object Button1: TButton
-            Left = 340
-            Height = 25
-            Top = 244
-            Width = 75
-            Caption = 'Button1'
-            OnClick = Button1Click
-            TabOrder = 6
           end
         end
         object pPlanoContas: TTabSheet

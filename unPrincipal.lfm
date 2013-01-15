@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 576
+  Left = 339
   Height = 624
-  Top = 208
+  Top = 117
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis'
   ClientHeight = 624
@@ -27,9 +27,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         OnChange = PageControl1Change
         object pEmpresa: TTabSheet
@@ -54,7 +54,7 @@ object frmPrincipal: TfrmPrincipal
             ParentColor = False
           end
           object edtCodigoEmpresa: TEdit
-            Left = 56
+            Left = 57
             Height = 23
             Top = 8
             Width = 56
@@ -190,6 +190,50 @@ object frmPrincipal: TfrmPrincipal
         end
         object pVinculador: TTabSheet
           Caption = 'Vinculador'
+          ClientHeight = 475
+          ClientWidth = 1029
+          object Label7: TLabel
+            Left = 16
+            Height = 16
+            Top = 24
+            Width = 23
+            Caption = 'Cod'
+            ParentColor = False
+            OnClick = Label7Click
+          end
+          object Edit1: TEdit
+            Left = 48
+            Height = 23
+            Top = 17
+            Width = 50
+            TabOrder = 0
+          end
+          object DBGrid1: TDBGrid
+            Left = 48
+            Height = 252
+            Top = 88
+            Width = 250
+            Color = clWindow
+            Columns = <>
+            TabOrder = 1
+          end
+          object DBGrid2: TDBGrid
+            Left = 400
+            Height = 249
+            Top = 88
+            Width = 250
+            Color = clWindow
+            Columns = <>
+            TabOrder = 2
+          end
+          object Label8: TLabel
+            Left = 48
+            Height = 16
+            Top = 64
+            Width = 103
+            Caption = 'Tabelas disponíveis'
+            ParentColor = False
+          end
         end
       end
     end
@@ -250,7 +294,7 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 600
-    top = 176
+    left = 136
+    top = 448
   end
 end

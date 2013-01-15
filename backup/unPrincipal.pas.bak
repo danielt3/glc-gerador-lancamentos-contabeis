@@ -18,7 +18,6 @@ type
     btnImportarPlano: TButton;
     btnNovaEmpresa: TButton;
     btnEditarEmpresa: TButton;
-    Button1: TButton;
     Button2: TButton;
     Button4: TButton;
     Conexao: TZConnection;

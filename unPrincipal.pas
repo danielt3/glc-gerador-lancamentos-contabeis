@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, db, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, StdCtrls, DBGrids, DbCtrls, ZConnection, ZDataset, unDataModule;
+  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, ZConnection, ZDataset,
+  unDataModule, unListaCodigo, unGarbageCollector;
 
 type
   { TfrmPrincipal }
@@ -18,15 +19,14 @@ type
     btnImportarPlano: TButton;
     btnNovaEmpresa: TButton;
     btnEditarEmpresa: TButton;
+    Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     Button4: TButton;
+    cmbEmpresa: TComboBox;
     Conexao: TZConnection;
     dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
-    cmbEmpresa: TDBLookupComboBox;
-    DBGrid1: TDBGrid;
-    DBGrid2: TDBGrid;
-    Edit1: TEdit;
     edtCodigoEmpresa: TEdit;
     edtNomeEmpresa: TEdit;
     edtCNPJEmpresa: TEdit;
@@ -38,8 +38,6 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
     OpenDialog1: TOpenDialog;
     PageControl: TPageControl;
     PageControl2: TPageControl;
@@ -54,19 +52,30 @@ type
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure cmbEmpresaChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure Label7Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    procedure EmpresaProxima(Sender: TObject);
+    procedure EmpresaAnterior(Sender: TObject);
   private
+    //Geral
+    fGarbageCollector: TGarbageCollector;
     //Empresa
     fEstadoEmpresa: TTipoAcao;
     fEmpresaAtual: Integer;
+    fListaEmpresa: TListaCodigo;
+
     //Geral
     function ApenasNumeros(Texto: String): String;
     function Vazio(Texto: String): Boolean;
+    function AlignLeft(Texto: String; Tamanho: Integer; Caractere: String = ' '): String;
+    function AlignRight(Texto: String; Tamanho: Integer; Caractere: String = ' '): String;
     function FormatarCPFCNPJ(Texto: String): String;
     procedure MensagemErro(Mensagem, pCaption: String);
     procedure MensagemAlerta(Mensagem, pCaption: String);
+
     //Empresa
     procedure NovaEmpresa;
     procedure EditarEmpresa;
@@ -75,6 +84,7 @@ type
     function GravarInserirEmpresa: Boolean;
     function GravarAlterarEmpresa: Boolean;
     procedure CarregarEmpresa(Empresa: Integer);
+    procedure CarregarListaEmpresa;
   public
     { public declarations }
   end; 
@@ -96,7 +106,6 @@ end;
 function TfrmPrincipal.ApenasNumeros(Texto: String): String;
 var
   i: Integer;
-  lResultado: String;
 begin
   result := '';
 
@@ -110,6 +119,38 @@ end;
 function TfrmPrincipal.Vazio(Texto: String): Boolean;
 begin
   result := Trim(Texto) = EmptyStr;
+end;
+
+function TfrmPrincipal.AlignLeft(Texto: String; Tamanho: Integer; Caractere: String): String;
+var
+  i: Integer;
+begin
+  if (Length(Texto) > Tamanho) then
+    result := Copy(Texto, 1, Tamanho)
+  else
+  begin
+    result := Trim(Texto);
+
+    for i := 0 to (Tamanho - Length(result)) do
+      result := result + Caractere;
+  end;
+end;
+
+function TfrmPrincipal.AlignRight(Texto: String; Tamanho: Integer; Caractere: String): String;
+var
+  i: Integer;
+begin
+  if (Length(Texto) > Tamanho) then
+    result := Copy(Texto, 1, Tamanho)
+  else
+  begin
+    result := '';
+
+    for i := 0 to (Tamanho - Length(result)) do
+      result := result + Caractere;
+
+    result := result + Trim(Texto);
+  end;
 end;
 
 function TfrmPrincipal.FormatarCPFCNPJ(Texto: String): String;
@@ -240,11 +281,11 @@ begin
 
   try
     lComando := 'UPDATE' +
-                '  empresa' +
+                '  empresa ' +
                 'SET' +
                 '  codigo = ' + QuotedStr(ApenasNumeros(edtCodigoEmpresa.Text)) + ',' +
                 '  nome = ' + QuotedStr(Trim(edtNomeEmpresa.Text)) + ',' +
-                '  cnpj = ' + QuotedStr(ApenasNumeros(edtCNPJEmpresa.Text)) + ',' +
+                '  cnpj = ' + QuotedStr(ApenasNumeros(edtCNPJEmpresa.Text)) + ' ' +
                 'WHERE' +
                 '  chave = ' + IntToStr(fEmpresaAtual);
 
@@ -263,13 +304,13 @@ begin
                 '  chave,' +
                 '  codigo,' +
                 '  nome,' +
-                '  cnpj' +
+                '  cnpj ' +
                 'FROM' +
-                '  empresa' +
+                '  empresa ' +
                 'WHERE' +
                 '  chave = ' + IntToStr(Empresa);
 
-    if (DataModule1.Consultar(lComando) > 1) then
+    if (DataModule1.Consultar(lComando) > 0) then
     begin
       edtCodigoEmpresa.Text := DataModule1.qConsulta.FieldByName('codigo').AsString;
       edtNomeEmpresa.Text := DataModule1.qConsulta.FieldByName('nome').AsString;
@@ -281,14 +322,86 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.FormCreate(Sender: TObject);
+procedure TfrmPrincipal.EmpresaProxima(Sender: TObject);
+var
+  i: Integer;
+  Maximo: Integer;
 begin
-  //DataModule1.Conexao.Connect;
+  i := cmbEmpresa.ItemIndex;
+  Maximo := cmbEmpresa.Items.Count - 1;
+  if i < Maximo then
+    cmbEmpresa.ItemIndex := i + 1;
+  cmbEmpresaChange(cmbEmpresa);
 end;
 
-procedure TfrmPrincipal.Label7Click(Sender: TObject);
+procedure TfrmPrincipal.EmpresaAnterior(Sender: TObject);
+var
+  i: Integer;
 begin
+  i := cmbEmpresa.ItemIndex;
 
+  if i > 0 then
+    cmbEmpresa.ItemIndex := i - 1;
+  cmbEmpresaChange(cmbEmpresa);
+end;
+
+procedure TfrmPrincipal.CarregarListaEmpresa;
+var
+  lComando: String;
+begin
+  try
+    fListaEmpresa.Clear;
+    cmbEmpresa.Items.Clear;
+
+    lComando := 'SELECT' +
+                '  chave,' +
+                '  codigo,' +
+                '  nome,' +
+                '  cnpj ' +
+                'FROM' +
+                '  empresa ' +
+                'ORDER BY' +
+                '  codigo';
+
+    if (DataModule1.Consultar(lComando) > 1) then
+    begin
+      DataModule1.qConsulta.First;
+      while not DataModule1.qConsulta.EOF do
+      begin
+        cmbEmpresa.Items.Add(AlignLeft(DataModule1.qConsulta.FieldByName('nome').AsString, 30) + '-' + AlignRight(DataModule1.qConsulta.FieldByName('codigo').AsString, 6));
+        fListaEmpresa.Add(DataModule1.qConsulta.FieldByName('chave').AsInteger);
+
+        DataModule1.qConsulta.Next;
+      end;
+
+      if DataModule1.qConsulta.Locate('chave', IntToStr(fEmpresaAtual), []) then
+        cmbEmpresa.ItemIndex:= fListaEmpresa.IndexOf(fEmpresaAtual)
+      else
+        cmbEmpresa.ItemIndex:= 0;
+
+      cmbEmpresaChange(cmbEmpresa);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Alterar empresa.');
+  end;
+end;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  fGarbageCollector := TGarbageCollector.Create;
+
+  fListaEmpresa := TListaCodigo.Create;
+  fGarbageCollector.Add(fListaEmpresa);
+end;
+
+procedure TfrmPrincipal.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(fGarbageCollector);
+end;
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  CarregarListaEmpresa;
 end;
 
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);
@@ -301,9 +414,15 @@ begin
   DataModule1.Conexao.Connect;
 end;
 
+procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
+begin
+  CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
+end;
+
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);
 begin
   GravarEmpresa;
+  CarregarListaEmpresa;
 end;
 
 procedure TfrmPrincipal.btnEditarEmpresaClick(Sender: TObject);

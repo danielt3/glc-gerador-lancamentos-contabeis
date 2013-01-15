@@ -24,6 +24,9 @@ type
     dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
     cmbEmpresa: TDBLookupComboBox;
+    DBGrid1: TDBGrid;
+    DBGrid2: TDBGrid;
+    Edit1: TEdit;
     edtCodigoEmpresa: TEdit;
     edtNomeEmpresa: TEdit;
     edtCNPJEmpresa: TEdit;
@@ -35,6 +38,8 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
     OpenDialog1: TOpenDialog;
     PageControl: TPageControl;
     PageControl2: TPageControl;
@@ -50,6 +55,7 @@ type
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Label7Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
     //Empresa
@@ -278,6 +284,11 @@ end;
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   //DataModule1.Conexao.Connect;
+end;
+
+procedure TfrmPrincipal.Label7Click(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);

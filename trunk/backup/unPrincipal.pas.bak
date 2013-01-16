@@ -5,8 +5,9 @@ unit unPrincipal;
 interface
 
 uses
-  Classes, SysUtils, db, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, StdCtrls, DBGrids, DbCtrls, ZConnection, ZDataset, unDataModule;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
+  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, ZConnection,
+  unDataModule, unListaCodigo, unGarbageCollector, unUtilitario;
 
 type
   { TfrmPrincipal }
@@ -18,12 +19,14 @@ type
     btnImportarPlano: TButton;
     btnNovaEmpresa: TButton;
     btnEditarEmpresa: TButton;
+    Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     Button4: TButton;
+    cmbEmpresa: TComboBox;
     Conexao: TZConnection;
     dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
-    cmbEmpresa: TDBLookupComboBox;
     edtCodigoEmpresa: TEdit;
     edtNomeEmpresa: TEdit;
     edtCNPJEmpresa: TEdit;
@@ -41,26 +44,32 @@ type
     pContador: TTabSheet;
     pClientes: TTabSheet;
     pPlanoContas: TTabSheet;
+    ProgressBar1: TProgressBar;
     pVinculador: TTabSheet;
     pEmpresa: TTabSheet;
     pIntegracao: TTabSheet;
     pAjuda: TTabSheet;
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
+    procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure cmbEmpresaChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    procedure EmpresaProxima(Sender: TObject);
+    procedure EmpresaAnterior(Sender: TObject);
   private
+    //Geral
+    fGarbageCollector: TGarbageCollector;
     //Empresa
     fEstadoEmpresa: TTipoAcao;
     fEmpresaAtual: Integer;
-    //Geral
-    function ApenasNumeros(Texto: String): String;
-    function Vazio(Texto: String): Boolean;
-    function FormatarCPFCNPJ(Texto: String): String;
-    procedure MensagemErro(Mensagem, pCaption: String);
-    procedure MensagemAlerta(Mensagem, pCaption: String);
+    fListaEmpresa: TListaCodigo;
+
     //Empresa
     procedure NovaEmpresa;
     procedure EditarEmpresa;
@@ -69,6 +78,12 @@ type
     function GravarInserirEmpresa: Boolean;
     function GravarAlterarEmpresa: Boolean;
     procedure CarregarEmpresa(Empresa: Integer);
+    procedure CarregarListaEmpresa;
+    //Plano de Contas
+    function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
+    function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
+    function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
   public
     { public declarations }
   end; 
@@ -85,54 +100,6 @@ implementation
 procedure TfrmPrincipal.PageControl1Change(Sender: TObject);
 begin
 
-end;
-
-function TfrmPrincipal.ApenasNumeros(Texto: String): String;
-var
-  i: Integer;
-  lResultado: String;
-begin
-  result := '';
-
-  for i := 1 to Length(Texto) do
-  begin
-    if (Texto[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
-      result := result + Texto[i];
-  end;
-end;
-
-function TfrmPrincipal.Vazio(Texto: String): Boolean;
-begin
-  result := Trim(Texto) = EmptyStr;
-end;
-
-function TfrmPrincipal.FormatarCPFCNPJ(Texto: String): String;
-var
-  lDocumento: String;
-begin
-  result := '';
-
-  if not Vazio(Texto) then
-  begin
-    lDocumento := ApenasNumeros(Texto);
-
-    if (Length(lDocumento) = 11) then
-      result := Copy(lDocumento, 1, 3) + '.' + Copy(lDocumento, 4, 3) + '.' + Copy(lDocumento, 7, 3) + '.' + Copy(lDocumento, 10, 2)
-    else if (Length(lDocumento) = 14) then
-      result := Copy(lDocumento, 1, 2) + '.' + Copy(lDocumento, 3, 3) + '.' + Copy(lDocumento, 6, 3) + '/' + Copy(lDocumento, 9, 4) + '-' + Copy(lDocumento, 13, 2)
-    else
-      result := lDocumento;
-  end;
-end;
-
-procedure TfrmPrincipal.MensagemErro(Mensagem, pCaption: String);
-begin
-  MessageDlg(pCaption, Mensagem, mtError, [mbOK], 0);
-end;
-
-procedure TfrmPrincipal.MensagemAlerta(Mensagem, pCaption: String);
-begin
-  MessageDlg(pCaption, Mensagem, mtWarning, [mbOK], 0);
 end;
 
 procedure TfrmPrincipal.NovaEmpresa;
@@ -234,11 +201,11 @@ begin
 
   try
     lComando := 'UPDATE' +
-                '  empresa' +
+                '  empresa ' +
                 'SET' +
                 '  codigo = ' + QuotedStr(ApenasNumeros(edtCodigoEmpresa.Text)) + ',' +
                 '  nome = ' + QuotedStr(Trim(edtNomeEmpresa.Text)) + ',' +
-                '  cnpj = ' + QuotedStr(ApenasNumeros(edtCNPJEmpresa.Text)) + ',' +
+                '  cnpj = ' + QuotedStr(ApenasNumeros(edtCNPJEmpresa.Text)) + ' ' +
                 'WHERE' +
                 '  chave = ' + IntToStr(fEmpresaAtual);
 
@@ -257,27 +224,211 @@ begin
                 '  chave,' +
                 '  codigo,' +
                 '  nome,' +
-                '  cnpj' +
+                '  cnpj ' +
                 'FROM' +
-                '  empresa' +
+                '  empresa ' +
                 'WHERE' +
                 '  chave = ' + IntToStr(Empresa);
 
-    if (DataModule1.Consultar(lComando) > 1) then
+    if (DataModule1.Consultar(lComando) > 0) then
     begin
       edtCodigoEmpresa.Text := DataModule1.qConsulta.FieldByName('codigo').AsString;
       edtNomeEmpresa.Text := DataModule1.qConsulta.FieldByName('nome').AsString;
       edtCNPJEmpresa.Text := FormatarCPFCNPJ(DataModule1.qConsulta.FieldByName('cnpj').AsString);
       fEmpresaAtual:= Empresa;
+
+      CarregarPlanoDeContas(fEmpresaAtual);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
   end;
 end;
 
+procedure TfrmPrincipal.EmpresaProxima(Sender: TObject);
+var
+  i: Integer;
+  Maximo: Integer;
+begin
+  i := cmbEmpresa.ItemIndex;
+  Maximo := cmbEmpresa.Items.Count - 1;
+  if i < Maximo then
+    cmbEmpresa.ItemIndex := i + 1;
+  cmbEmpresaChange(cmbEmpresa);
+end;
+
+procedure TfrmPrincipal.EmpresaAnterior(Sender: TObject);
+var
+  i: Integer;
+begin
+  i := cmbEmpresa.ItemIndex;
+
+  if i > 0 then
+    cmbEmpresa.ItemIndex := i - 1;
+  cmbEmpresaChange(cmbEmpresa);
+end;
+
+procedure TfrmPrincipal.CarregarListaEmpresa;
+var
+  lComando: String;
+begin
+  try
+    fListaEmpresa.Clear;
+    cmbEmpresa.Items.Clear;
+
+    lComando := 'SELECT' +
+                '  chave,' +
+                '  codigo,' +
+                '  nome,' +
+                '  cnpj ' +
+                'FROM' +
+                '  empresa ' +
+                'ORDER BY' +
+                '  codigo';
+
+    if (DataModule1.Consultar(lComando) > 1) then
+    begin
+      DataModule1.qConsulta.First;
+      while not DataModule1.qConsulta.EOF do
+      begin
+        cmbEmpresa.Items.Add(AlignLeft(DataModule1.qConsulta.FieldByName('nome').AsString, 30) + '-' + AlignRight(DataModule1.qConsulta.FieldByName('codigo').AsString, 6));
+        fListaEmpresa.Add(DataModule1.qConsulta.FieldByName('chave').AsInteger);
+
+        DataModule1.qConsulta.Next;
+      end;
+
+      if DataModule1.qConsulta.Locate('chave', IntToStr(fEmpresaAtual), []) then
+        cmbEmpresa.ItemIndex:= fListaEmpresa.IndexOf(fEmpresaAtual)
+      else
+        cmbEmpresa.ItemIndex:= 0;
+
+      cmbEmpresaChange(cmbEmpresa);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Alterar empresa.');
+  end;
+end;
+
+function TfrmPrincipal.LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'update' + NewLine +
+                 '  PLANO_CONTAS' + NewLine +
+                 'set' + NewLine +
+                 '  EMPRESA_OLD = EMPRESA,' + NewLine +
+                 '  EMPRESA = 0' + NewLine +
+                 'where' + NewLine +
+                 '  EMPRESA = ' + IntToStr(pEmpresa1);
+
+  result := DataModule1.Executar(lComandoSQL);
+end;
+
+function TfrmPrincipal.ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+var
+  lArquivo: TStringList;
+  i: Integer;
+
+  lExterno: String;
+  lCodigo: String;
+  lDescricao: String;
+  lSintetico: String;
+begin
+  result := false;
+  try
+    if FileExists(pNomeArquivo) then
+    begin
+      LimparPlanoDeContas(pEmpresa2);
+
+      lArquivo := TStringList.Create;
+
+      try
+        lArquivo.LoadFromFile(pNomeArquivo);
+
+        if Assigned(pBarraProgresso) then
+        begin
+          pBarraProgresso.Visible := true;
+          pBarraProgresso.Min := 0;
+          pBarraProgresso.Max := lArquivo.Count;
+          pBarraProgresso.Step := 0;
+        end;
+
+        for i := 0 to lArquivo.Count - 1 do
+        begin
+          lExterno := IntToStr(StrToIntDef(Copy(lArquivo.Strings[i], 1, 7), 0));
+          lCodigo := ApenasNumeros(Copy(lArquivo.Strings[i], 8, 20));
+          lDescricao:= Trim(Copy(lArquivo.Strings[i], 28, 40));
+          lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
+
+          AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
+          pBarraProgresso.StepBy(1);
+        end;
+      finally
+        FreeAndNil(lArquivo);
+      end;
+    end;
+
+    result := true;
+  except on e:exception do
+    MensagemErro(e.Message, 'Importar Plano');
+  end;
+end;
+
+function TfrmPrincipal.AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'insert into PLANO_CONTAS (' + NewLine +
+                 '  EMPRESA,' + NewLine +
+                 '  EMPRESA_OLD,' + NewLine +
+                 '  CODIGO_EXTERNO,' + NewLine +
+                 '  CODIGO,' + NewLine +
+                 '  DESCRICAO,' + NewLine +
+                 '  SINTETICA)' + NewLine +
+                 'values (' + NewLine +
+                 '  ' + IntToStr(pEmpresa3) + ', ' + NewLine +
+                 '  0, ' + NewLine +
+                 '  ' + QuotedStr(Trim(pExterno)) + ', ' + NewLine +
+                 '  ' + QuotedStr(Trim(pCodigo)) + ', ' + NewLine +
+                 '  ' + QuotedStr(Trim(pDescricao)) + ', ' + NewLine +
+                 '  ' + QuotedStr(Trim(pSintetico)) + ')';
+
+  result := DataModule1.Executar(lComandoSQL);
+end;
+
+function TfrmPrincipal.CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'select' + NewLine +
+                 '  CODIGO_EXTERNO as Codigo_Externo,' + NewLine +
+                 '  CODIGO as Codigo,' + NewLine +
+                 '  DESCRICAO as ''Descrição'',' + NewLine +
+                 '  SINTETICA' + NewLine +
+                 'from' + NewLine +
+                 '  PLANO_CONTAS' + NewLine +
+                 'where' + NewLine +
+                 '  EMPRESA = ' + IntToStr(pEmpresa4);
+
+  result := DataModule1.NovaConsulta('PlanoContasMain', lComandoSQL) > 0;
+  dbgPlano.DataSource := DataModule1.getDataSource('PlanoContasMain');
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-  //DataModule1.Conexao.Connect;
+  fGarbageCollector := TGarbageCollector.Create;
+
+  fListaEmpresa := TListaCodigo.Create;
+  fGarbageCollector.Add(fListaEmpresa);
+end;
+
+procedure TfrmPrincipal.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(fGarbageCollector);
+end;
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  CarregarListaEmpresa;
 end;
 
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);
@@ -290,9 +441,32 @@ begin
   DataModule1.Conexao.Connect;
 end;
 
+procedure TfrmPrincipal.Button2Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+    edtImportarPlano.Text := OpenDialog1.FileName;
+end;
+
+procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
+begin
+  CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
+end;
+
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);
 begin
   GravarEmpresa;
+  CarregarListaEmpresa;
+end;
+
+procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);
+begin
+  if FileExists(edtImportarPlano.Text) then
+  begin
+    if ImportarPlanoDeContas(fEmpresaAtual, edtImportarPlano.Text, ProgressBar1) then
+    begin
+      MensagemSucesso('Plano de contas importado com sucesso!', 'Importação de plano de contas');
+    end;
+  end;
 end;
 
 procedure TfrmPrincipal.btnEditarEmpresaClick(Sender: TObject);

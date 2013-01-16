@@ -1,13 +1,15 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 52
+  Left = 576
   Height = 624
-  Top = 49
+  Top = 208
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis'
   ClientHeight = 624
   ClientWidth = 1045
   FormStyle = fsMDIForm
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '0.9.30.4'
   object PageControl: TPageControl
     Left = 0
@@ -27,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = PageControl1Change
         object pEmpresa: TTabSheet
@@ -54,10 +56,11 @@ object frmPrincipal: TfrmPrincipal
             ParentColor = False
           end
           object edtCodigoEmpresa: TEdit
-            Left = 57
+            Left = 56
             Height = 23
             Top = 8
             Width = 56
+            Enabled = False
             TabOrder = 1
           end
           object edtNomeEmpresa: TEdit
@@ -65,6 +68,7 @@ object frmPrincipal: TfrmPrincipal
             Height = 23
             Top = 40
             Width = 296
+            Enabled = False
             TabOrder = 2
           end
           object Label3: TLabel
@@ -80,6 +84,7 @@ object frmPrincipal: TfrmPrincipal
             Height = 23
             Top = 72
             Width = 144
+            Enabled = False
             MaxLength = 18
             TabOrder = 3
           end
@@ -109,6 +114,24 @@ object frmPrincipal: TfrmPrincipal
             OnClick = btnGravarEmpresaClick
             TabOrder = 5
           end
+          object Button1: TButton
+            Left = 120
+            Height = 25
+            Top = 8
+            Width = 46
+            Caption = '<<'
+            OnClick = EmpresaAnterior
+            TabOrder = 6
+          end
+          object Button3: TButton
+            Left = 169
+            Height = 25
+            Top = 8
+            Width = 46
+            Caption = '>>'
+            OnClick = EmpresaProxima
+            TabOrder = 7
+          end
         end
         object pPlanoContas: TTabSheet
           Caption = 'Plano de Contas'
@@ -122,7 +145,7 @@ object frmPrincipal: TfrmPrincipal
             Color = clWindow
             Columns = <>
             FixedCols = 0
-            Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+            Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
             TabOrder = 0
           end
           object Label4: TLabel
@@ -146,6 +169,7 @@ object frmPrincipal: TfrmPrincipal
             Top = 6
             Width = 27
             Caption = '...'
+            OnClick = Button2Click
             TabOrder = 2
           end
           object btnImportarPlano: TButton
@@ -154,6 +178,7 @@ object frmPrincipal: TfrmPrincipal
             Top = 6
             Width = 91
             Caption = 'Importar'
+            OnClick = btnImportarPlanoClick
             TabOrder = 3
           end
           object Label5: TLabel
@@ -224,15 +249,23 @@ object frmPrincipal: TfrmPrincipal
     Caption = 'Empresa'
     ParentColor = False
   end
-  object cmbEmpresa: TDBLookupComboBox
-    Left = 65
+  object cmbEmpresa: TComboBox
+    Left = 63
     Height = 23
     Top = 536
-    Width = 164
-    ListFieldIndex = 0
-    LookupCache = False
+    Width = 289
+    ItemHeight = 15
+    OnChange = cmbEmpresaChange
     Style = csDropDownList
     TabOrder = 1
+  end
+  object ProgressBar1: TProgressBar
+    Left = 216
+    Height = 20
+    Top = 576
+    Width = 633
+    TabOrder = 2
+    Visible = False
   end
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8

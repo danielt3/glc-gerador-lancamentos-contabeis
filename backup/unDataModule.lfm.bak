@@ -1,4 +1,6 @@
 object DataModule1: TDataModule1
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 440
   HorizontalOffset = 506
@@ -30,5 +32,9 @@ object DataModule1: TDataModule1
     Params = <>
     left = 128
     top = 120
+  end
+  object Datasource1: TDatasource
+    left = 128
+    top = 200
   end
 end

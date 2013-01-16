@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, unPrincipal, zcomponent, unDataModule, unListaCodigo, 
-unGarbageCollector;
+unGarbageCollector, unUtilitario;
 
 {$R *.res}
 

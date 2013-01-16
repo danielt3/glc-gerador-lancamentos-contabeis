@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 576
+  Left = 177
   Height = 624
-  Top = 208
+  Top = 138
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis'
   ClientHeight = 624
@@ -22,11 +22,11 @@ object frmPrincipal: TfrmPrincipal
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
-      ClientHeight = 503
+      ClientHeight = 505
       ClientWidth = 1037
       object PageControl2: TPageControl
         Left = 0
-        Height = 503
+        Height = 505
         Top = 0
         Width = 1037
         ActivePage = pPlanoContas
@@ -36,7 +36,7 @@ object frmPrincipal: TfrmPrincipal
         OnChange = PageControl1Change
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
-          ClientHeight = 475
+          ClientHeight = 479
           ClientWidth = 1029
           object btnNovaEmpresa: TButton
             Left = 16
@@ -49,15 +49,15 @@ object frmPrincipal: TfrmPrincipal
           end
           object Label1: TLabel
             Left = 8
-            Height = 16
+            Height = 14
             Top = 12
-            Width = 40
+            Width = 34
             Caption = 'Código'
             ParentColor = False
           end
           object edtCodigoEmpresa: TEdit
             Left = 56
-            Height = 23
+            Height = 21
             Top = 8
             Width = 56
             Enabled = False
@@ -65,7 +65,7 @@ object frmPrincipal: TfrmPrincipal
           end
           object edtNomeEmpresa: TEdit
             Left = 57
-            Height = 23
+            Height = 21
             Top = 40
             Width = 296
             Enabled = False
@@ -73,15 +73,15 @@ object frmPrincipal: TfrmPrincipal
           end
           object Label3: TLabel
             Left = 16
-            Height = 16
+            Height = 14
             Top = 44
-            Width = 34
+            Width = 28
             Caption = 'Nome'
             ParentColor = False
           end
           object edtCNPJEmpresa: TEdit
             Left = 57
-            Height = 23
+            Height = 21
             Top = 72
             Width = 144
             Enabled = False
@@ -90,9 +90,9 @@ object frmPrincipal: TfrmPrincipal
           end
           object Label6: TLabel
             Left = 16
-            Height = 16
+            Height = 14
             Top = 76
-            Width = 29
+            Width = 26
             Caption = 'CNPJ'
             ParentColor = False
           end
@@ -135,7 +135,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object pPlanoContas: TTabSheet
           Caption = 'Plano de Contas'
-          ClientHeight = 475
+          ClientHeight = 479
           ClientWidth = 1029
           object dbgPlano: TDBGrid
             Left = 8
@@ -150,15 +150,15 @@ object frmPrincipal: TfrmPrincipal
           end
           object Label4: TLabel
             Left = 8
-            Height = 16
+            Height = 14
             Top = 13
-            Width = 43
+            Width = 38
             Caption = 'Arquivo'
             ParentColor = False
           end
           object edtImportarPlano: TEdit
             Left = 58
-            Height = 23
+            Height = 21
             Top = 8
             Width = 323
             TabOrder = 1
@@ -183,15 +183,15 @@ object frmPrincipal: TfrmPrincipal
           end
           object Label5: TLabel
             Left = 516
-            Height = 16
+            Height = 14
             Top = 11
-            Width = 43
+            Width = 38
             Caption = 'Arquivo'
             ParentColor = False
           end
           object edtExportarPlano: TEdit
             Left = 566
-            Height = 23
+            Height = 21
             Top = 6
             Width = 317
             TabOrder = 4
@@ -243,18 +243,18 @@ object frmPrincipal: TfrmPrincipal
   end
   object Label2: TLabel
     Left = 9
-    Height = 16
+    Height = 14
     Top = 540
-    Width = 46
+    Width = 42
     Caption = 'Empresa'
     ParentColor = False
   end
   object cmbEmpresa: TComboBox
     Left = 63
-    Height = 23
+    Height = 21
     Top = 536
     Width = 289
-    ItemHeight = 15
+    ItemHeight = 13
     OnChange = cmbEmpresaChange
     Style = csDropDownList
     TabOrder = 1

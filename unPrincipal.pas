@@ -6,49 +6,125 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, ZConnection,
-  unDataModule, unListaCodigo, unGarbageCollector, unUtilitario;
+  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
+  EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
+  PopupNotifier, ZConnection, unDataModule, unListaCodigo, unGarbageCollector,
+  unUtilitario, ExtendedNotebook, types;
 
 type
   { TfrmPrincipal }
   TTipoAcao = (taNada, taInclusao, taEdicao);
 
   TfrmPrincipal = class(TForm)
-    btnGravarEmpresa: TButton;
-    btnExportarPlano: TButton;
-    btnImportarPlano: TButton;
-    btnNovaEmpresa: TButton;
     btnEditarEmpresa: TButton;
+    btnEditarEmpresa1: TButton;
+    btnExportarPlano: TButton;
+    btnExportarPlano1: TButton;
+    btnGravarEmpresa: TButton;
+    btnGravarEmpresa1: TButton;
+    btnGravarEmpresa2: TButton;
+    btnGravarEmpresa3: TButton;
+    btnImportarPlano: TButton;
+    btnImportarPlano1: TButton;
+    btnNovaEmpresa: TButton;
+    btnNovaEmpresa1: TButton;
     Button1: TButton;
+    Button10: TButton;
+    Button11: TButton;
+    Button12: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
     cmbEmpresa: TComboBox;
+    ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
+    ComboBox3: TComboBox;
+    ComboBox4: TComboBox;
     Conexao: TZConnection;
     dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
-    edtCodigoEmpresa: TEdit;
-    edtNomeEmpresa: TEdit;
+    Edit1: TEdit;
+    Edit10: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit6: TEdit;
+    Edit9: TEdit;
     edtCNPJEmpresa: TEdit;
+    edtCNPJEmpresa1: TEdit;
+    edtCNPJEmpresa2: TEdit;
+    edtCNPJEmpresa3: TEdit;
+    edtCNPJEmpresa4: TEdit;
+    edtCNPJEmpresa5: TEdit;
+    edtCNPJEmpresa6: TEdit;
+    edtCodigoEmpresa: TEdit;
+    edtCodigoEmpresa1: TEdit;
+    edtCodigoEmpresa3: TEdit;
     edtExportarPlano: TEdit;
+    edtExportarPlano1: TEdit;
     edtImportarPlano: TEdit;
+    edtImportarPlano1: TEdit;
+    edtNomeEmpresa: TEdit;
+    edtNomeEmpresa1: TEdit;
+    edtNomeEmpresa2: TEdit;
+    GroupBox1: TGroupBox;
+    GroupBox10: TGroupBox;
+    GroupBox11: TGroupBox;
+    GroupBox12: TGroupBox;
+    GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    GroupBox4: TGroupBox;
+    GroupBox5: TGroupBox;
+    GroupBox6: TGroupBox;
+    GroupBox7: TGroupBox;
+    GroupBox9: TGroupBox;
     Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label14: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
     Label2: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
     Label3: TLabel;
+    Label30: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Memo1: TMemo;
     OpenDialog1: TOpenDialog;
     PageControl: TPageControl;
+    PageControl1: TPageControl;
     PageControl2: TPageControl;
     pContador: TTabSheet;
     pClientes: TTabSheet;
     pPlanoContas: TTabSheet;
-    ProgressBar1: TProgressBar;
     pVinculador: TTabSheet;
     pEmpresa: TTabSheet;
     pIntegracao: TTabSheet;
     pAjuda: TTabSheet;
+    Splitter1: TSplitter;
+    TabSheet1: TTabSheet;
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
@@ -56,12 +132,23 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GroupBox12Click(Sender: TObject);
+    procedure GroupBox4Click(Sender: TObject);
+    procedure GroupBox8Click(Sender: TObject);
+    procedure GroupBox9Click(Sender: TObject);
+    procedure Label3Click(Sender: TObject);
+    procedure Label4Click(Sender: TObject);
+    procedure Label6Click(Sender: TObject);
+    procedure Label9Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
+    procedure pEmpresaContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -267,6 +354,12 @@ begin
   cmbEmpresaChange(cmbEmpresa);
 end;
 
+procedure TfrmPrincipal.pEmpresaContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+
+end;
+
 procedure TfrmPrincipal.CarregarListaEmpresa;
 var
   lComando: String;
@@ -431,6 +524,46 @@ begin
   CarregarListaEmpresa;
 end;
 
+procedure TfrmPrincipal.GroupBox12Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.GroupBox4Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.GroupBox8Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.GroupBox9Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.Label3Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.Label4Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.Label6Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.Label9Click(Sender: TObject);
+begin
+
+end;
+
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);
 begin
   NovaEmpresa;
@@ -450,6 +583,11 @@ end;
 procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
 begin
   CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
+end;
+
+procedure TfrmPrincipal.Edit2Change(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);

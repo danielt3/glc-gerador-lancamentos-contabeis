@@ -600,7 +600,7 @@ procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);
 begin
   if FileExists(edtImportarPlano.Text) then
   begin
-    if ImportarPlanoDeContas(fEmpresaAtual, edtImportarPlano.Text, ProgressBar1) then
+    if ImportarPlanoDeContas(fEmpresaAtual, edtImportarPlano.Text, ProgressBar1      ) then
     begin
       MensagemSucesso('Plano de contas importado com sucesso!', 'Importação de plano de contas');
     end;

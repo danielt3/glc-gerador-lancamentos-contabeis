@@ -937,7 +937,7 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 232
-    top = 384
+    left = 288
+    top = 344
   end
 end

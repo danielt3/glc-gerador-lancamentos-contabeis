@@ -65,8 +65,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="592"/>
-        <CursorPos X="80" Y="603"/>
+        <TopLine Value="595"/>
+        <CursorPos X="81" Y="603"/>
         <UsageCount Value="61"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -286,7 +286,7 @@
       </Position29>
       <Position30>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="603" Column="86" TopLine="577"/>
+        <Caret Line="603" Column="80" TopLine="592"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

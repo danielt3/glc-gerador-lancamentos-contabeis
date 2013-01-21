@@ -111,7 +111,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    Memo1: TMemo;
+    memAnotacoes: TMemo;
     OpenDialog1: TOpenDialog;
     PageControl: TPageControl;
     PageControl1: TPageControl;
@@ -125,6 +125,7 @@ type
     pAjuda: TTabSheet;
     Splitter1: TSplitter;
     TabSheet1: TTabSheet;
+    pLeiaute: TTabSheet;
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
@@ -144,6 +145,7 @@ type
     procedure Label4Click(Sender: TObject);
     procedure Label6Click(Sender: TObject);
     procedure Label9Click(Sender: TObject);
+    procedure memAnotacoesExit(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
@@ -166,6 +168,7 @@ type
     function GravarAlterarEmpresa: Boolean;
     procedure CarregarEmpresa(Empresa: Integer);
     procedure CarregarListaEmpresa;
+    procedure GravarAnotacoes;
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
@@ -401,6 +404,20 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.GravarAnotacoes;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'update' + NewLine +
+                 '  EMPRESA' + NewLine +
+                 'set' + NewLine +
+                 '  ANOTACOES = ' + QuotedStr(memAnotacoes.Lines.Text) + NewLine +
+                 'where' + NewLine +
+                 '  EMPRESA = ' + IntToStr(fEmpresaAtual);
+
+  DataModule1.Executar(lComandoSQL);
+end;
+
 function TfrmPrincipal.LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
 var
   lComandoSQL: String;
@@ -493,8 +510,8 @@ var
   lComandoSQL: String;
 begin
   lComandoSQL := 'select' + NewLine +
-                 '  CODIGO_EXTERNO as "Cód Externo",' + NewLine +
-                 '  CODIGO as "Código",' + NewLine +
+                 '  CODIGO_EXTERNO as "Cód Reduzido",' + NewLine +
+                 '  CODIGO as "Classificação",' + NewLine +
                  '  DESCRICAO as "Descrição",' + NewLine +
                  '  SINTETICA as "Sintética"' + NewLine +
                  'from' + NewLine +
@@ -562,6 +579,11 @@ end;
 procedure TfrmPrincipal.Label9Click(Sender: TObject);
 begin
 
+end;
+
+procedure TfrmPrincipal.memAnotacoesExit(Sender: TObject);
+begin
+  GravarAnotacoes;
 end;
 
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);

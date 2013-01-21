@@ -16,7 +16,11 @@ uses
   procedure MensagemErro(Mensagem, pCaption: String);
   procedure MensagemAlerta(Mensagem, pCaption: String);
   procedure MensagemSucesso(Mensagem, pCaption: String);
+  function  MascararTexto(Texto, Mascara: String): String;
 
+  function  ENumero(Caractere: Char): Boolean;
+  function  ELetra(Caractere: Char): Boolean;
+  function  ENumeroOuLetra(Caractere: Char): Boolean;
 const
   NewLine = #13#10;
 
@@ -30,7 +34,7 @@ begin
 
   for i := 1 to Length(Texto) do
   begin
-    if (Texto[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
+    if ENumero(Texto[i]) then
       result := result + Texto[i];
   end;
 end;
@@ -104,6 +108,45 @@ end;
 procedure MensagemSucesso(Mensagem, pCaption: String);
 begin
   MessageDlg(pCaption, Mensagem, mtInformation, [mbOK], 0);
+end;
+
+function MascararTexto(Texto, Mascara: String): String;
+var
+  i: Integer;
+begin
+  result := '';
+
+  for i := 1 to Length(Texto) do
+  begin
+    if Length(Mascara) >= i then
+    begin
+      if ((Mascara[i] = 'N') and ENumero(Texto[i])) or
+         ((Mascara[i] = 'L') and ELetra(Texto[i])) or
+         ((Mascara[i] = 'X') and ENumeroOuLetra(Texto[i])) then
+         result := result + Texto[i]
+      else
+        result := result + Mascara[i];
+    end;
+  end;
+end;
+
+function ENumero(Caractere: Char): Boolean;
+begin
+  result := (Caractere in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+end;
+
+function ELetra(Caractere: Char): Boolean;
+begin
+  result := (UpperCase(Caractere) in ['A', 'Á', 'À', 'Â', 'Ã', 'Ä', 'B', 'C', 'Ç', 'D',
+                                      'E', 'É', 'È', 'Ê', 'Ë', 'F', 'G', 'H', 'I', 'Í',
+                                      'Ì', 'Î', 'Ï', 'J', 'K', 'L', 'M', 'N', 'O', 'Ó',
+                                      'Ò', 'Ô', 'Õ', 'Ö', 'P', 'Q', 'R', 'S', 'T', 'U',
+                                      'Ú', 'Ù', 'Û', 'Ü', 'V', 'X', 'W', 'Y', 'Z']);
+end;
+
+function ENumeroOuLetra(Caractere: Char): Boolean;
+begin
+  result := ENumero(Caractere) or ELetra(Caractere);
 end;
 
 end.

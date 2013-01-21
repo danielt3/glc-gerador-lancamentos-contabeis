@@ -3,7 +3,7 @@ object frmPrincipal: TfrmPrincipal
   Height = 606
   Top = 148
   Width = 1045
-  Caption = 'GLC - Gerador de Lançamentos Contábeis'
+  Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
   ClientWidth = 1045
   FormStyle = fsMDIForm
@@ -173,7 +173,7 @@ object frmPrincipal: TfrmPrincipal
               ClientWidth = 437
               TabOrder = 0
               OnClick = GroupBox9Click
-              object Memo1: TMemo
+              object memAnotacoes: TMemo
                 Left = 6
                 Height = 104
                 Top = 8
@@ -183,9 +183,7 @@ object frmPrincipal: TfrmPrincipal
                 Font.Name = 'Courier New'
                 Font.Pitch = fpFixed
                 Font.Quality = fqDraft
-                Lines.Strings = (
-                  'Memo1'
-                )
+                OnExit = memAnotacoesExit
                 ParentFont = False
                 TabOrder = 0
               end
@@ -714,6 +712,9 @@ object frmPrincipal: TfrmPrincipal
             Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
             TabOrder = 2
           end
+        end
+        object pLeiaute: TTabSheet
+          Caption = 'Leiaute'
         end
       end
     end

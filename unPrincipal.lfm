@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = PageControl1Change
         object pEmpresa: TTabSheet
@@ -173,7 +173,7 @@ object frmPrincipal: TfrmPrincipal
               ClientWidth = 437
               TabOrder = 0
               OnClick = GroupBox9Click
-              object Memo1: TMemo
+              object memAnotacoes: TMemo
                 Left = 6
                 Height = 104
                 Top = 8
@@ -183,9 +183,7 @@ object frmPrincipal: TfrmPrincipal
                 Font.Name = 'Courier New'
                 Font.Pitch = fpFixed
                 Font.Quality = fqDraft
-                Lines.Strings = (
-                  'Memo1'
-                )
+                OnExit = memAnotacoesExit
                 ParentFont = False
                 TabOrder = 0
               end
@@ -258,6 +256,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 152
               OnChange = Edit2Change
               TabOrder = 0
+              Text = 'X.X.X.XX.XXX'
             end
           end
           object GroupBox5: TGroupBox
@@ -714,6 +713,9 @@ object frmPrincipal: TfrmPrincipal
             Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
             TabOrder = 2
           end
+        end
+        object pLeiaute: TTabSheet
+          Caption = 'Leiaute'
         end
       end
     end

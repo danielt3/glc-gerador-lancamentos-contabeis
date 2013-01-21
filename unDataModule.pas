@@ -29,6 +29,7 @@ type
     function Conectar: Boolean;
 
     procedure CriarTabelaContas;
+    procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
   public
@@ -90,6 +91,7 @@ begin
   CampoExiste('EMPRESA', 'CODIGO', 'VARCHAR(7) NOT NULL');
   CampoExiste('EMPRESA', 'NOME', 'VARCHAR(100) NOT NULL');
   CampoExiste('EMPRESA', 'CNPJ', 'VARCHAR(14) NOT NULL');
+  CampoExiste('EMPRESA', 'ANOTACOES', 'VARCHAR(1000)');
 
   TabelaExiste('PLANO_CONTAS');
   CampoExiste('PLANO_CONTAS', 'EMPRESA', 'INT NOT NULL');
@@ -98,6 +100,11 @@ begin
   CampoExiste('PLANO_CONTAS', 'CODIGO', 'VARCHAR(20) NOT NULL');
   CampoExiste('PLANO_CONTAS', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
   CampoExiste('PLANO_CONTAS', 'SINTETICA', 'CHAR(1) DEFAULT ''S'' NOT NULL');
+end;
+
+procedure TDataModule1.AtualizarBaseDeDados;
+begin
+  CriarTabelaContas;
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

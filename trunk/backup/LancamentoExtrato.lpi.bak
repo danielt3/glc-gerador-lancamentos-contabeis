@@ -54,7 +54,11 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="33" Y="16"/>
+<<<<<<< .mine
+        <UsageCount Value="62"/>
+=======
         <UsageCount Value="69"/>
+>>>>>>> .r14
       </Unit0>
       <Unit1>
         <Filename Value="unPrincipal.pas"/>
@@ -62,8 +66,16 @@
         <ComponentName Value="frmPrincipal"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unPrincipal"/>
+<<<<<<< .mine
+=======
         <EditorIndex Value="0"/>
+>>>>>>> .r14
         <WindowIndex Value="0"/>
+<<<<<<< .mine
+        <TopLine Value="595"/>
+        <CursorPos X="84" Y="603"/>
+        <UsageCount Value="62"/>
+=======
         <TopLine Value="146"/>
         <CursorPos X="35" Y="160"/>
         <UsageCount Value="69"/>
@@ -72,6 +84,7 @@
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
+>>>>>>> .r14
       </Unit1>
       <Unit2>
         <Filename Value="unDataModule.pas"/>
@@ -79,11 +92,18 @@
         <ComponentName Value="DataModule1"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="unDataModule"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
+<<<<<<< .mine
+        <TopLine Value="248"/>
+        <CursorPos X="22" Y="250"/>
+        <UsageCount Value="62"/>
+=======
         <TopLine Value="76"/>
         <CursorPos X="3" Y="90"/>
         <UsageCount Value="69"/>
+>>>>>>> .r14
         <Bookmarks Count="1">
           <Item0 X="3" Y="90" ID="1"/>
         </Bookmarks>
@@ -109,22 +129,30 @@
         <Filename Value="unListaCodigo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unListaCodigo"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="45"/>
         <CursorPos X="27" Y="31"/>
+<<<<<<< .mine
+        <UsageCount Value="41"/>
+=======
         <UsageCount Value="48"/>
+>>>>>>> .r14
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="unGarbageCollector.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unGarbageCollector"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="36" Y="42"/>
+<<<<<<< .mine
+        <UsageCount Value="40"/>
+=======
         <UsageCount Value="47"/>
+>>>>>>> .r14
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -138,12 +166,22 @@
         <Filename Value="unUtilitario.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unUtilitario"/>
+<<<<<<< .mine
+        <EditorIndex Value="0"/>
+=======
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+>>>>>>> .r14
         <WindowIndex Value="0"/>
+<<<<<<< .mine
+        <TopLine Value="69"/>
+        <CursorPos X="21" Y="106"/>
+        <UsageCount Value="34"/>
+=======
         <TopLine Value="102"/>
         <CursorPos X="39" Y="129"/>
         <UsageCount Value="41"/>
+>>>>>>> .r14
         <Loaded Value="True"/>
       </Unit8>
       <Unit9>
@@ -170,6 +208,9 @@
         <UsageCount Value="8"/>
       </Unit11>
     </Units>
+<<<<<<< .mine
+    <JumpHistory Count="0" HistoryIndex="-1"/>
+=======
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="unPrincipal.pas"/>
@@ -292,6 +333,7 @@
         <Caret Line="23" Column="22" TopLine="1"/>
       </Position30>
     </JumpHistory>
+>>>>>>> .r14
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>

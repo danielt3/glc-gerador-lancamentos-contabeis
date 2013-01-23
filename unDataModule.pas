@@ -15,16 +15,27 @@ type
   TDataModule1 = class(TDataModule)
     Conexao: TZConnection;
     Datasource1: TDatasource;
+    dsPlanoContas: TDatasource;
     qConsulta: TZQuery;
+    qPlanoContas: TZQuery;
     qExecutar: TZQuery;
+    qPlanoContaschave1: TLongintField;
+    qPlanoContasclassificacao1: TStringField;
+    qPlanoContascodigo1: TStringField;
+    qPlanoContasdescricao1: TStringField;
+    qPlanoContassintetica1: TStringField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure qPlanoContasclassificacao1GetText(Sender: TField;
+      var aText: string; DisplayText: Boolean);
   private
     fGarbageCollector: TGarbageCollector;
 
     fNomesConsultas: TStringList;
     fQueriesConsultas: TList;
     fSourceConsultas: TList;
+
+    fMascaraPlanoContas: String;
 
     function Conectar: Boolean;
 
@@ -40,6 +51,8 @@ type
     function NovaConsulta(SQL: String): TZQuery; Overload;
     function NovaConsulta(NomeConsulta: String; SQL: String): Integer;
     function GerarChave(NomeGenerator: String): Integer;
+
+    property MascaraPlanoContas: String read fMascaraPlanoContas write fMascaraPlanoContas;
   end; 
 
 var
@@ -61,21 +74,31 @@ begin
   fSourceConsultas := TList.Create;
   fNomesConsultas := TStringList.Create;
 
-  fGarbageCollector.Add(fQueriesConsultas);
-  fGarbageCollector.Add(fSourceConsultas);
-  fGarbageCollector.Add(fNomesConsultas);
+  try
+    fGarbageCollector.Add(fQueriesConsultas);
+    fGarbageCollector.Add(fSourceConsultas);
+    fGarbageCollector.Add(fNomesConsultas);
 
-  lConf := TStringList.Create;
-  lConf.Add('RootDirectory = ' + ExtractFileDir(ApplicationName));
-  lConf.SaveToFile(ExtractFileDir(ApplicationName) + 'firebird.conf');
-  FreeAndNil(lConf);
+    lConf := TStringList.Create;
+    lConf.Add('RootDirectory = ' + ExtractFileDir(ApplicationName));
+    lConf.SaveToFile(ExtractFileDir(ApplicationName) + 'firebird.conf');
+    FreeAndNil(lConf);
 
-  CriarTabelaContas;
+    CriarTabelaContas;
+  except on e:exception do
+    MensagemErro(e.Message, 'DataModuleCreate');
+  end;
 end;
 
 procedure TDataModule1.DataModuleDestroy(Sender: TObject);
 begin
   FreeAndNil(fGarbageCollector);
+end;
+
+procedure TDataModule1.qPlanoContasclassificacao1GetText(Sender: TField;
+  var aText: string; DisplayText: Boolean);
+begin
+  aText := MascararTexto(qPlanoContas.FieldByName('classificacao').AsString, MascaraPlanoContas);
 end;
 
 function TDataModule1.Conectar: Boolean;
@@ -183,6 +206,7 @@ begin
     qExecutar.Close;
     qExecutar.SQL.Clear;
     qExecutar.SQL.Add(SQL);
+    qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Executar.sql');
     qExecutar.Prepared:= true;
     qExecutar.ExecSQL;
 
@@ -200,6 +224,7 @@ begin
     qConsulta.Close;
     qConsulta.SQL.Clear;
     qConsulta.SQL.Add(SQL);
+    qConsulta.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Consultar.sql');
     qConsulta.Open;
 
     if not qConsulta.IsEmpty then
@@ -236,6 +261,7 @@ begin
     result.Close;
     result.SQL.Clear;
     result.SQL.Add(SQL);
+    result.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'NovaConsulta.sql');
     result.Open;
   except
     RaiseLastOSError;

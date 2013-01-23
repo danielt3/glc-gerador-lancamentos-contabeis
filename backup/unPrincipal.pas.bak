@@ -9,7 +9,7 @@ uses
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
   PopupNotifier, ZConnection, unDataModule, unListaCodigo, unGarbageCollector,
-  unUtilitario, ExtendedNotebook, types;
+  unUtilitario, db, ExtendedNotebook, types;
 
 type
   { TfrmPrincipal }
@@ -41,20 +41,20 @@ type
     Button8: TButton;
     Button9: TButton;
     cmbEmpresa: TComboBox;
+    cmbPlanoContasTipo2: TDBLookupComboBox;
     ComboBox1: TComboBox;
-    ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     Conexao: TZConnection;
     dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
-    Edit1: TEdit;
-    Edit10: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Edit4: TEdit;
-    Edit6: TEdit;
-    Edit9: TEdit;
+    cmbPlanoContasTipo: TDBLookupComboBox;
+    edtPlanoContasCodigo: TEdit;
+    edtPlanoContasDescricao2: TEdit;
+    edtPlanoContasClassificacao: TEdit;
+    edtPlanoContasDescricao: TEdit;
+    edtMascaraPlanoContas: TEdit;
+    edtPlanoContasClassificacao2: TEdit;
     edtCNPJEmpresa: TEdit;
     edtCNPJEmpresa1: TEdit;
     edtCNPJEmpresa2: TEdit;
@@ -130,27 +130,24 @@ type
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
+    procedure Button10Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
-    procedure Edit2Change(Sender: TObject);
+    procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure edtMascaraPlanoContasChange(Sender: TObject);
+    procedure edtPlanoContasClassificacaoKeyPress(Sender: TObject; var Key: char
+      );
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure GroupBox12Click(Sender: TObject);
-    procedure GroupBox4Click(Sender: TObject);
-    procedure GroupBox8Click(Sender: TObject);
-    procedure GroupBox9Click(Sender: TObject);
-    procedure Label3Click(Sender: TObject);
-    procedure Label4Click(Sender: TObject);
-    procedure Label6Click(Sender: TObject);
-    procedure Label9Click(Sender: TObject);
     procedure memAnotacoesExit(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
-    procedure pEmpresaContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -158,6 +155,11 @@ type
     fEstadoEmpresa: TTipoAcao;
     fEmpresaAtual: Integer;
     fListaEmpresa: TListaCodigo;
+    //Plano de Contas
+    fEstadoPlano: TTipoAcao;
+    fPlanoAtual: Integer;
+    fListaTipoPlano: TStringList;
+
 
     //Empresa
     procedure NovaEmpresa;
@@ -174,6 +176,15 @@ type
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
+    function  CarregarTelaPlanoDeContas: Boolean;
+    procedure PrepararComboTipoPlanoContas;
+    procedure LimparTelaPlanoContas;
+    procedure NovoPlanoContas;
+    procedure EditarPlanoContas;
+    procedure CancelarPlanoContas;
+    function GravarPlanoContas: Boolean;
+    function GravarInserirPlanoContas: Boolean;
+    function GravarAlterarPlanoContas: Boolean;
   public
     { public declarations }
   end; 
@@ -186,11 +197,6 @@ implementation
 {$R *.lfm}
 
 { TfrmPrincipal }
-
-procedure TfrmPrincipal.PageControl1Change(Sender: TObject);
-begin
-
-end;
 
 procedure TfrmPrincipal.NovaEmpresa;
 begin
@@ -357,12 +363,6 @@ begin
   cmbEmpresaChange(cmbEmpresa);
 end;
 
-procedure TfrmPrincipal.pEmpresaContextPopup(Sender: TObject; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-
-end;
-
 procedure TfrmPrincipal.CarregarListaEmpresa;
 var
   lComando: String;
@@ -508,19 +508,207 @@ end;
 function TfrmPrincipal.CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
+  teste: Integer;
 begin
+  DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
+
   lComandoSQL := 'select' + NewLine +
-                 '  CODIGO_EXTERNO as "Cód Reduzido",' + NewLine +
-                 '  CODIGO as "Classificação",' + NewLine +
-                 '  DESCRICAO as "Descrição",' + NewLine +
-                 '  SINTETICA as "Sintética"' + NewLine +
+                 '  CHAVE,' + NewLine +
+                 '  CODIGO_EXTERNO as codigo,' + NewLine +
+                 '  CODIGO as classificacao,' + NewLine +
+                 '  DESCRICAO as descricao,' + NewLine +
+                 '  SINTETICA as sintetica' + NewLine +
                  'from' + NewLine +
                  '  PLANO_CONTAS' + NewLine +
                  'where' + NewLine +
                  '  EMPRESA = ' + IntToStr(pEmpresa4);
 
-  result := DataModule1.NovaConsulta('PlanoContasMain', lComandoSQL) > 0;
-  dbgPlano.DataSource := DataModule1.getDataSource('PlanoContasMain');
+  DataModule1.qPlanoContas.Close;
+  DataModule1.qPlanoContas.SQl.Clear;
+  DataModule1.qPlanoContas.SQL.Add(lComandoSQL);
+  DataModule1.qPlanoContas.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'PlanoContas.sql');
+  DataModule1.qPlanoContas.Open;
+  teste := DataModule1.qPlanoContas.RowsAffected;
+  result := not DataModule1.qPlanoContas.IsEmpty;
+  dbgPlano.DataSource := DataModule1.dsPlanoContas;
+  CarregarTelaPlanoDeContas;
+end;
+
+function TfrmPrincipal.CarregarTelaPlanoDeContas: Boolean;
+begin
+  if not (DataModule1.qPlanoContas.IsEmpty) then
+  begin
+    fPlanoAtual := DataModule1.qPlanoContas.FieldByName('chave').AsInteger;
+    edtPlanoContasCodigo.Text := DataModule1.qPlanoContas.FieldByName('codigo').AsString;
+    edtPlanoContasClassificacao.Text := MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text);
+    edtPlanoContasClassificacao2.Text := MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text);
+    if (DataModule1.qPlanoContas.FieldByName('sintetica').AsString = 'S') then
+    begin
+      cmbPlanoContasTipo.ItemIndex := 0;
+      cmbPlanoContasTipo2.ItemIndex := 0;
+    end
+    else
+    begin
+      cmbPlanoContasTipo.ItemIndex := 1;
+      cmbPlanoContasTipo2.ItemIndex := 1;
+    end;
+    edtPlanoContasDescricao.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
+    edtPlanoContasDescricao2.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
+  end
+  else
+    LimparTelaPlanoContas;
+end;
+
+procedure TfrmPrincipal.PrepararComboTipoPlanoContas;
+begin
+  if not Assigned(fListaTipoPlano) then
+    fListaTipoPlano := TStringList.Create;
+
+  cmbPlanoContasTipo.Clear;
+  cmbPlanoContasTipo2.Clear;
+
+  fListaTipoPlano.Add('S');
+  fListaTipoPlano.Add('A');
+
+  cmbPlanoContasTipo.AddItem('Sintética', TObject('S'));
+  cmbPlanoContasTipo.AddItem('Analítica', TObject('A'));
+  cmbPlanoContasTipo.ItemIndex := 0;
+  cmbPlanoContasTipo2.AddItem('Sintética', TObject('S'));
+  cmbPlanoContasTipo2.AddItem('Analítica', TObject('A'));
+  cmbPlanoContasTipo2.ItemIndex := 0;
+end;
+
+procedure TfrmPrincipal.LimparTelaPlanoContas;
+begin
+  edtPlanoContasCodigo.Text := '';
+  edtPlanoContasClassificacao.Text := '';
+  edtPlanoContasClassificacao2.Text := '';
+  cmbPlanoContasTipo.ItemIndex := 0;
+  cmbPlanoContasTipo2.ItemIndex := 0;
+  edtPlanoContasDescricao.Text := '';
+  edtPlanoContasDescricao2.Text := '';
+end;
+
+procedure TfrmPrincipal.NovoPlanoContas;
+begin
+  LimparTelaPlanoContas;
+  fEstadoPlano := taInclusao;
+
+  edtPlanoContasCodigo.Enabled := true;
+  edtPlanoContasClassificacao.Enabled := true;
+  edtPlanoContasDescricao.Enabled := true;
+  cmbPlanoContasTipo.Enabled := true;
+
+  PageControl.ActivePage := pContador;
+  PageControl2.ActivePage := pPlanoContas;
+  edtPlanoContasCodigo.SetFocus;
+end;
+
+procedure TfrmPrincipal.EditarPlanoContas;
+begin
+  if not (DataModule1.qPlanoContas.IsEmpty) then
+  begin
+    CarregarTelaPlanoDeContas;
+    fEstadoPlano := taEdicao;
+
+    edtPlanoContasCodigo.Enabled := true;
+    edtPlanoContasClassificacao.Enabled := true;
+    edtPlanoContasDescricao.Enabled := true;
+    cmbPlanoContasTipo.Enabled := true;
+
+    PageControl.ActivePage := pContador;
+    PageControl2.ActivePage := pPlanoContas;
+    edtPlanoContasCodigo.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.CancelarPlanoContas;
+begin
+  CarregarTelaPlanoDeContas;
+  fEstadoPlano := taNada;
+
+  edtPlanoContasCodigo.Enabled := false;
+  edtPlanoContasClassificacao.Enabled := false;
+  edtPlanoContasDescricao.Enabled := false;
+  cmbPlanoContasTipo.Enabled := false;
+end;
+
+function TfrmPrincipal.GravarPlanoContas: boolean;
+var
+  lComandoSQL: String;
+  lPlanoAtual: Integer;
+begin
+  result := false;
+  if (fEstadoPlano = taInclusao) then
+  begin
+    result := GravarInserirPlanoContas;
+    lPlanoAtual := fPlanoAtual;
+  end
+  else if (fEstadoPlano = taEdicao) then
+  begin
+    lPlanoAtual := fPlanoAtual;
+    result := GravarAlterarPlanoContas;
+  end;
+
+  CarregarPlanoDeContas(fEmpresaAtual);
+  DataModule1.qPlanoContas.Locate('CHAVE', IntToStr(lPlanoAtual), []);
+  CarregarTelaPlanoDeContas;
+
+  edtPlanoContasCodigo.Enabled := false;
+  edtPlanoContasClassificacao.Enabled := false;
+  edtPlanoContasDescricao.Enabled := false;
+  cmbPlanoContasTipo.Enabled := false;
+end;
+
+function TfrmPrincipal.GravarInserirPlanoContas: Boolean;
+var
+  lComando: String;
+begin
+  result := false;
+
+  try
+    fPlanoAtual := DataModule1.GerarChave('GEN_PLANO_CONTAS');
+    lComando := 'INSERT INTO plano_contas (' + NewLine +
+                'chave,' + NewLine +
+                'empresa,' + NewLine +
+                'codigo_externo,' + NewLine +
+                'codigo,' + NewLine +
+                'descricao,' + NewLine +
+                'sintetica)' + NewLine +
+                'VALUES (' + NewLine +
+                '' + IntToStr(fPlanoAtual) + ',' + NewLine +
+                '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                '' + QuotedStr(ApenasNumeros(edtPlanoContasCodigo.Text)) + ',' + NewLine +
+                '' + QuotedStr(ApenasNumeros(edtPlanoContasClassificacao.Text)) + ',' + NewLine +
+                '' + QuotedStr(Trim(edtPlanoContasDescricao.Text)) + ',' + NewLine +
+                '' + QuotedStr(fListaTipoPlano.Strings[cmbPlanoContasTipo.ItemIndex]) + ')';
+
+    result := DataModule1.Executar(lComando);
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir plano de conta.');
+  end;
+end;
+
+function TfrmPrincipal.GravarAlterarPlanoContas: Boolean;
+var
+  lComando: String;
+  lTipo: String;
+begin
+  result := false;
+
+  try
+    lComando := 'UPDATE plano_contas SET' + NewLine +
+                '  codigo_externo = ' + QuotedStr(ApenasNumeros(edtPlanoContasCodigo.Text)) + ',' + NewLine +
+                '  codigo = ' + QuotedStr(ApenasNumeros(edtPlanoContasClassificacao.Text)) + ',' + NewLine +
+                '  descricao = ' + QuotedStr(Trim(edtPlanoContasDescricao.Text)) + ',' + NewLine +
+                '  sintetica = ' + QuotedStr(fListaTipoPlano.Strings[cmbPlanoContasTipo.ItemIndex]) + NewLine +
+                'WHERE' + NewLine +
+                '  chave = ' + IntToStr(fPlanoAtual);
+
+    result := DataModule1.Executar(lComando);
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir plano de conta.');
+  end;
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
@@ -529,56 +717,19 @@ begin
 
   fListaEmpresa := TListaCodigo.Create;
   fGarbageCollector.Add(fListaEmpresa);
+  PrepararComboTipoPlanoContas;
 end;
 
 procedure TfrmPrincipal.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fGarbageCollector);
+  if Assigned(fListaTipoPlano) then
+    FreeAndNil(fListaTipoPlano);
 end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   CarregarListaEmpresa;
-end;
-
-procedure TfrmPrincipal.GroupBox12Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.GroupBox4Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.GroupBox8Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.GroupBox9Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.Label3Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.Label4Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.Label6Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.Label9Click(Sender: TObject);
-begin
-
 end;
 
 procedure TfrmPrincipal.memAnotacoesExit(Sender: TObject);
@@ -589,6 +740,11 @@ end;
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);
 begin
   NovaEmpresa;
+end;
+
+procedure TfrmPrincipal.Button10Click(Sender: TObject);
+begin
+  CancelarPlanoContas;
 end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
@@ -602,14 +758,42 @@ begin
     edtImportarPlano.Text := OpenDialog1.FileName;
 end;
 
+procedure TfrmPrincipal.Button7Click(Sender: TObject);
+begin
+  GravarPlanoContas;
+end;
+
+procedure TfrmPrincipal.Button8Click(Sender: TObject);
+begin
+  EditarPlanoContas;
+end;
+
+procedure TfrmPrincipal.Button9Click(Sender: TObject);
+begin
+  NovoPlanoContas;;
+end;
+
 procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
 begin
   CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
 end;
 
-procedure TfrmPrincipal.Edit2Change(Sender: TObject);
+procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
+  CarregarTelaPlanoDeContas;
+end;
 
+procedure TfrmPrincipal.edtMascaraPlanoContasChange(Sender: TObject);
+begin
+  CarregarPlanoDeContas(fEmpresaAtual);
+end;
+
+procedure TfrmPrincipal.edtPlanoContasClassificacaoKeyPress(Sender: TObject;
+  var Key: char);
+begin
+  edtPlanoContasClassificacao.Text := MascararTexto(ApenasNumeros(edtPlanoContasClassificacao.Text), edtMascaraPlanoContas.Text);
+  edtPlanoContasClassificacao.SelStart := Length(edtPlanoContasClassificacao.Text);
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);

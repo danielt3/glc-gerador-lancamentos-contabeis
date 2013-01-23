@@ -3,8 +3,8 @@ object DataModule1: TDataModule1
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 440
-  HorizontalOffset = 506
-  VerticalOffset = 247
+  HorizontalOffset = 526
+  VerticalOffset = 511
   Width = 750
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8
@@ -36,5 +36,71 @@ object DataModule1: TDataModule1
   object Datasource1: TDatasource
     left = 128
     top = 200
+  end
+  object dsPlanoContas: TDatasource
+    DataSet = qPlanoContas
+    left = 464
+    top = 51
+  end
+  object qPlanoContas: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 360
+    top = 56
+    object qPlanoContascodigo1: TStringField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'codigo'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 10
+    end
+    object qPlanoContasdescricao1: TStringField
+      DisplayWidth = 40
+      FieldKind = fkData
+      FieldName = 'descricao'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 40
+    end
+    object qPlanoContassintetica1: TStringField
+      DisplayWidth = 1
+      FieldKind = fkData
+      FieldName = 'sintetica'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 1
+    end
+    object qPlanoContasclassificacao1: TStringField
+      DisplayWidth = 20
+      FieldKind = fkData
+      FieldName = 'classificacao'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = qPlanoContasclassificacao1GetText
+    end
+    object qPlanoContaschave1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'chave'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
   end
 end

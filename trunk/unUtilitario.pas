@@ -113,10 +113,30 @@ end;
 function MascararTexto(Texto, Mascara: String): String;
 var
   i: Integer;
+  j: Integer;
 begin
   result := '';
+  j := 1;
 
-  for i := 1 to Length(Texto) do
+  for i := 1 to Length(Mascara) do
+  begin
+    if (Length(Texto) >= j) then
+    begin
+      if ((Mascara[i] = 'N') and ENumero(Texto[j])) or
+         ((Mascara[i] = 'L') and ELetra(Texto[j])) or
+         ((Mascara[i] = 'X') and ENumeroOuLetra(Texto[j])) then
+      begin
+         result := result + Texto[j];
+         j := j + 1;
+      end
+      else
+        result := result + Mascara[i];
+    end;
+  end;
+
+  for i := j to Length(Texto) do
+    result := result + Texto[i];
+  {for i := 1 to Length(Texto) do
   begin
     if Length(Mascara) >= i then
     begin
@@ -125,9 +145,11 @@ begin
          ((Mascara[i] = 'X') and ENumeroOuLetra(Texto[i])) then
          result := result + Texto[i]
       else
-        result := result + Mascara[i];
-    end;
-  end;
+        result := result + Mascara[i] + Texto[i];
+    end
+    else
+      result := result + Texto[i];
+  end;}
 end;
 
 function ENumero(Caractere: Char): Boolean;
@@ -136,12 +158,10 @@ begin
 end;
 
 function ELetra(Caractere: Char): Boolean;
+const
+  lLetras = 'AÁÀÂÃÄBCÇDEÉÈÊËFGHIÍÌÎÏJKLMNOÓÒÔÕÖPQRSTUÚÙÛÜVXWYZ';
 begin
-  result := (UpperCase(Caractere) in ['A', 'Á', 'À', 'Â', 'Ã', 'Ä', 'B', 'C', 'Ç', 'D',
-                                      'E', 'É', 'È', 'Ê', 'Ë', 'F', 'G', 'H', 'I', 'Í',
-                                      'Ì', 'Î', 'Ï', 'J', 'K', 'L', 'M', 'N', 'O', 'Ó',
-                                      'Ò', 'Ô', 'Õ', 'Ö', 'P', 'Q', 'R', 'S', 'T', 'U',
-                                      'Ú', 'Ù', 'Û', 'Ü', 'V', 'X', 'W', 'Y', 'Z']);
+  result := Pos(UpperCase(Caractere), lLetras) > 0;
 end;
 
 function ENumeroOuLetra(Caractere: Char): Boolean;

@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 368
+  Left = 313
   Height = 606
-  Top = 148
+  Top = 154
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -29,16 +29,14 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
-        OnChange = PageControl1Change
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
           ClientHeight = 475
           ClientWidth = 1029
-          OnContextPopup = pEmpresaContextPopup
           object GroupBox6: TGroupBox
             Left = 8
             Height = 200
@@ -79,7 +77,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 58
               Caption = 'Descrição:.'
               ParentColor = False
-              OnClick = Label3Click
             end
             object edtCNPJEmpresa: TEdit
               Left = 89
@@ -97,7 +94,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 35
               Caption = 'CNPJ:.'
               ParentColor = False
-              OnClick = Label6Click
             end
             object btnNovaEmpresa: TButton
               Left = 25
@@ -172,7 +168,6 @@ object frmPrincipal: TfrmPrincipal
               ClientHeight = 126
               ClientWidth = 437
               TabOrder = 0
-              OnClick = GroupBox9Click
               object memAnotacoes: TMemo
                 Left = 6
                 Height = 104
@@ -239,7 +234,6 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 142
             ClientWidth = 348
             TabOrder = 0
-            OnClick = GroupBox4Click
             object Label14: TLabel
               Left = 8
               Height = 16
@@ -247,15 +241,24 @@ object frmPrincipal: TfrmPrincipal
               Width = 99
               Caption = 'Mascara Contábil:.'
               ParentColor = False
-              OnClick = Label9Click
             end
-            object Edit6: TEdit
+            object edtMascaraPlanoContas: TEdit
               Left = 102
               Height = 23
               Top = 48
               Width = 152
-              OnChange = Edit2Change
+              OnChange = edtMascaraPlanoContasChange
               TabOrder = 0
+              Text = 'X.X.X.XX.XXX.XXX'
+            end
+            object Button13: TButton
+              Left = 280
+              Height = 25
+              Top = 26
+              Width = 75
+              Caption = 'Button13'
+              OnClick = Button13Click
+              TabOrder = 1
             end
           end
           object GroupBox5: TGroupBox
@@ -273,10 +276,32 @@ object frmPrincipal: TfrmPrincipal
               Top = 112
               Width = 610
               Color = clWindow
-              Columns = <>
+              Columns = <              
+                item
+                  Title.Caption = 'Cód. Reduzido'
+                  Width = 84
+                  FieldName = 'codigo'
+                end              
+                item
+                  Title.Caption = 'Classificação'
+                  Width = 124
+                  FieldName = 'classificacao'
+                end              
+                item
+                  Title.Caption = 'Descrição'
+                  Width = 325
+                  FieldName = 'descricao'
+                end              
+                item
+                  Title.Caption = 'Sintética'
+                  Width = 54
+                  FieldName = 'sintetica'
+                end>
               FixedCols = 0
-              Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              ReadOnly = True
               TabOrder = 0
+              OnMouseUp = dbgPlanoMouseUp
             end
             object Label17: TLabel
               Left = 486
@@ -285,7 +310,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 31
               Caption = 'Tipo:.'
               ParentColor = False
-              OnClick = Label9Click
             end
             object Label27: TLabel
               Left = 14
@@ -294,14 +318,13 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Classificação:.'
               ParentColor = False
-              OnClick = Label9Click
             end
-            object Edit9: TEdit
+            object edtPlanoContasClassificacao2: TEdit
               Left = 14
               Height = 23
               Top = 24
               Width = 184
-              OnChange = Edit2Change
+              Enabled = False
               TabOrder = 1
             end
             object Label28: TLabel
@@ -311,24 +334,14 @@ object frmPrincipal: TfrmPrincipal
               Width = 58
               Caption = 'Descrição:.'
               ParentColor = False
-              OnClick = Label9Click
             end
-            object Edit10: TEdit
+            object edtPlanoContasDescricao2: TEdit
               Left = 230
               Height = 23
               Top = 24
               Width = 184
-              OnChange = Edit2Change
+              Enabled = False
               TabOrder = 2
-            end
-            object ComboBox2: TComboBox
-              Left = 486
-              Height = 23
-              Top = 24
-              Width = 120
-              ItemHeight = 15
-              TabOrder = 3
-              Text = 'Analitíca'
             end
             object Label29: TLabel
               Left = 14
@@ -337,7 +350,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 100
               Caption = 'Ordem Alfabetica:.'
               ParentColor = False
-              OnClick = Label9Click
             end
             object ComboBox3: TComboBox
               Left = 14
@@ -345,7 +357,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 80
               Width = 100
               ItemHeight = 15
-              TabOrder = 4
+              TabOrder = 3
               Text = 'Crescente'
             end
             object ComboBox4: TComboBox
@@ -354,7 +366,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 80
               Width = 100
               ItemHeight = 15
-              TabOrder = 5
+              TabOrder = 4
               Text = 'Crescente'
             end
             object Label30: TLabel
@@ -364,7 +376,16 @@ object frmPrincipal: TfrmPrincipal
               Width = 99
               Caption = 'Ordem Númerica:.'
               ParentColor = False
-              OnClick = Label9Click
+            end
+            object cmbPlanoContasTipo2: TDBLookupComboBox
+              Left = 486
+              Height = 23
+              Top = 20
+              Width = 124
+              Enabled = False
+              ListFieldIndex = 0
+              LookupCache = False
+              TabOrder = 5
             end
           end
           object GroupBox3: TGroupBox
@@ -376,11 +397,12 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 206
             ClientWidth = 348
             TabOrder = 2
-            object Edit1: TEdit
+            object edtPlanoContasCodigo: TEdit
               Left = 78
               Height = 23
               Top = 8
               Width = 80
+              Enabled = False
               TabOrder = 0
             end
             object Label9: TLabel
@@ -390,7 +412,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 29
               Caption = 'Cod:.'
               ParentColor = False
-              OnClick = Label9Click
             end
             object Label10: TLabel
               Left = 6
@@ -399,22 +420,23 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Classificação:.'
               ParentColor = False
-              OnClick = Label9Click
             end
-            object Edit2: TEdit
+            object edtPlanoContasClassificacao: TEdit
               Left = 78
               Height = 23
               Top = 72
               Width = 128
-              OnChange = Edit2Change
+              Enabled = False
+              OnKeyPress = edtPlanoContasClassificacaoKeyPress
               TabOrder = 1
             end
-            object Edit3: TEdit
+            object edtPlanoContasDescricao: TEdit
               Left = 78
               Height = 23
               Top = 104
               Width = 256
-              OnChange = Edit2Change
+              CharCase = ecUppercase
+              Enabled = False
               TabOrder = 2
             end
             object Label11: TLabel
@@ -424,14 +446,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 58
               Caption = 'Descrição:.'
               ParentColor = False
-              OnClick = Label9Click
-            end
-            object Edit4: TEdit
-              Left = 78
-              Height = 23
-              Top = 41
-              Width = 80
-              TabOrder = 3
             end
             object Label12: TLabel
               Left = 6
@@ -440,7 +454,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 31
               Caption = 'Tipo:.'
               ParentColor = False
-              OnClick = Label9Click
             end
             object Button7: TButton
               Left = 270
@@ -448,7 +461,8 @@ object frmPrincipal: TfrmPrincipal
               Top = 152
               Width = 75
               Caption = 'Gravar'
-              TabOrder = 4
+              OnClick = Button7Click
+              TabOrder = 3
             end
             object Button8: TButton
               Left = 94
@@ -456,7 +470,8 @@ object frmPrincipal: TfrmPrincipal
               Top = 152
               Width = 75
               Caption = 'Editar'
-              TabOrder = 5
+              OnClick = Button8Click
+              TabOrder = 4
             end
             object Button9: TButton
               Left = 6
@@ -464,7 +479,8 @@ object frmPrincipal: TfrmPrincipal
               Top = 152
               Width = 75
               Caption = 'Novo'
-              TabOrder = 6
+              OnClick = Button9Click
+              TabOrder = 5
             end
             object Button10: TButton
               Left = 182
@@ -472,6 +488,17 @@ object frmPrincipal: TfrmPrincipal
               Top = 152
               Width = 75
               Caption = 'Cancelar'
+              OnClick = Button10Click
+              TabOrder = 6
+            end
+            object cmbPlanoContasTipo: TDBLookupComboBox
+              Left = 78
+              Height = 23
+              Top = 41
+              Width = 124
+              Enabled = False
+              ListFieldIndex = 0
+              LookupCache = False
               TabOrder = 7
             end
           end
@@ -495,7 +522,6 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 254
             ClientWidth = 684
             TabOrder = 1
-            OnClick = GroupBox12Click
             object edtCodigoEmpresa1: TEdit
               Left = 73
               Height = 23
@@ -763,7 +789,6 @@ object frmPrincipal: TfrmPrincipal
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False
-          OnClick = Label4Click
         end
         object Label5: TLabel
           Left = 454
@@ -879,7 +904,6 @@ object frmPrincipal: TfrmPrincipal
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False
-          OnClick = Label4Click
         end
         object Label8: TLabel
           Left = 454
@@ -920,7 +944,6 @@ object frmPrincipal: TfrmPrincipal
     Width = 75
     Caption = 'Classificação:.'
     ParentColor = False
-    OnClick = Label9Click
   end
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8

@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 313
+  Left = 581
   Height = 606
-  Top = 154
+  Top = 164
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -251,15 +251,6 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 0
               Text = 'X.X.X.XX.XXX.XXX'
             end
-            object Button13: TButton
-              Left = 280
-              Height = 25
-              Top = 26
-              Width = 75
-              Caption = 'Button13'
-              OnClick = Button13Click
-              TabOrder = 1
-            end
           end
           object GroupBox5: TGroupBox
             Left = 376
@@ -324,7 +315,8 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 24
               Width = 184
-              Enabled = False
+              OnChange = edtPlanoContasClassificacao2Change
+              OnKeyPress = edtPlanoContasClassificacao2KeyPress
               TabOrder = 1
             end
             object Label28: TLabel
@@ -340,7 +332,7 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 24
               Width = 184
-              Enabled = False
+              OnChange = edtPlanoContasDescricao2Change
               TabOrder = 2
             end
             object Label29: TLabel
@@ -357,6 +349,12 @@ object frmPrincipal: TfrmPrincipal
               Top = 80
               Width = 100
               ItemHeight = 15
+              ItemIndex = 0
+              Items.Strings = (
+                'Crescente'
+                'Decrescente'
+              )
+              OnChange = ComboBox3Change
               TabOrder = 3
               Text = 'Crescente'
             end
@@ -366,6 +364,12 @@ object frmPrincipal: TfrmPrincipal
               Top = 80
               Width = 100
               ItemHeight = 15
+              ItemIndex = 0
+              Items.Strings = (
+                'Crescente'
+                'Decrescente'
+              )
+              OnChange = ComboBox4Change
               TabOrder = 4
               Text = 'Crescente'
             end
@@ -382,9 +386,9 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 20
               Width = 124
-              Enabled = False
               ListFieldIndex = 0
               LookupCache = False
+              OnChange = cmbPlanoContasTipo2Change
               TabOrder = 5
             end
           end

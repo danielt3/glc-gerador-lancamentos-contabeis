@@ -9,7 +9,7 @@ uses
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
   PopupNotifier, ZConnection, unDataModule, unListaCodigo, unGarbageCollector,
-  unUtilitario, db, ExtendedNotebook, types;
+  unUtilitario, db, ExtendedNotebook, types, ZAbstractRODataset;
 
 type
   { TfrmPrincipal }
@@ -32,7 +32,6 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
-    Button13: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -139,11 +138,18 @@ type
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
+    procedure cmbPlanoContasTipo2Change(Sender: TObject);
+    procedure ComboBox3Change(Sender: TObject);
+    procedure ComboBox4Change(Sender: TObject);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
+    procedure edtPlanoContasClassificacao2Change(Sender: TObject);
+    procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
+      var Key: char);
     procedure edtPlanoContasClassificacaoKeyPress(Sender: TObject; var Key: char
       );
+    procedure edtPlanoContasDescricao2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -525,6 +531,17 @@ begin
                  'where' + NewLine +
                  '  EMPRESA = ' + IntToStr(pEmpresa4);
 
+  if ApenasNumeros(edtPlanoContasClassificacao2.Text) <> EmptyStr then
+    lComandoSQL := lComandoSQL + '  AND CODIGO LIKE ' + QuotedStr(ApenasNumeros(edtPlanoContasClassificacao2.Text) + '%');
+
+  if trim(edtPlanoContasDescricao2.Text) <> EmptyStr then
+    lComandoSQL := lComandoSQL + '  AND descricao LIKE ' + QuotedStr(Trim(edtPlanoContasDescricao2.Text) + '%');
+
+  if (cmbPlanoContasTipo2.ItemIndex = 1) then
+    lComandoSQL := lComandoSQL + '  AND sintetica = ' + QuotedStr('S') + NewLine
+  else if (cmbPlanoContasTipo2.ItemIndex = 2) then
+    lComandoSQL := lComandoSQL + '  AND sintetica = ' + QuotedStr('N') + NewLine;
+
   DataModule1.qPlanoContas.Close;
   DataModule1.qPlanoContas.SQl.Clear;
   DataModule1.qPlanoContas.SQL.Add(lComandoSQL);
@@ -543,19 +560,11 @@ begin
     fPlanoAtual := DataModule1.qPlanoContas.FieldByName('chave').AsInteger;
     edtPlanoContasCodigo.Text := DataModule1.qPlanoContas.FieldByName('codigo').AsString;
     edtPlanoContasClassificacao.Text := MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text);
-    edtPlanoContasClassificacao2.Text := MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text);
     if (DataModule1.qPlanoContas.FieldByName('sintetica').AsString = 'S') then
-    begin
-      cmbPlanoContasTipo.ItemIndex := 0;
-      cmbPlanoContasTipo2.ItemIndex := 0;
-    end
+      cmbPlanoContasTipo.ItemIndex := 0
     else
-    begin
       cmbPlanoContasTipo.ItemIndex := 1;
-      cmbPlanoContasTipo2.ItemIndex := 1;
-    end;
     edtPlanoContasDescricao.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
-    edtPlanoContasDescricao2.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
   end
   else
     LimparTelaPlanoContas;
@@ -575,6 +584,7 @@ begin
   cmbPlanoContasTipo.AddItem('Sintética', TObject('S'));
   cmbPlanoContasTipo.AddItem('Analítica', TObject('A'));
   cmbPlanoContasTipo.ItemIndex := 0;
+  cmbPlanoContasTipo2.AddItem('Todas', TObject('T'));
   cmbPlanoContasTipo2.AddItem('Sintética', TObject('S'));
   cmbPlanoContasTipo2.AddItem('Analítica', TObject('A'));
   cmbPlanoContasTipo2.ItemIndex := 0;
@@ -751,7 +761,7 @@ end;
 
 procedure TfrmPrincipal.Button13Click(Sender: TObject);
 begin
-  DataModule1.qPlanoContas.SortedFields := 'classificacao';
+
 end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
@@ -785,6 +795,29 @@ begin
   CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
 end;
 
+procedure TfrmPrincipal.cmbPlanoContasTipo2Change(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.ComboBox3Change(Sender: TObject);
+begin
+  DataModule1.qPlanoContas.SortedFields := 'descricao';
+  if ComboBox3.ItemIndex = 0 then
+    DataModule1.qPlanoContas.SortType := stAscending
+  else
+    DataModule1.qPlanoContas.SortType := stDescending;
+end;
+
+procedure TfrmPrincipal.ComboBox4Change(Sender: TObject);
+begin
+  DataModule1.qPlanoContas.SortedFields := 'classificacao';
+  if ComboBox4.ItemIndex = 0 then
+    DataModule1.qPlanoContas.SortType := stAscending
+  else
+    DataModule1.qPlanoContas.SortType := stDescending;
+end;
+
 procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -796,11 +829,28 @@ begin
   CarregarPlanoDeContas(fEmpresaAtual);
 end;
 
+procedure TfrmPrincipal.edtPlanoContasClassificacao2Change(Sender: TObject);
+begin
+  CarregarPlanoDeContas(fEmpresaAtual);
+end;
+
+procedure TfrmPrincipal.edtPlanoContasClassificacao2KeyPress(Sender: TObject;
+  var Key: char);
+begin
+  edtPlanoContasClassificacao2.Text := MascararTexto(ApenasNumeros(edtPlanoContasClassificacao2.Text), edtMascaraPlanoContas.Text);
+  edtPlanoContasClassificacao2.SelStart := Length(edtPlanoContasClassificacao2.Text);
+end;
+
 procedure TfrmPrincipal.edtPlanoContasClassificacaoKeyPress(Sender: TObject;
   var Key: char);
 begin
   edtPlanoContasClassificacao.Text := MascararTexto(ApenasNumeros(edtPlanoContasClassificacao.Text), edtMascaraPlanoContas.Text);
   edtPlanoContasClassificacao.SelStart := Length(edtPlanoContasClassificacao.Text);
+end;
+
+procedure TfrmPrincipal.edtPlanoContasDescricao2Change(Sender: TObject);
+begin
+  CarregarPlanoDeContas(fEmpresaAtual);
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);

@@ -98,7 +98,7 @@ end;
 procedure TDataModule1.qPlanoContasclassificacao1GetText(Sender: TField;
   var aText: string; DisplayText: Boolean);
 begin
-  aText := MascararTexto(qPlanoContas.FieldByName('classificacao').AsString, MascaraPlanoContas);
+  //aText := MascararTexto(qPlanoContas.FieldByName('classificacao').AsString, MascaraPlanoContas);
 end;
 
 function TDataModule1.Conectar: Boolean;
@@ -224,7 +224,7 @@ begin
     qConsulta.Close;
     qConsulta.SQL.Clear;
     qConsulta.SQL.Add(SQL);
-    qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Consultar.sql');
+    qConsulta.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Consultar.sql');
     qConsulta.Open;
 
     if not qConsulta.IsEmpty then

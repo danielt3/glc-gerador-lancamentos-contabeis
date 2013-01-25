@@ -332,6 +332,7 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 24
               Width = 184
+              OnChange = edtPlanoContasDescricao2Change
               TabOrder = 2
             end
             object Label29: TLabel

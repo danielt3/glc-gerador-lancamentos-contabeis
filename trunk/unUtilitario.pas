@@ -118,6 +118,9 @@ begin
   result := '';
   j := 1;
 
+  if Length(Texto) >= 2 then
+    j := 1;
+
   for i := 1 to Length(Mascara) do
   begin
     if (Length(Texto) >= j) then

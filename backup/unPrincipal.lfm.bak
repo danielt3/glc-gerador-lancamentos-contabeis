@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pPlanoContas
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 1
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -332,6 +332,7 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 24
               Width = 184
+              OnChange = edtPlanoContasDescricao2Change
               TabOrder = 2
             end
             object Label29: TLabel
@@ -580,7 +581,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 200
               Width = 75
               Caption = 'Novo'
-              OnClick = btnNovaEmpresaClick
+              OnClick = btnNovaEmpresa1Click
               TabOrder = 3
             end
             object btnEditarEmpresa1: TButton
@@ -589,7 +590,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 200
               Width = 75
               Caption = 'Editar'
-              OnClick = btnEditarEmpresaClick
+              OnClick = btnEditarEmpresa1Click
               TabOrder = 4
             end
             object btnGravarEmpresa2: TButton
@@ -598,7 +599,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 200
               Width = 75
               Caption = 'Gravar'
-              OnClick = btnGravarEmpresaClick
+              OnClick = btnGravarEmpresa2Click
               TabOrder = 5
             end
             object btnGravarEmpresa3: TButton
@@ -607,7 +608,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 200
               Width = 75
               Caption = 'Cancelar'
-              OnClick = btnGravarEmpresaClick
+              OnClick = btnGravarEmpresa3Click
               TabOrder = 6
             end
             object Button11: TButton
@@ -740,6 +741,7 @@ object frmPrincipal: TfrmPrincipal
             FixedCols = 0
             Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
             TabOrder = 2
+            OnMouseUp = dbgPlano1MouseUp
           end
         end
         object pLeiaute: TTabSheet

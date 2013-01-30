@@ -16,14 +16,21 @@ type
     Conexao: TZConnection;
     Datasource1: TDatasource;
     dsPlanoContas: TDatasource;
+    dsVinculadores: TDatasource;
     qConsulta: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
+    qVinculadores: TZQuery;
     qPlanoContaschave1: TLongintField;
+    qPlanoContaschave2: TLongintField;
     qPlanoContasclassificacao1: TStringField;
+    qPlanoContasclassificacao2: TStringField;
     qPlanoContascodigo1: TStringField;
+    qPlanoContascodigo2: TStringField;
     qPlanoContasdescricao1: TStringField;
+    qPlanoContasdescricao2: TStringField;
     qPlanoContassintetica1: TStringField;
+    qPlanoContassintetica2: TStringField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure qPlanoContasclassificacao1GetText(Sender: TField;
@@ -40,6 +47,7 @@ type
     function Conectar: Boolean;
 
     procedure CriarTabelaContas;
+    procedure CriarTabelaVinculadores;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
@@ -84,7 +92,7 @@ begin
     lConf.SaveToFile(ExtractFileDir(ApplicationName) + 'firebird.conf');
     FreeAndNil(lConf);
 
-    CriarTabelaContas;
+    AtualizarBaseDeDados
   except on e:exception do
     MensagemErro(e.Message, 'DataModuleCreate');
   end;
@@ -125,9 +133,22 @@ begin
   CampoExiste('PLANO_CONTAS', 'SINTETICA', 'CHAR(1) DEFAULT ''S'' NOT NULL');
 end;
 
+procedure TDataModule1.CriarTabelaVinculadores;
+begin
+  TabelaExiste('VINCULADORES');
+  CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
+  CampoExiste('VINCULADORES', 'CODIGO', 'VARCHAR(10) NOT NULL');
+  CampoExiste('VINCULADORES', 'DATA', 'DATE');
+  CampoExiste('VINCULADORES', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
+  CampoExiste('VINCULADORES', 'DEBITAR', 'INT NOT NULL');
+  CampoExiste('VINCULADORES', 'CREDITAR', 'INT NOT NULL');
+  CampoExiste('VINCULADORES', 'HISTORICO', 'VARCHAR(100) NOT NULL');
+end;
+
 procedure TDataModule1.AtualizarBaseDeDados;
 begin
   CriarTabelaContas;
+  CriarTabelaVinculadores;
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

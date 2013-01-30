@@ -103,4 +103,70 @@ object DataModule1: TDataModule1
       Required = False
     end
   end
+  object qVinculadores: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 360
+    top = 117
+    object qPlanoContascodigo2: TStringField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'codigo'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 10
+    end
+    object qPlanoContasdescricao2: TStringField
+      DisplayWidth = 40
+      FieldKind = fkData
+      FieldName = 'descricao'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 40
+    end
+    object qPlanoContassintetica2: TStringField
+      DisplayWidth = 1
+      FieldKind = fkData
+      FieldName = 'sintetica'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 1
+    end
+    object qPlanoContasclassificacao2: TStringField
+      DisplayWidth = 20
+      FieldKind = fkData
+      FieldName = 'classificacao'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = qPlanoContasclassificacao1GetText
+    end
+    object qPlanoContaschave2: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'chave'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+  end
+  object dsVinculadores: TDatasource
+    DataSet = qVinculadores
+    left = 464
+    top = 112
+  end
 end

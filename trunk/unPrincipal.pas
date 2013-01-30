@@ -8,8 +8,9 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
-  PopupNotifier, ZConnection, unDataModule, unListaCodigo, unGarbageCollector,
-  unUtilitario, db, ExtendedNotebook, types, ZAbstractRODataset;
+  PopupNotifier, Calendar, ZConnection, unDataModule, unListaCodigo,
+  unGarbageCollector, unUtilitario, db, ExtendedNotebook, types,
+  ZAbstractRODataset;
 
 type
   { TfrmPrincipal }
@@ -126,9 +127,13 @@ type
     Splitter1: TSplitter;
     TabSheet1: TTabSheet;
     pLeiaute: TTabSheet;
+    procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
+    procedure btnGravarEmpresa2Click(Sender: TObject);
+    procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
+    procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button13Click(Sender: TObject);
@@ -141,6 +146,8 @@ type
     procedure cmbPlanoContasTipo2Change(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
+    procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
@@ -167,7 +174,9 @@ type
     fEstadoPlano: TTipoAcao;
     fPlanoAtual: Integer;
     fListaTipoPlano: TStringList;
-
+    //Vinculadores
+    fEstadoVinculador: TTipoAcao;
+    fVinculadorAtual: Integer;
 
     //Empresa
     procedure NovaEmpresa;
@@ -193,6 +202,18 @@ type
     function GravarPlanoContas: Boolean;
     function GravarInserirPlanoContas: Boolean;
     function GravarAlterarPlanoContas: Boolean;
+    function getChavePlano(Empresa: Integer; Codigo: String): Integer;
+    //Vinculadores
+    function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
+    procedure LimparTelaVinculadores;
+    procedure HabilitarVinculadores(Habilitar: Boolean);
+    procedure NovoVinculador;
+    procedure EditarVinculador;
+    procedure CancelarVinculador;
+    function  CarregarVinculador: Boolean;
+    function GravarVinculador: Boolean;
+    function GravarInserirVinculador: Boolean;
+    function GravarAlterarVinculador: Boolean;
   public
     { public declarations }
   end; 
@@ -342,6 +363,7 @@ begin
       fEmpresaAtual:= Empresa;
 
       CarregarPlanoDeContas(fEmpresaAtual);
+      CarregarVinculadores(fEmpresaAtual);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -723,6 +745,227 @@ begin
   end;
 end;
 
+function TfrmPrincipal.getChavePlano(Empresa: Integer; Codigo: String): Integer;
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  if not (Vazio(Codigo)) then
+  begin
+    lComandoSQL := 'SELECT' + NewLine +
+                   '  a.chave AS chave' + NewLine +
+                   'FROM' + NewLine +
+                   'where' + NewLine +
+                   '  empresa = ' + IntToStr(Empresa) + ' AND' + NewLine +
+                   '  codigo_externo = ' + QuotedStr(Trim(Codigo));
+
+    if DataModule1.NovaConsulta('getChavePlano', lComandoSQL) > 0 then
+      result := DataModule1.getQuery('getChavePlano').FieldByName('chave').AsInteger;
+  end
+  else
+    result := 0;
+end;
+
+function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  a.chave AS chave,' + NewLine +
+                 '  a.codigo AS codigo,' + NewLine +
+                 '  a.data AS data,' + NewLine +
+                 '  a.descricao AS descricao,' + NewLine +
+                 '  b.codigo_externo AS debitar,' + NewLine +
+                 '  b.codigo AS cd_debitar,' + NewLine +
+                 '  b.descricao AS no_debitar,' + NewLine +
+                 '  c.codigo_externo AS creditar,' + NewLine +
+                 '  c.codigo AS cd_creditar,' + NewLine +
+                 '  c.descricao AS no_creditar,' + NewLine +
+                 '  a.historico AS historico' + NewLine +
+                 'FROM' + NewLine +
+                 '  vinculadores a' + NewLine +
+                 '  LEFT JOIN plano_contas b ON (' + NewLine +
+                 '    b.empresa = a.empresa AND' + NewLine +
+                 '    b.chave = a.debitar)' + NewLine +
+                 '  LEFT JOIN plano_contas c ON (' + NewLine +
+                 '    c.empresa = a.empresa AND' + NewLine +
+                 '    c.chave = a.creditar)' + NewLine +
+                 'where' + NewLine +
+                 '  a.empresa = ' + IntToStr(pEmpresa4);
+
+  DataModule1.qVinculadores.Close;
+  DataModule1.qVinculadores.SQl.Clear;
+  DataModule1.qVinculadores.SQL.Add(lComandoSQL);
+  DataModule1.qVinculadores.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Vinculadores.sql');
+  DataModule1.qVinculadores.Open;
+  teste := DataModule1.qVinculadores.RowsAffected;
+  result := not DataModule1.qVinculadores.IsEmpty;
+  dbgPlano1.DataSource := DataModule1.dsVinculadores;
+  CarregarVinculador;
+end;
+
+procedure TfrmPrincipal.LimparTelaVinculadores;
+begin
+  edtCodigoEmpresa1.Text := '';
+  edtNomeEmpresa1.Text := '';
+  edtCNPJEmpresa1.Text := '';
+  edtCNPJEmpresa3.Text := '';
+  edtCNPJEmpresa2.Text := '';
+  edtCNPJEmpresa4.Text := '';
+  edtCNPJEmpresa5.Text := '';
+  edtCNPJEmpresa6.Text := '';
+  edtNomeEmpresa2.Text := '';
+end;
+
+procedure TfrmPrincipal.HabilitarVinculadores(Habilitar: Boolean);
+var
+  lCor: TColor;
+begin
+  if habilitar then
+    lCor := clWhite
+  else
+    lCor := clBlack;
+
+  edtCodigoEmpresa1.Color := lCor;
+  edtCodigoEmpresa1.Enabled := Habilitar;
+  edtNomeEmpresa1.Color := lCor;
+  edtNomeEmpresa1.Enabled := Habilitar;
+  edtCNPJEmpresa1.Color := lCor;
+  edtCNPJEmpresa1.Enabled := Habilitar;
+  edtCNPJEmpresa3.Color := lCor;
+  edtCNPJEmpresa3.Enabled := Habilitar;
+  edtCNPJEmpresa2.Color := lCor;
+  edtCNPJEmpresa2.Enabled := Habilitar;
+  edtCNPJEmpresa4.Color := lCor;
+  edtCNPJEmpresa4.Enabled := Habilitar;
+  edtCNPJEmpresa5.Color := lCor;
+  edtCNPJEmpresa5.Enabled := Habilitar;
+  edtCNPJEmpresa6.Color := lCor;
+  edtCNPJEmpresa6.Enabled := Habilitar;
+  edtNomeEmpresa2.Color := lCor;
+  edtNomeEmpresa2.Enabled := Habilitar;
+end;
+
+procedure TfrmPrincipal.NovoVinculador;
+begin
+  LimparTelaVinculadores;
+
+  fEstadoVinculador := taInclusao;
+
+  HabilitarVinculadores(true);
+
+  PageControl.ActivePage := pContador;
+  PageControl2.ActivePage := pVinculador;
+  edtCodigoEmpresa1.SetFocus;
+end;
+
+procedure TfrmPrincipal.EditarVinculador;
+begin
+  if not (DataModule1.qVinculadores.IsEmpty) then
+  begin
+    CarregarVinculador;
+    fEstadoVinculador := taEdicao;
+
+    HabilitarVinculadores(true);
+
+    PageControl.ActivePage := pContador;
+    PageControl2.ActivePage := pVinculador;
+    edtNomeEmpresa1.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.CancelarVinculador;
+begin
+  CarregarVinculador;
+  fEstadoVinculador := taNada;
+  HabilitarVinculadores(false);
+end;
+
+function TfrmPrincipal.CarregarVinculador: Boolean;
+begin
+  if not (DataModule1.qVinculadores.IsEmpty) then
+  begin
+    fVinculadorAtual := DataModule1.qVinculadores.FieldByName('chave').AsInteger;
+
+    edtCodigoEmpresa1.Text := DataModule1.qVinculadores.FieldByName('codigo').AsString;
+    edtNomeEmpresa1.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
+    edtCNPJEmpresa1.Text := DataModule1.qVinculadores.FieldByName('debitar').AsString;
+    edtCNPJEmpresa3.Text := DataModule1.qVinculadores.FieldByName('cd_debitar').AsString;
+    edtCNPJEmpresa2.Text := DataModule1.qVinculadores.FieldByName('no_debitar').AsString;
+    edtCNPJEmpresa4.Text := DataModule1.qVinculadores.FieldByName('creditar').AsString;
+    edtCNPJEmpresa5.Text := DataModule1.qVinculadores.FieldByName('cd_creditar').AsString;
+    edtCNPJEmpresa6.Text := DataModule1.qVinculadores.FieldByName('no_creditar').AsString;
+    edtNomeEmpresa2.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
+  end
+  else
+    LimparTelaVinculadores;
+end;
+
+function TfrmPrincipal.GravarVinculador: Boolean;
+var
+  lComandoSQL: String;
+  lVinculadorAtual: Integer;
+begin
+  result := false;
+  if (fEstadoVinculador = taInclusao) then
+  begin
+    result := GravarInserirVinculador;
+    lVinculadorAtual := fVinculadorAtual;
+  end
+  else if (fEstadoVinculador = taEdicao) then
+  begin
+    lVinculadorAtual := fVinculadorAtual;
+    result := GravarAlterarVinculador;
+  end;
+
+  CarregarVinculadores(fEmpresaAtual);
+  DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lVinculadorAtual), []);
+  CarregarVinculador;
+
+  HabilitarVinculadores(false);
+end;
+
+function TfrmPrincipal.GravarInserirVinculador: Boolean;
+var
+  lComando: String;
+begin
+  result := false;
+
+  try
+    fPlanoAtual := DataModule1.GerarChave('GEN_VINCULADORES');
+    lComando := 'INSERT INTO vinculadores (' + NewLine +
+                'chave,' + NewLine +
+                'empresa,' + NewLine +
+                'codigo,' + NewLine +
+                //'data,' + NewLine +
+                'descricao,' + NewLine +
+                'debitar,' + NewLine +
+                'creditar,' + NewLine +
+                'historico)' + NewLine +
+                'VALUES (' + NewLine +
+                '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
+                '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                '' + QuotedStr(ApenasNumeros(edtCodigoEmpresa1.Text)) + ',' + NewLine +
+                //'' + FormatDateTime('yyyy-mm-dd hh:nn:ss.zzzz' edtPlanoContasClassificacao.Text)) + ',' + NewLine +
+                '' + QuotedStr(Trim(edtNomeEmpresa1.Text)) + ',' + NewLine +
+                '' + IntToStr(getChavePlano(fEmpresaAtual, edtCNPJEmpresa1.Text)) + ',' + NewLine +
+                '' + IntToStr(getChavePlano(fEmpresaAtual, edtCNPJEmpresa4.Text)) + ',' + NewLine +
+                '' + QuotedStr(ApenasNumeros(edtNomeEmpresa2.Text)) + ')';
+
+    result := DataModule1.Executar(lComando);
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir vinculador.');
+  end;
+end;
+
+function TfrmPrincipal.GravarAlterarVinculador: Boolean;
+begin
+
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   fGarbageCollector := TGarbageCollector.Create;
@@ -818,6 +1061,12 @@ begin
     DataModule1.qPlanoContas.SortType := stDescending;
 end;
 
+procedure TfrmPrincipal.dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  CarregarVinculador;
+end;
+
 procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -870,9 +1119,29 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.btnNovaEmpresa1Click(Sender: TObject);
+begin
+  NovoVinculador;
+end;
+
 procedure TfrmPrincipal.btnEditarEmpresaClick(Sender: TObject);
 begin
   EditarEmpresa;
+end;
+
+procedure TfrmPrincipal.btnGravarEmpresa2Click(Sender: TObject);
+begin
+  GravarVinculador;
+end;
+
+procedure TfrmPrincipal.btnGravarEmpresa3Click(Sender: TObject);
+begin
+  CancelarVinculador;
+end;
+
+procedure TfrmPrincipal.btnEditarEmpresa1Click(Sender: TObject);
+begin
+  EditarVinculador;
 end;
 
 end.

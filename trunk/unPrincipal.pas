@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
-  PopupNotifier, Calendar, ZConnection, unDataModule, unListaCodigo,
-  unGarbageCollector, unUtilitario, db, ExtendedNotebook, types,
+  PopupNotifier, Calendar, Arrow, ZConnection, unDataModule, unListaCodigo,
+  unGarbageCollector, unUtilitario, db, ExtendedNotebook, RTTICtrls, types,
   ZAbstractRODataset;
 
 type
@@ -17,6 +17,10 @@ type
   TTipoAcao = (taNada, taInclusao, taEdicao);
 
   TfrmPrincipal = class(TForm)
+    Arrow1: TArrow;
+    Arrow2: TArrow;
+    Arrow3: TArrow;
+    Arrow4: TArrow;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
     btnExportarPlano: TButton;
@@ -33,6 +37,7 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
+    Button13: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -41,14 +46,31 @@ type
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
+    CheckListBox1: TCheckListBox;
+    CheckListBox2: TCheckListBox;
+    CheckListBox3: TCheckListBox;
+    CheckListBox4: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
+    cmbCodigoDebitar: TComboBox;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
+    cmbClassificacaoDebitar: TComboBox;
+    cmbNomeDebitar: TComboBox;
+    cmbCodigoCreditar: TComboBox;
+    cmbClassificacaoCreditar: TComboBox;
+    cmbNomeCreditar: TComboBox;
+    ComboBox5: TComboBox;
+    ComboBox6: TComboBox;
     Conexao: TZConnection;
-    dbgPlano: TDBGrid;
     dbgPlano1: TDBGrid;
+    DBGrid1: TDBGrid;
+    DBGrid2: TDBGrid;
+    DBGrid4: TDBGrid;
+    Edit1: TEdit;
+    dbgPlano: TDBGrid;
     cmbPlanoContasTipo: TDBLookupComboBox;
     edtPlanoContasCodigo: TEdit;
     edtPlanoContasDescricao2: TEdit;
@@ -57,15 +79,8 @@ type
     edtMascaraPlanoContas: TEdit;
     edtPlanoContasClassificacao2: TEdit;
     edtCNPJEmpresa: TEdit;
-    edtCNPJEmpresa1: TEdit;
-    edtCNPJEmpresa2: TEdit;
-    edtCNPJEmpresa3: TEdit;
-    edtCNPJEmpresa4: TEdit;
-    edtCNPJEmpresa5: TEdit;
-    edtCNPJEmpresa6: TEdit;
     edtCodigoEmpresa: TEdit;
-    edtCodigoEmpresa1: TEdit;
-    edtCodigoEmpresa3: TEdit;
+    edtCodigoVinculador: TEdit;
     edtExportarPlano: TEdit;
     edtExportarPlano1: TEdit;
     edtImportarPlano: TEdit;
@@ -77,18 +92,31 @@ type
     GroupBox10: TGroupBox;
     GroupBox11: TGroupBox;
     GroupBox12: TGroupBox;
+    GroupBox13: TGroupBox;
+    GroupBox14: TGroupBox;
+    GroupBox15: TGroupBox;
+    GroupBox16: TGroupBox;
+    GroupBox17: TGroupBox;
+    GroupBox18: TGroupBox;
+    GroupBox19: TGroupBox;
     GroupBox2: TGroupBox;
+    GroupBox20: TGroupBox;
+    GroupBox21: TGroupBox;
+    GroupBox22: TGroupBox;
     GroupBox3: TGroupBox;
     GroupBox4: TGroupBox;
     GroupBox5: TGroupBox;
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
+    GroupBox8: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     Label14: TLabel;
+    Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -98,7 +126,6 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
-    Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
     Label27: TLabel;
@@ -106,6 +133,7 @@ type
     Label29: TLabel;
     Label3: TLabel;
     Label30: TLabel;
+    Label31: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -142,14 +170,19 @@ type
     procedure Button7Click(Sender: TObject);
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
+    procedure cmbClassificacaoCreditarChange(Sender: TObject);
+    procedure cmbCodigoCreditarChange(Sender: TObject);
+    procedure cmbCodigoDebitarChange(Sender: TObject);
+    procedure cmbCodigoDebitarKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure cmbEmpresaChange(Sender: TObject);
-    procedure cmbPlanoContasTipo2Change(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
     procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Edit2Change(Sender: TObject);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -160,9 +193,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GroupBox15Click(Sender: TObject);
+    procedure GroupBox8Click(Sender: TObject);
+    procedure Label13Click(Sender: TObject);
     procedure memAnotacoesExit(Sender: TObject);
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
+    procedure cmbLookupKeyPress(Sender: TObject; var Key: char);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -177,6 +214,8 @@ type
     //Vinculadores
     fEstadoVinculador: TTipoAcao;
     fVinculadorAtual: Integer;
+    fListaDebito: TStringList;
+    fListaCredito: TStringList;
 
     //Empresa
     procedure NovaEmpresa;
@@ -195,6 +234,7 @@ type
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
     function  CarregarTelaPlanoDeContas: Boolean;
     procedure PrepararComboTipoPlanoContas;
+    procedure CarregarCombosPlano;
     procedure LimparTelaPlanoContas;
     procedure NovoPlanoContas;
     procedure EditarPlanoContas;
@@ -393,6 +433,18 @@ begin
   cmbEmpresaChange(cmbEmpresa);
 end;
 
+procedure TfrmPrincipal.cmbLookupKeyPress(Sender: TObject; var Key: char);
+var
+  teste: String;
+begin
+  teste := TComboBox(Sender).Text;
+
+  if (Key <> #8) and (TComboBox(Sender).Text <> '') and (TComboBox(Sender).Items.IndexOf(TComboBox(Sender).Text + Key) = -1) then
+    Key := #0;
+
+  TComboBox(Sender).SelStart := Length(TComboBox(Sender).Text);
+end;
+
 procedure TfrmPrincipal.CarregarListaEmpresa;
 var
   lComando: String;
@@ -569,6 +621,9 @@ begin
   DataModule1.qPlanoContas.SQL.Add(lComandoSQL);
   DataModule1.qPlanoContas.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'PlanoContas.sql');
   DataModule1.qPlanoContas.Open;
+
+  CarregarCombosPlano;
+
   teste := DataModule1.qPlanoContas.RowsAffected;
   result := not DataModule1.qPlanoContas.IsEmpty;
   dbgPlano.DataSource := DataModule1.dsPlanoContas;
@@ -610,6 +665,27 @@ begin
   cmbPlanoContasTipo2.AddItem('Sintética', TObject('S'));
   cmbPlanoContasTipo2.AddItem('Analítica', TObject('A'));
   cmbPlanoContasTipo2.ItemIndex := 0;
+end;
+
+procedure TfrmPrincipal.CarregarCombosPlano;
+begin
+  DataModule1.qPlanoContas.First;
+
+  while not DataModule1.qPlanoContas.Eof do
+  begin
+    fListaDebito.Add(DataModule1.qPlanoContas.FieldByName('CHAVE').AsString);
+    fListaCredito.Add(DataModule1.qPlanoContas.FieldByName('chave').AsString);
+    cmbCodigoDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+    cmbCodigoCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+    cmbClassificacaoDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('classificacao').AsString);
+    cmbClassificacaoCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('classificacao').AsString);
+    cmbNomeDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+    cmbNomeCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+
+    DataModule1.qPlanoContas.Next;
+  end;
+
+  DataModule1.qPlanoContas.First;
 end;
 
 procedure TfrmPrincipal.LimparTelaPlanoContas;
@@ -778,9 +854,11 @@ begin
                  '  a.codigo AS codigo,' + NewLine +
                  '  a.data AS data,' + NewLine +
                  '  a.descricao AS descricao,' + NewLine +
+                 '  b.chave AS id_debitar,' + NewLine +
                  '  b.codigo_externo AS debitar,' + NewLine +
                  '  b.codigo AS cd_debitar,' + NewLine +
                  '  b.descricao AS no_debitar,' + NewLine +
+                 '  b.chave AS id_creditar,' + NewLine +
                  '  c.codigo_externo AS creditar,' + NewLine +
                  '  c.codigo AS cd_creditar,' + NewLine +
                  '  c.descricao AS no_creditar,' + NewLine +
@@ -809,14 +887,20 @@ end;
 
 procedure TfrmPrincipal.LimparTelaVinculadores;
 begin
-  edtCodigoEmpresa1.Text := '';
+  edtCodigoVinculador.Text := '';
   edtNomeEmpresa1.Text := '';
-  edtCNPJEmpresa1.Text := '';
-  edtCNPJEmpresa3.Text := '';
-  edtCNPJEmpresa2.Text := '';
-  edtCNPJEmpresa4.Text := '';
-  edtCNPJEmpresa5.Text := '';
-  edtCNPJEmpresa6.Text := '';
+  cmbCodigoDebitar.ItemIndex := -1;
+  cmbCodigoDebitar.Text := '';
+  cmbCodigoCreditar.ItemIndex := -1;
+  cmbCodigoCreditar.Text := '';
+  cmbClassificacaoDebitar.ItemIndex := -1;
+  cmbClassificacaoDebitar.Text := '';
+  cmbClassificacaoCreditar.ItemIndex := -1;
+  cmbClassificacaoCreditar.Text := '';
+  cmbNomeDebitar.ItemIndex := -1;
+  cmbNomeDebitar.Text := '';
+  cmbNomeCreditar.ItemIndex := -1;
+  cmbNomeCreditar.Text := '';
   edtNomeEmpresa2.Text := '';
 end;
 
@@ -829,22 +913,22 @@ begin
   else
     lCor := clBlack;
 
-  edtCodigoEmpresa1.Color := lCor;
-  edtCodigoEmpresa1.Enabled := Habilitar;
+  edtCodigoVinculador.Color := lCor;
+  edtCodigoVinculador.Enabled := Habilitar;
   edtNomeEmpresa1.Color := lCor;
   edtNomeEmpresa1.Enabled := Habilitar;
-  edtCNPJEmpresa1.Color := lCor;
-  edtCNPJEmpresa1.Enabled := Habilitar;
-  edtCNPJEmpresa3.Color := lCor;
-  edtCNPJEmpresa3.Enabled := Habilitar;
-  edtCNPJEmpresa2.Color := lCor;
-  edtCNPJEmpresa2.Enabled := Habilitar;
-  edtCNPJEmpresa4.Color := lCor;
-  edtCNPJEmpresa4.Enabled := Habilitar;
-  edtCNPJEmpresa5.Color := lCor;
-  edtCNPJEmpresa5.Enabled := Habilitar;
-  edtCNPJEmpresa6.Color := lCor;
-  edtCNPJEmpresa6.Enabled := Habilitar;
+  cmbCodigoDebitar.Color := lCor;
+  cmbCodigoDebitar.Enabled := Habilitar;
+  cmbCodigoCreditar.Color := lCor;
+  cmbCodigoCreditar.Enabled := Habilitar;
+  cmbClassificacaoDebitar.Color := lCor;
+  cmbClassificacaoDebitar.Enabled := Habilitar;
+  cmbClassificacaoCreditar.Color := lCor;
+  cmbClassificacaoCreditar.Enabled := Habilitar;
+  cmbNomeDebitar.Color := lCor;
+  cmbNomeDebitar.Enabled := Habilitar;
+  cmbNomeCreditar.Color := lCor;
+  cmbNomeCreditar.Enabled := Habilitar;
   edtNomeEmpresa2.Color := lCor;
   edtNomeEmpresa2.Enabled := Habilitar;
 end;
@@ -859,7 +943,7 @@ begin
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pVinculador;
-  edtCodigoEmpresa1.SetFocus;
+  edtCodigoVinculador.SetFocus;
 end;
 
 procedure TfrmPrincipal.EditarVinculador;
@@ -890,14 +974,14 @@ begin
   begin
     fVinculadorAtual := DataModule1.qVinculadores.FieldByName('chave').AsInteger;
 
-    edtCodigoEmpresa1.Text := DataModule1.qVinculadores.FieldByName('codigo').AsString;
+    edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('codigo').AsString;
     edtNomeEmpresa1.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
-    edtCNPJEmpresa1.Text := DataModule1.qVinculadores.FieldByName('debitar').AsString;
-    edtCNPJEmpresa3.Text := DataModule1.qVinculadores.FieldByName('cd_debitar').AsString;
-    edtCNPJEmpresa2.Text := DataModule1.qVinculadores.FieldByName('no_debitar').AsString;
-    edtCNPJEmpresa4.Text := DataModule1.qVinculadores.FieldByName('creditar').AsString;
-    edtCNPJEmpresa5.Text := DataModule1.qVinculadores.FieldByName('cd_creditar').AsString;
-    edtCNPJEmpresa6.Text := DataModule1.qVinculadores.FieldByName('no_creditar').AsString;
+    cmbCodigoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
+    cmbClassificacaoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
+    cmbNomeDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
+    cmbCodigoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
+    cmbClassificacaoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
+    cmbNomeCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
     edtNomeEmpresa2.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
   end
   else
@@ -940,7 +1024,6 @@ begin
                 'chave,' + NewLine +
                 'empresa,' + NewLine +
                 'codigo,' + NewLine +
-                //'data,' + NewLine +
                 'descricao,' + NewLine +
                 'debitar,' + NewLine +
                 'creditar,' + NewLine +
@@ -948,11 +1031,10 @@ begin
                 'VALUES (' + NewLine +
                 '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                 '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
-                '' + QuotedStr(ApenasNumeros(edtCodigoEmpresa1.Text)) + ',' + NewLine +
-                //'' + FormatDateTime('yyyy-mm-dd hh:nn:ss.zzzz' edtPlanoContasClassificacao.Text)) + ',' + NewLine +
+                '' + QuotedStr(ApenasNumeros(edtCodigoVinculador.Text)) + ',' + NewLine +
                 '' + QuotedStr(Trim(edtNomeEmpresa1.Text)) + ',' + NewLine +
-                '' + IntToStr(getChavePlano(fEmpresaAtual, edtCNPJEmpresa1.Text)) + ',' + NewLine +
-                '' + IntToStr(getChavePlano(fEmpresaAtual, edtCNPJEmpresa4.Text)) + ',' + NewLine +
+                '' + IntToStr(getChavePlano(fEmpresaAtual, cmbCodigoDebitar.Text)) + ',' + NewLine +
+                '' + IntToStr(getChavePlano(fEmpresaAtual, cmbCodigoCreditar.Text)) + ',' + NewLine +
                 '' + QuotedStr(ApenasNumeros(edtNomeEmpresa2.Text)) + ')';
 
     result := DataModule1.Executar(lComando);
@@ -971,7 +1053,11 @@ begin
   fGarbageCollector := TGarbageCollector.Create;
 
   fListaEmpresa := TListaCodigo.Create;
+  fListaDebito := TStringList.Create;
+  fListaCredito := TStringList.Create;
   fGarbageCollector.Add(fListaEmpresa);
+  fGarbageCollector.Add(fListaDebito);
+  fGarbageCollector.Add(fListaCredito);
   PrepararComboTipoPlanoContas;
 end;
 
@@ -985,6 +1071,21 @@ end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   CarregarListaEmpresa;
+end;
+
+procedure TfrmPrincipal.GroupBox15Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.GroupBox8Click(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.Label13Click(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.memAnotacoesExit(Sender: TObject);
@@ -1033,14 +1134,42 @@ begin
   NovoPlanoContas;;
 end;
 
+procedure TfrmPrincipal.cmbClassificacaoCreditarChange(Sender: TObject);
+begin
+
+end;
+
+procedure TfrmPrincipal.cmbCodigoCreditarChange(Sender: TObject);
+begin
+  cmbCodigoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+  cmbClassificacaoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+  cmbNomeCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+end;
+
+procedure TfrmPrincipal.cmbCodigoDebitarChange(Sender: TObject);
+var
+  teste: Integer;
+  lteste: String;
+begin
+  teste := TComboBox(Sender).ItemIndex;
+  lteste := cmbCodigoDebitar.Text;
+
+  cmbCodigoDebitar.ItemIndex := teste;
+  cmbClassificacaoDebitar.ItemIndex := teste;
+  cmbNomeDebitar.ItemIndex := teste;
+end;
+
+procedure TfrmPrincipal.cmbCodigoDebitarKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  cmbCodigoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+  cmbClassificacaoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+  cmbNomeCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+end;
+
 procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
 begin
   CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
-end;
-
-procedure TfrmPrincipal.cmbPlanoContasTipo2Change(Sender: TObject);
-begin
-
 end;
 
 procedure TfrmPrincipal.ComboBox3Change(Sender: TObject);
@@ -1071,6 +1200,11 @@ procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   CarregarTelaPlanoDeContas;
+end;
+
+procedure TfrmPrincipal.Edit2Change(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.edtMascaraPlanoContasChange(Sender: TObject);

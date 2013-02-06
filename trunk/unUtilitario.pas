@@ -139,20 +139,6 @@ begin
 
   for i := j to Length(Texto) do
     result := result + Texto[i];
-  {for i := 1 to Length(Texto) do
-  begin
-    if Length(Mascara) >= i then
-    begin
-      if ((Mascara[i] = 'N') and ENumero(Texto[i])) or
-         ((Mascara[i] = 'L') and ELetra(Texto[i])) or
-         ((Mascara[i] = 'X') and ENumeroOuLetra(Texto[i])) then
-         result := result + Texto[i]
-      else
-        result := result + Mascara[i] + Texto[i];
-    end
-    else
-      result := result + Texto[i];
-  end;}
 end;
 
 function ENumero(Caractere: Char): Boolean;

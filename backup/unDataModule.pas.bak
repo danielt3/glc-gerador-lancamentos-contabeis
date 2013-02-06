@@ -22,15 +22,10 @@ type
     qExecutar: TZQuery;
     qVinculadores: TZQuery;
     qPlanoContaschave1: TLongintField;
-    qPlanoContaschave2: TLongintField;
     qPlanoContasclassificacao1: TStringField;
-    qPlanoContasclassificacao2: TStringField;
     qPlanoContascodigo1: TStringField;
-    qPlanoContascodigo2: TStringField;
     qPlanoContasdescricao1: TStringField;
-    qPlanoContasdescricao2: TStringField;
     qPlanoContassintetica1: TStringField;
-    qPlanoContassintetica2: TStringField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure qPlanoContasclassificacao1GetText(Sender: TField;
@@ -48,6 +43,8 @@ type
 
     procedure CriarTabelaContas;
     procedure CriarTabelaVinculadores;
+    procedure CriarTabelaLayouts;
+    procedure CriarTabelaLayoutsCampos;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
@@ -59,6 +56,8 @@ type
     function NovaConsulta(SQL: String): TZQuery; Overload;
     function NovaConsulta(NomeConsulta: String; SQL: String): Integer;
     function GerarChave(NomeGenerator: String): Integer;
+
+    procedure GravarListaCampos(pTabela: TZQuery; pNomeArquivo: String);
 
     property MascaraPlanoContas: String read fMascaraPlanoContas write fMascaraPlanoContas;
   end; 
@@ -138,11 +137,25 @@ begin
   TabelaExiste('VINCULADORES');
   CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CODIGO', 'VARCHAR(10) NOT NULL');
-  CampoExiste('VINCULADORES', 'DATA', 'DATETIME');
+  //CampoExiste('VINCULADORES', 'DATA', 'DATE');
   CampoExiste('VINCULADORES', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
   CampoExiste('VINCULADORES', 'DEBITAR', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CREDITAR', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'HISTORICO', 'VARCHAR(100) NOT NULL');
+end;
+
+procedure TDataModule1.CriarTabelaLayouts;
+begin
+  TabelaExiste('LAYOUTS');
+  CampoExiste('LAYOUTS', 'EMPRESA', 'INT NOT NULL');
+  CampoExiste('LAYOUTS', 'NOME', 'VARCHAR(100) NOT NULL');
+end;
+
+procedure TDataModule1.CriarTabelaLayoutsCampos;
+begin
+  TabelaExiste('LAYOUT_CAMPOS');
+  CampoExiste('LAYOUT_CAMPOS', 'LAYOUT', 'INT NOT NULL');
+  CampoExiste('LAYOUT_CAMPOS', 'NOME', 'VARCHAR(20) NOT NULL');
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
@@ -313,6 +326,7 @@ begin
     lQuery.Close;
     lQuery.SQL.Clear;
     lQuery.SQL.Add(SQL);
+    lQuery.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'NovaConsulta.sql');
     lQuery.Open;
 
     if not lQuery.IsEmpty then
@@ -336,6 +350,28 @@ begin
       result := qConsulta.FieldByName('chave').AsInteger;
   except
     RaiseLastOSError;
+  end;
+end;
+
+procedure TDataModule1.GravarListaCampos(pTabela: TZQuery; pNomeArquivo: String);
+var
+  i: Integer;
+  lLista: TStringList;
+begin
+  if pTabela.Active then
+  begin
+    lLista := TStringList.Create;
+
+    try
+      for i := 0 to pTabela.FieldDefs.Count - 1 do
+      begin
+        lLista.Add(pTabela.FieldDefs.Items[i].Name + ' = ' + pTabela.Fields.Fields[i].AsString);//(pTabela.FieldDefs.Items[i].Name).AsString);
+      end;
+
+      lLista.SaveToFile(pNomeArquivo);
+    finally
+      FreeandNil(lLista);
+    end;
   end;
 end;
 

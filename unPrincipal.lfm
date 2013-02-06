@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 581
+  Left = 398
   Height = 606
-  Top = 164
+  Top = 157
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -541,7 +541,7 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Código'
               ParentColor = False
             end
-            object edtNomeEmpresa1: TEdit
+            object edtNomeVinculador: TEdit
               Left = 73
               Height = 23
               Top = 48
@@ -575,7 +575,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 2
             end
             object btnEditarEmpresa1: TButton
-              Left = 114
+              Left = 123
               Height = 25
               Top = 396
               Width = 75
@@ -584,7 +584,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 3
             end
             object btnGravarEmpresa2: TButton
-              Left = 308
+              Left = 334
               Height = 25
               Top = 396
               Width = 75
@@ -593,7 +593,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 4
             end
             object btnGravarEmpresa3: TButton
-              Left = 218
+              Left = 227
               Height = 25
               Top = 396
               Width = 75
@@ -607,7 +607,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 8
               Width = 36
               Caption = '>>'
-              OnClick = EmpresaProxima
+              OnClick = Button11Click
               TabOrder = 6
             end
             object Button12: TButton
@@ -616,7 +616,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 8
               Width = 36
               Caption = '<<'
-              OnClick = EmpresaAnterior
+              OnClick = Button12Click
               TabOrder = 7
             end
             object Label25: TLabel
@@ -627,7 +627,7 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Creditar:.'
               ParentColor = False
             end
-            object edtNomeEmpresa2: TEdit
+            object edtHistorico: TEdit
               Left = 73
               Height = 23
               Top = 168
@@ -654,7 +654,6 @@ object frmPrincipal: TfrmPrincipal
               ItemHeight = 15
               OnChange = cmbCodigoDebitarChange
               OnKeyPress = cmbLookupKeyPress
-              OnKeyUp = cmbCodigoDebitarKeyUp
               Style = csSimple
               TabOrder = 9
             end
@@ -733,7 +732,7 @@ object frmPrincipal: TfrmPrincipal
               Height = 166
               Top = 220
               Width = 650
-              Caption = 'GroupBox20'
+              Caption = 'Leiautes'
               ClientHeight = 148
               ClientWidth = 646
               TabOrder = 15
@@ -752,11 +751,12 @@ object frmPrincipal: TfrmPrincipal
                 ClientHeight = 132
                 ClientWidth = 203
                 TabOrder = 1
-                object CheckListBox3: TCheckListBox
+                object chkLayoutsDisponiveis: TCheckListBox
                   Left = 9
                   Height = 112
                   Top = 8
                   Width = 184
+                  Enabled = False
                   ItemHeight = 0
                   TabOrder = 0
                 end
@@ -777,11 +777,12 @@ object frmPrincipal: TfrmPrincipal
                 ClientHeight = 132
                 ClientWidth = 203
                 TabOrder = 3
-                object CheckListBox4: TCheckListBox
+                object chkLayoutsUtilizados: TCheckListBox
                   Left = 9
                   Height = 120
                   Top = 8
                   Width = 180
+                  Enabled = False
                   ItemHeight = 0
                   TabOrder = 0
                 end
@@ -835,10 +836,10 @@ object frmPrincipal: TfrmPrincipal
             ClientWidth = 292
             TabOrder = 0
             OnClick = GroupBox8Click
-            object CheckListBox1: TCheckListBox
+            object chkCamposDisponiveis: TCheckListBox
               Left = 14
-              Height = 148
-              Top = 16
+              Height = 152
+              Top = 4
               Width = 264
               Items.Strings = (
                 'Crédito'
@@ -868,10 +869,10 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 175
             ClientWidth = 292
             TabOrder = 1
-            object CheckListBox2: TCheckListBox
+            object chkCamposUtilizados: TCheckListBox
               Left = 14
-              Height = 148
-              Top = 16
+              Height = 152
+              Top = 4
               Width = 264
               ItemHeight = 0
               TabOrder = 0
@@ -899,7 +900,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 354
             ClientWidth = 254
             TabOrder = 4
-            object DBGrid1: TDBGrid
+            object dbgLayouts: TDBGrid
               Left = 6
               Height = 332
               Top = 14
@@ -907,10 +908,9 @@ object frmPrincipal: TfrmPrincipal
               Color = clWindow
               Columns = <              
                 item
-                  Title.Caption = 'N.'
-                end              
-                item
-                  Title.Caption = 'Tabela'
+                  Title.Caption = 'Nome'
+                  Width = 205
+                  FieldName = 'nome'
                 end>
               TabOrder = 0
             end
@@ -1013,13 +1013,49 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Nome:.'
               ParentColor = False
             end
-            object Edit1: TEdit
+            object edtNomeLayout: TEdit
               Left = 54
               Height = 23
               Top = 3
               Width = 392
               TabOrder = 0
             end
+          end
+          object Button14: TButton
+            Left = 288
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Gravar'
+            OnClick = Button7Click
+            TabOrder = 7
+          end
+          object btnCancelarLayout: TButton
+            Left = 200
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Cancelar'
+            OnClick = Button10Click
+            TabOrder = 8
+          end
+          object btnEditarLayout: TButton
+            Left = 112
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Editar'
+            OnClick = Button8Click
+            TabOrder = 9
+          end
+          object btnNovoLayou: TButton
+            Left = 24
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Novo'
+            OnClick = Button9Click
+            TabOrder = 10
           end
         end
       end
@@ -1062,11 +1098,11 @@ object frmPrincipal: TfrmPrincipal
           end
           object GroupBox18: TGroupBox
             Left = 8
-            Height = 82
+            Height = 72
             Top = 6
             Width = 1008
             Caption = 'Leiaute a ser Utilizado:.'
-            ClientHeight = 64
+            ClientHeight = 54
             ClientWidth = 1004
             TabOrder = 1
             object Label16: TLabel

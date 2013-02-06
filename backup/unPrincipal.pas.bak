@@ -38,6 +38,10 @@ type
     Button11: TButton;
     Button12: TButton;
     Button13: TButton;
+    Button14: TButton;
+    btnCancelarLayout: TButton;
+    btnEditarLayout: TButton;
+    btnNovoLayou: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -46,10 +50,10 @@ type
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
-    CheckListBox1: TCheckListBox;
-    CheckListBox2: TCheckListBox;
-    CheckListBox3: TCheckListBox;
-    CheckListBox4: TCheckListBox;
+    chkCamposDisponiveis: TCheckListBox;
+    chkCamposUtilizados: TCheckListBox;
+    chkLayoutsDisponiveis: TCheckListBox;
+    chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbCodigoDebitar: TComboBox;
@@ -66,10 +70,10 @@ type
     ComboBox6: TComboBox;
     Conexao: TZConnection;
     dbgPlano1: TDBGrid;
-    DBGrid1: TDBGrid;
+    dbgLayouts: TDBGrid;
     DBGrid2: TDBGrid;
     DBGrid4: TDBGrid;
-    Edit1: TEdit;
+    edtNomeLayout: TEdit;
     dbgPlano: TDBGrid;
     cmbPlanoContasTipo: TDBLookupComboBox;
     edtPlanoContasCodigo: TEdit;
@@ -80,14 +84,14 @@ type
     edtPlanoContasClassificacao2: TEdit;
     edtCNPJEmpresa: TEdit;
     edtCodigoEmpresa: TEdit;
-    edtCodigoEmpresa1: TEdit;
+    edtCodigoVinculador: TEdit;
     edtExportarPlano: TEdit;
     edtExportarPlano1: TEdit;
     edtImportarPlano: TEdit;
     edtImportarPlano1: TEdit;
     edtNomeEmpresa: TEdit;
-    edtNomeEmpresa1: TEdit;
-    edtNomeEmpresa2: TEdit;
+    edtNomeVinculador: TEdit;
+    edtHistorico: TEdit;
     GroupBox1: TGroupBox;
     GroupBox10: TGroupBox;
     GroupBox11: TGroupBox;
@@ -164,17 +168,15 @@ type
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
-    procedure Button13Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
-    procedure cmbClassificacaoCreditarChange(Sender: TObject);
     procedure cmbCodigoCreditarChange(Sender: TObject);
     procedure cmbCodigoDebitarChange(Sender: TObject);
-    procedure cmbCodigoDebitarKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure cmbEmpresaChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
@@ -216,6 +218,8 @@ type
     fVinculadorAtual: Integer;
     fListaDebito: TStringList;
     fListaCredito: TStringList;
+    //Layouts
+    fLayoutAtual: Integer;
 
     //Empresa
     procedure NovaEmpresa;
@@ -242,7 +246,6 @@ type
     function GravarPlanoContas: Boolean;
     function GravarInserirPlanoContas: Boolean;
     function GravarAlterarPlanoContas: Boolean;
-    function getChavePlano(Empresa: Integer; Codigo: String): Integer;
     //Vinculadores
     function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
     procedure LimparTelaVinculadores;
@@ -254,6 +257,10 @@ type
     function GravarVinculador: Boolean;
     function GravarInserirVinculador: Boolean;
     function GravarAlterarVinculador: Boolean;
+    //Layouts
+    function  CarregarLayouts(pEmpresa4: Integer): Boolean;
+    procedure CarregarLayout;
+    procedure CarregarCamposLayout;
   public
     { public declarations }
   end; 
@@ -404,6 +411,7 @@ begin
 
       CarregarPlanoDeContas(fEmpresaAtual);
       CarregarVinculadores(fEmpresaAtual);
+      CarregarLayouts(fEmpresaAtual);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -619,7 +627,6 @@ begin
   DataModule1.qPlanoContas.Close;
   DataModule1.qPlanoContas.SQl.Clear;
   DataModule1.qPlanoContas.SQL.Add(lComandoSQL);
-  DataModule1.qPlanoContas.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'PlanoContas.sql');
   DataModule1.qPlanoContas.Open;
 
   CarregarCombosPlano;
@@ -677,8 +684,8 @@ begin
     fListaCredito.Add(DataModule1.qPlanoContas.FieldByName('chave').AsString);
     cmbCodigoDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
     cmbCodigoCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
-    cmbClassificacaoDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('classificacao').AsString);
-    cmbClassificacaoCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('classificacao').AsString);
+    cmbClassificacaoDebitar.Items.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
+    cmbClassificacaoCreditar.Items.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
     cmbNomeDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
     cmbNomeCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
 
@@ -821,27 +828,6 @@ begin
   end;
 end;
 
-function TfrmPrincipal.getChavePlano(Empresa: Integer; Codigo: String): Integer;
-var
-  lComandoSQL: String;
-  teste: Integer;
-begin
-  if not (Vazio(Codigo)) then
-  begin
-    lComandoSQL := 'SELECT' + NewLine +
-                   '  a.chave AS chave' + NewLine +
-                   'FROM' + NewLine +
-                   'where' + NewLine +
-                   '  empresa = ' + IntToStr(Empresa) + ' AND' + NewLine +
-                   '  codigo_externo = ' + QuotedStr(Trim(Codigo));
-
-    if DataModule1.NovaConsulta('getChavePlano', lComandoSQL) > 0 then
-      result := DataModule1.getQuery('getChavePlano').FieldByName('chave').AsInteger;
-  end
-  else
-    result := 0;
-end;
-
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
@@ -852,9 +838,8 @@ begin
   lComandoSQL := 'SELECT' + NewLine +
                  '  a.chave AS chave,' + NewLine +
                  '  a.codigo AS codigo,' + NewLine +
-                 '  a.data AS data,' + NewLine +
-                 '  a.descricao AS descricao,' + NewLine +
-                 '  b.chave AS id_debitar,' + NewLine +
+                 '  a.descricao,' + NewLine +
+                 '  b.chave as id_debitar,' + NewLine +
                  '  b.codigo_externo AS debitar,' + NewLine +
                  '  b.codigo AS cd_debitar,' + NewLine +
                  '  b.descricao AS no_debitar,' + NewLine +
@@ -887,8 +872,8 @@ end;
 
 procedure TfrmPrincipal.LimparTelaVinculadores;
 begin
-  edtCodigoEmpresa1.Text := '';
-  edtNomeEmpresa1.Text := '';
+  edtCodigoVinculador.Text := '';
+  edtNomeVinculador.Text := '';
   cmbCodigoDebitar.ItemIndex := -1;
   cmbCodigoDebitar.Text := '';
   cmbCodigoCreditar.ItemIndex := -1;
@@ -901,22 +886,21 @@ begin
   cmbNomeDebitar.Text := '';
   cmbNomeCreditar.ItemIndex := -1;
   cmbNomeCreditar.Text := '';
-  edtNomeEmpresa2.Text := '';
+  edtHistorico.Text := '';
 end;
 
 procedure TfrmPrincipal.HabilitarVinculadores(Habilitar: Boolean);
 var
   lCor: TColor;
 begin
-  if habilitar then
+  lCor := clWhite;
+  {if habilitar then
     lCor := clWhite
   else
-    lCor := clBlack;
+    lCor := clBlack;}
 
-  edtCodigoEmpresa1.Color := lCor;
-  edtCodigoEmpresa1.Enabled := Habilitar;
-  edtNomeEmpresa1.Color := lCor;
-  edtNomeEmpresa1.Enabled := Habilitar;
+  edtNomeVinculador.Color := lCor;
+  edtNomeVinculador.Enabled := Habilitar;
   cmbCodigoDebitar.Color := lCor;
   cmbCodigoDebitar.Enabled := Habilitar;
   cmbCodigoCreditar.Color := lCor;
@@ -929,8 +913,11 @@ begin
   cmbNomeDebitar.Enabled := Habilitar;
   cmbNomeCreditar.Color := lCor;
   cmbNomeCreditar.Enabled := Habilitar;
-  edtNomeEmpresa2.Color := lCor;
-  edtNomeEmpresa2.Enabled := Habilitar;
+  edtHistorico.Color := lCor;
+  edtHistorico.Enabled := Habilitar;
+
+  chkLayoutsDisponiveis.Enabled := Habilitar;
+  chkLayoutsUtilizados.Enabled := Habilitar;
 end;
 
 procedure TfrmPrincipal.NovoVinculador;
@@ -943,7 +930,8 @@ begin
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pVinculador;
-  edtCodigoEmpresa1.SetFocus;
+  edtCodigoVinculador.Text := '0';
+  edtNomeVinculador.SetFocus;
 end;
 
 procedure TfrmPrincipal.EditarVinculador;
@@ -957,7 +945,7 @@ begin
 
     PageControl.ActivePage := pContador;
     PageControl2.ActivePage := pVinculador;
-    edtNomeEmpresa1.SetFocus;
+    edtNomeVinculador.SetFocus;
   end;
 end;
 
@@ -974,15 +962,15 @@ begin
   begin
     fVinculadorAtual := DataModule1.qVinculadores.FieldByName('chave').AsInteger;
 
-    edtCodigoEmpresa1.Text := DataModule1.qVinculadores.FieldByName('codigo').AsString;
-    edtNomeEmpresa1.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
+    edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('chave').AsString;
+    edtNomeVinculador.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
     cmbCodigoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
     cmbClassificacaoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
     cmbNomeDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
     cmbCodigoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
     cmbClassificacaoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
     cmbNomeCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
-    edtNomeEmpresa2.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
+    edtHistorico.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
   end
   else
     LimparTelaVinculadores;
@@ -1019,7 +1007,7 @@ begin
   result := false;
 
   try
-    fPlanoAtual := DataModule1.GerarChave('GEN_VINCULADORES');
+    fVinculadorAtual := DataModule1.GerarChave('GEN_VINCULADORES');
     lComando := 'INSERT INTO vinculadores (' + NewLine +
                 'chave,' + NewLine +
                 'empresa,' + NewLine +
@@ -1031,11 +1019,11 @@ begin
                 'VALUES (' + NewLine +
                 '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                 '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
-                '' + QuotedStr(ApenasNumeros(edtCodigoEmpresa1.Text)) + ',' + NewLine +
-                '' + QuotedStr(Trim(edtNomeEmpresa1.Text)) + ',' + NewLine +
-                '' + IntToStr(getChavePlano(fEmpresaAtual, cmbCodigoDebitar.Text)) + ',' + NewLine +
-                '' + IntToStr(getChavePlano(fEmpresaAtual, cmbCodigoCreditar.Text)) + ',' + NewLine +
-                '' + QuotedStr(ApenasNumeros(edtNomeEmpresa2.Text)) + ')';
+                '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
+                '' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
+                '' + fListaDebito.Strings[cmbCodigoDebitar.ItemIndex] + ',' + NewLine +
+                '' + fListaCredito.Strings[cmbCodigoCreditar.ItemIndex] + ',' + NewLine +
+                '' + QuotedStr(edtHistorico.Text) + ')';
 
     result := DataModule1.Executar(lComando);
   except on e:exception do
@@ -1044,8 +1032,98 @@ begin
 end;
 
 function TfrmPrincipal.GravarAlterarVinculador: Boolean;
+var
+  lComando: String;
 begin
+  result := false;
 
+  try
+    lComando := 'UPDATE' + NewLine +
+                '  vinculadores' + NewLine +
+                'SET ' + NewLine +
+                '  descricao = ' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
+                '  debitar = ' + fListaDebito.Strings[cmbCodigoDebitar.ItemIndex] + ',' + NewLine +
+                '  creditar = ' + fListaCredito.Strings[cmbCodigoCreditar.ItemIndex] + ',' + NewLine +
+                '  historico = ' + QuotedStr(edtHistorico.Text) + NewLine +
+                'WHERE' + NewLine +
+                '  chave = ' + IntToStr(fVinculadorAtual);
+
+    result := DataModule1.Executar(lComando);
+  except on e:exception do
+    MensagemErro(e.Message, 'Alterar vinculador.');
+  end;
+end;
+
+function TfrmPrincipal.CarregarLayouts(pEmpresa4: Integer): Boolean;
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  a.chave,' + NewLine +
+                 '  a.nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layouts a' + NewLine +
+                 'where' + NewLine +
+                 '  a.empresa = ' + IntToStr(pEmpresa4);
+
+  DataModule1.qLayouts.Close;
+  DataModule1.qLayouts.SQl.Clear;
+  DataModule1.qLayouts.SQL.Add(lComandoSQL);
+  DataModule1.qLayouts.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Layouts.sql');
+  DataModule1.qLayouts.Open;
+  teste := DataModule1.qLayouts.RowsAffected;
+  result := not DataModule1.qLayouts.IsEmpty;
+  dbgLayouts.DataSource := DataModule1.dsLayouts;
+  CarregarLayout;
+end;
+
+procedure TfrmPrincipal.CarregarLayout;
+begin
+  if not (DataModule1.qLayouts.IsEmpty) then
+  begin
+    fLayoutAtual := DataModule1.qLayouts.FieldByName('chave').AsInteger;
+
+    edtNomeLayout.Text := DataModule1.qLayouts.FieldByName('nome').AsString;
+    CarregarCamposLayout;
+  end;
+end;
+
+procedure TfrmPrincipal.CarregarCamposLayout;
+var
+  lComandoSQL: String;
+  i: Integer;
+begin
+  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
+    chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
+
+  while (chkCamposUtilizados.Items.Count > 0) do
+    chkCamposUtilizados.Items.Delete(0);
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  chave,' + NewLine +
+                 '  nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLayoutAtual);
+
+  if DataModule1.NovaConsulta('CamposLayout', lComandoSQL) then
+  begin
+    DataModule1.getQuery('CamposLayout').First;
+
+    while not DataModule1.getQuery('CamposLayout').Eof do
+    begin
+      chkCamposUtilizados.Items.Add(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString);
+
+      if (chkCamposDisponiveis.Items.IndexOf(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString) > -1) then
+        chkCamposDisponiveis.Items.Delete(chkCamposDisponiveis.Items.IndexOf(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString));
+
+      DataModule1.getQuery('CamposLayout').Next;
+    end;
+  end;
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
@@ -1103,9 +1181,14 @@ begin
   CancelarPlanoContas;
 end;
 
-procedure TfrmPrincipal.Button13Click(Sender: TObject);
+procedure TfrmPrincipal.Button11Click(Sender: TObject);
 begin
+  DataModule1.qVinculadores.Next;
+end;
 
+procedure TfrmPrincipal.Button12Click(Sender: TObject);
+begin
+  DataModule1.qVinculadores.Prior;
 end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
@@ -1134,16 +1217,20 @@ begin
   NovoPlanoContas;;
 end;
 
-procedure TfrmPrincipal.cmbClassificacaoCreditarChange(Sender: TObject);
-begin
-
-end;
-
 procedure TfrmPrincipal.cmbCodigoCreditarChange(Sender: TObject);
+var
+  teste: Integer;
+  lteste: String;
 begin
-  cmbCodigoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
-  cmbClassificacaoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
-  cmbNomeCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
+  teste := TComboBox(Sender).ItemIndex;
+  lteste := TComboBox(Sender).Text;
+
+  if (TComboBox(Sender).Items.IndexOf(lteste) > -1) then
+    teste := TComboBox(Sender).Items.IndexOf(lteste);
+
+  cmbCodigoCreditar.ItemIndex := teste;
+  cmbClassificacaoCreditar.ItemIndex := teste;
+  cmbNomeCreditar.ItemIndex := teste;
 end;
 
 procedure TfrmPrincipal.cmbCodigoDebitarChange(Sender: TObject);
@@ -1152,19 +1239,14 @@ var
   lteste: String;
 begin
   teste := TComboBox(Sender).ItemIndex;
-  lteste := cmbCodigoDebitar.Text;
+  lteste := TComboBox(Sender).Text;
+
+  if (TComboBox(Sender).Items.IndexOf(lteste) > -1) then
+    teste := TComboBox(Sender).Items.IndexOf(lteste);
 
   cmbCodigoDebitar.ItemIndex := teste;
   cmbClassificacaoDebitar.ItemIndex := teste;
   cmbNomeDebitar.ItemIndex := teste;
-end;
-
-procedure TfrmPrincipal.cmbCodigoDebitarKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  cmbCodigoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
-  cmbClassificacaoCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
-  cmbNomeCreditar.ItemIndex := TComboBox(Sender).ItemIndex;
 end;
 
 procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);

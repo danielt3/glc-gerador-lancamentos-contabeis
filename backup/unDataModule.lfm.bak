@@ -115,4 +115,16 @@ object DataModule1: TDataModule1
     left = 464
     top = 112
   end
+  object qLayouts: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 360
+    top = 181
+  end
+  object dsLayouts: TDatasource
+    DataSet = qLayouts
+    left = 464
+    top = 176
+  end
 end

@@ -41,7 +41,7 @@ type
     Button14: TButton;
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
-    btnNovoLayou: TButton;
+    btnNovoLayout: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -96,13 +96,13 @@ type
     GroupBox10: TGroupBox;
     GroupBox11: TGroupBox;
     GroupBox12: TGroupBox;
-    GroupBox13: TGroupBox;
+    gbTabelasUtilizadas: TGroupBox;
     GroupBox14: TGroupBox;
     GroupBox15: TGroupBox;
-    GroupBox16: TGroupBox;
+    gbInformacoes: TGroupBox;
     GroupBox17: TGroupBox;
     GroupBox18: TGroupBox;
-    GroupBox19: TGroupBox;
+    gbNomeLayout: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox20: TGroupBox;
     GroupBox21: TGroupBox;
@@ -112,7 +112,7 @@ type
     GroupBox5: TGroupBox;
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
-    GroupBox8: TGroupBox;
+    gbTabelasDisponiveis: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -159,6 +159,7 @@ type
     Splitter1: TSplitter;
     TabSheet1: TTabSheet;
     pLeiaute: TTabSheet;
+    procedure btnCancelarLayoutClick(Sender: TObject);
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
@@ -167,6 +168,7 @@ type
     procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
+    procedure btnNovoLayoutClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
@@ -184,7 +186,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Edit2Change(Sender: TObject);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -195,9 +196,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure GroupBox15Click(Sender: TObject);
-    procedure GroupBox8Click(Sender: TObject);
-    procedure Label13Click(Sender: TObject);
     procedure memAnotacoesExit(Sender: TObject);
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
@@ -220,6 +218,7 @@ type
     fListaCredito: TStringList;
     //Layouts
     fLayoutAtual: Integer;
+    fEstadoLayout: TTipoAcao;
 
     //Empresa
     procedure NovaEmpresa;
@@ -261,6 +260,10 @@ type
     function  CarregarLayouts(pEmpresa4: Integer): Boolean;
     procedure CarregarLayout;
     procedure CarregarCamposLayout;
+    procedure LimparTelaLayouts;
+    procedure HabilitarLayout(Habilitar: Boolean);
+    procedure NovoLayout;
+    procedure CancelarLayout;
   public
     { public declarations }
   end; 
@@ -1126,6 +1129,44 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.LimparTelaLayouts;
+var
+  i: Integer;
+begin
+  edtNomeLayout.Text := '';
+
+  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
+    chkCamposDisponiveis.Items.Append(chkCamposUtilizados.Items.Strings[i]);
+
+  chkCamposUtilizados.Items.Clear;
+end;
+
+procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
+begin
+  gbNomeLayout.Enabled := Habilitar;
+  gbTabelasDisponiveis.Enabled := Habilitar;
+  gbTabelasDisponiveis.Enabled := Habilitar;
+  gbInformacoes.Enabled := Habilitar;
+end;
+
+procedure TfrmPrincipal.NovoLayout;
+begin
+  LimparTelaLayouts;
+
+  fEstadoLayout := taInclusao;
+
+  HabilitarLayout(true);
+
+  PageControl.ActivePage := pContador;
+  PageControl2.ActivePage := pLeiaute;
+  edtNomeLayout.SetFocus;
+end;
+
+procedure TfrmPrincipal.CancelarLayout;
+begin
+
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   fGarbageCollector := TGarbageCollector.Create;
@@ -1151,21 +1192,6 @@ begin
   CarregarListaEmpresa;
 end;
 
-procedure TfrmPrincipal.GroupBox15Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.GroupBox8Click(Sender: TObject);
-begin
-
-end;
-
-procedure TfrmPrincipal.Label13Click(Sender: TObject);
-begin
-
-end;
-
 procedure TfrmPrincipal.memAnotacoesExit(Sender: TObject);
 begin
   GravarAnotacoes;
@@ -1174,6 +1200,11 @@ end;
 procedure TfrmPrincipal.btnNovaEmpresaClick(Sender: TObject);
 begin
   NovaEmpresa;
+end;
+
+procedure TfrmPrincipal.btnNovoLayoutClick(Sender: TObject);
+begin
+  NovoLayout;
 end;
 
 procedure TfrmPrincipal.Button10Click(Sender: TObject);
@@ -1284,11 +1315,6 @@ begin
   CarregarTelaPlanoDeContas;
 end;
 
-procedure TfrmPrincipal.Edit2Change(Sender: TObject);
-begin
-
-end;
-
 procedure TfrmPrincipal.edtMascaraPlanoContasChange(Sender: TObject);
 begin
   CarregarPlanoDeContas(fEmpresaAtual);
@@ -1358,6 +1384,11 @@ end;
 procedure TfrmPrincipal.btnEditarEmpresa1Click(Sender: TObject);
 begin
   EditarVinculador;
+end;
+
+procedure TfrmPrincipal.btnCancelarLayoutClick(Sender: TObject);
+begin
+
 end;
 
 end.

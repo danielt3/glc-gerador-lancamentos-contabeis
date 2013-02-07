@@ -164,6 +164,8 @@ procedure TDataModule1.AtualizarBaseDeDados;
 begin
   CriarTabelaContas;
   CriarTabelaVinculadores;
+  CriarTabelaLayouts;
+  CriarTabelaLayoutsCampos;
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

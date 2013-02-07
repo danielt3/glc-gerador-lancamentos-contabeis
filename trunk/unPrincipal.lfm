@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 398
+  Left = 572
   Height = 606
-  Top = 157
+  Top = 111
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -798,7 +798,6 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 429
             ClientWidth = 282
             TabOrder = 2
-            OnClick = GroupBox15Click
             object dbgPlano1: TDBGrid
               Left = 0
               Height = 434
@@ -826,7 +825,7 @@ object frmPrincipal: TfrmPrincipal
           Caption = 'Leiaute'
           ClientHeight = 475
           ClientWidth = 1029
-          object GroupBox8: TGroupBox
+          object gbTabelasDisponiveis: TGroupBox
             Left = 8
             Height = 193
             Top = 64
@@ -834,8 +833,8 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Tabelas Disponíveis'
             ClientHeight = 175
             ClientWidth = 292
+            Enabled = False
             TabOrder = 0
-            OnClick = GroupBox8Click
             object chkCamposDisponiveis: TCheckListBox
               Left = 14
               Height = 152
@@ -860,7 +859,7 @@ object frmPrincipal: TfrmPrincipal
               }
             end
           end
-          object GroupBox13: TGroupBox
+          object gbTabelasUtilizadas: TGroupBox
             Left = 424
             Height = 193
             Top = 64
@@ -868,6 +867,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Tabelas Utlizadas'
             ClientHeight = 175
             ClientWidth = 292
+            Enabled = False
             TabOrder = 1
             object chkCamposUtilizados: TCheckListBox
               Left = 14
@@ -912,10 +912,11 @@ object frmPrincipal: TfrmPrincipal
                   Width = 205
                   FieldName = 'nome'
                 end>
+              ReadOnly = True
               TabOrder = 0
             end
           end
-          object GroupBox16: TGroupBox
+          object gbInformacoes: TGroupBox
             Left = 8
             Height = 164
             Top = 272
@@ -923,6 +924,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Informações'
             ClientHeight = 146
             ClientWidth = 710
+            Enabled = False
             TabOrder = 5
             object Label13: TLabel
               Left = 14
@@ -931,7 +933,6 @@ object frmPrincipal: TfrmPrincipal
               Width = 31
               Caption = 'Tipo:.'
               ParentColor = False
-              OnClick = Label13Click
             end
             object Label15: TLabel
               Left = 14
@@ -996,7 +997,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 4
             end
           end
-          object GroupBox19: TGroupBox
+          object gbNomeLayout: TGroupBox
             Left = 8
             Height = 51
             Top = 8
@@ -1027,7 +1028,6 @@ object frmPrincipal: TfrmPrincipal
             Top = 440
             Width = 75
             Caption = 'Gravar'
-            OnClick = Button7Click
             TabOrder = 7
           end
           object btnCancelarLayout: TButton
@@ -1036,7 +1036,7 @@ object frmPrincipal: TfrmPrincipal
             Top = 440
             Width = 75
             Caption = 'Cancelar'
-            OnClick = Button10Click
+            OnClick = btnCancelarLayoutClick
             TabOrder = 8
           end
           object btnEditarLayout: TButton
@@ -1045,16 +1045,15 @@ object frmPrincipal: TfrmPrincipal
             Top = 440
             Width = 75
             Caption = 'Editar'
-            OnClick = Button8Click
             TabOrder = 9
           end
-          object btnNovoLayou: TButton
+          object btnNovoLayout: TButton
             Left = 24
             Height = 25
             Top = 440
             Width = 75
             Caption = 'Novo'
-            OnClick = Button9Click
+            OnClick = btnNovoLayoutClick
             TabOrder = 10
           end
         end

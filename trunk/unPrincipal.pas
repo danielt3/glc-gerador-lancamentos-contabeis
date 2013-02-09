@@ -145,12 +145,20 @@ type
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     OpenDialog1: TOpenDialog;
     PageControl: TPageControl;
     PageControl1: TPageControl;
     PageControl2: TPageControl;
     pContador: TTabSheet;
     pClientes: TTabSheet;
+    popEmpresa: TPopupMenu;
+    popVinculador: TPopupMenu;
+    popPlanoContas: TPopupMenu;
+    popLayout: TPopupMenu;
     pPlanoContas: TTabSheet;
     pVinculador: TTabSheet;
     pEmpresa: TTabSheet;
@@ -203,6 +211,10 @@ type
     procedure EmpresaProxima(Sender: TObject);
     procedure EmpresaAnterior(Sender: TObject);
     procedure cmbLookupKeyPress(Sender: TObject; var Key: char);
+    procedure MenuItem1Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -226,6 +238,7 @@ type
     //Empresa
     procedure NovaEmpresa;
     procedure EditarEmpresa;
+    procedure ExcluirEmpresa;
     function GravarEmpresa: Boolean;
     function ValidarEmpresa: Boolean;
     function GravarInserirEmpresa: Boolean;
@@ -241,6 +254,7 @@ type
     function  CarregarTelaPlanoDeContas: Boolean;
     procedure PrepararComboTipoPlanoContas;
     procedure CarregarCombosPlano;
+    procedure ExcluirPlanoDeContas;
     procedure LimparTelaPlanoContas;
     procedure NovoPlanoContas;
     procedure EditarPlanoContas;
@@ -254,6 +268,7 @@ type
     procedure HabilitarVinculadores(Habilitar: Boolean);
     procedure NovoVinculador;
     procedure EditarVinculador;
+    procedure ExcluirVinculador;
     procedure CancelarVinculador;
     function  CarregarVinculador: Boolean;
     function GravarVinculador: Boolean;
@@ -266,6 +281,7 @@ type
     procedure LimparTelaLayouts;
     procedure HabilitarLayout(Habilitar: Boolean);
     procedure NovoLayout;
+    procedure ExcluirLayout;
     procedure CancelarLayout;
     function  TemCampoSelecionado(pLista: TCheckListBox): Integer;
     function GravarLayout: Boolean;
@@ -305,6 +321,25 @@ begin
   edtCNPJEmpresa.Enabled := true;
 
   edtNomeEmpresa.SetFocus;
+end;
+
+procedure TfrmPrincipal.ExcluirEmpresa;
+var
+  lComandoSQL: String;
+begin
+  if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir essa empresa?', 'GLC')) then
+  begin
+    lComandoSQL := 'DELETE FROM' + NewLine +
+                   '  empresa' + NewLine +
+                   'WHERE' + NewLine +
+                   '  chave = ' + IntToStr(fEmpresaAtual);
+
+    DataModule1.Executar(lComandoSQL);
+
+    CarregarListaEmpresa;
+
+    MensagemSucesso('Empresa excluida com sucesso!', 'GLC');
+  end;
 end;
 
 function TfrmPrincipal.GravarEmpresa: Boolean;
@@ -462,6 +497,26 @@ begin
     Key := #0;
 
   TComboBox(Sender).SelStart := Length(TComboBox(Sender).Text);
+end;
+
+procedure TfrmPrincipal.MenuItem1Click(Sender: TObject);
+begin
+  ExcluirEmpresa;
+end;
+
+procedure TfrmPrincipal.MenuItem2Click(Sender: TObject);
+begin
+  ExcluirPlanoDeContas;
+end;
+
+procedure TfrmPrincipal.MenuItem3Click(Sender: TObject);
+begin
+  ExcluirVinculador;
+end;
+
+procedure TfrmPrincipal.MenuItem4Click(Sender: TObject);
+begin
+  ExcluirLayout;
 end;
 
 procedure TfrmPrincipal.CarregarListaEmpresa;
@@ -704,6 +759,25 @@ begin
   end;
 
   DataModule1.qPlanoContas.First;
+end;
+
+procedure TfrmPrincipal.ExcluirPlanoDeContas;
+var
+  lComandoSQL: String;
+begin
+  if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse plano de contas?', 'GLC')) then
+  begin
+    lComandoSQL := 'DELETE FROM' + NewLine +
+                   '  plano_contas' + NewLine +
+                   'WHERE' + NewLine +
+                   '  chave = ' + IntToStr(fPlanoAtual);
+
+    DataModule1.Executar(lComandoSQL);
+
+    CarregarPlanoDeContas(fEmpresaAtual);
+
+    MensagemSucesso('Plano de Contas excluido com sucesso!', 'GLC');
+  end;
 end;
 
 procedure TfrmPrincipal.LimparTelaPlanoContas;
@@ -960,6 +1034,25 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.ExcluirVinculador;
+var
+  lComandoSQL: String;
+begin
+  if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse vinculador?', 'GLC')) then
+  begin
+    lComandoSQL := 'DELETE FROM' + NewLine +
+                   '  vinculador' + NewLine +
+                   'WHERE' + NewLine +
+                   '  chave = ' + IntToStr(fVinculadorAtual);
+
+    DataModule1.Executar(lComandoSQL);
+
+    CarregarVinculadores(fEmpresaAtual);
+
+    MensagemSucesso('Vinculador excluido com sucesso!', 'GLC');
+  end;
+end;
+
 procedure TfrmPrincipal.CancelarVinculador;
 begin
   CarregarVinculador;
@@ -1149,6 +1242,9 @@ begin
     chkCamposDisponiveis.Items.Append(chkCamposUtilizados.Items.Strings[i]);
 
   chkCamposUtilizados.Items.Clear;
+
+  for i := 0 to chkCamposDisponiveis.Items.Count - 1 do
+    chkCamposDisponiveis.Checked[i] := false;
 end;
 
 procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
@@ -1170,6 +1266,32 @@ begin
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pLeiaute;
   edtNomeLayout.SetFocus;
+end;
+
+procedure TfrmPrincipal.ExcluirLayout;
+var
+  lComandoSQL: String;
+begin
+  if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse Leiaute?', 'GLC')) then
+  begin
+    lComandoSQL := 'DELETE FROM' + NewLine +
+                   '  layout_campos' + NewLine +
+                   'WHERE' + NewLine +
+                   '  layout = ' + IntToStr(fVinculadorAtual);
+
+    DataModule1.Executar(lComandoSQL);
+
+    lComandoSQL := 'DELETE FROM' + NewLine +
+                   '  layouts' + NewLine +
+                   'WHERE' + NewLine +
+                   '  chave = ' + IntToStr(fVinculadorAtual);
+
+    DataModule1.Executar(lComandoSQL);
+
+    CarregarVinculadores(fEmpresaAtual);
+
+    MensagemSucesso('Leiaute excluido com sucesso!', 'GLC');
+  end;
 end;
 
 procedure TfrmPrincipal.CancelarLayout;

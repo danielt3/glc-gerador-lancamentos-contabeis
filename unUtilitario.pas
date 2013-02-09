@@ -16,6 +16,7 @@ uses
   procedure MensagemErro(Mensagem, pCaption: String);
   procedure MensagemAlerta(Mensagem, pCaption: String);
   procedure MensagemSucesso(Mensagem, pCaption: String);
+  function  MensagemConfirmacao(Mensagem, pCaption: String): Boolean;
   function  MascararTexto(Texto, Mascara: String): String;
 
   function  ENumero(Caractere: Char): Boolean;
@@ -108,6 +109,11 @@ end;
 procedure MensagemSucesso(Mensagem, pCaption: String);
 begin
   MessageDlg(pCaption, Mensagem, mtInformation, [mbOK], 0);
+end;
+
+function MensagemConfirmacao(Mensagem, pCaption: String): Boolean;
+begin
+  result := MessageDlg(pCaption, Mensagem, mtConfirmation, mbYesNo, 0) = 6;
 end;
 
 function MascararTexto(Texto, Mascara: String): String;

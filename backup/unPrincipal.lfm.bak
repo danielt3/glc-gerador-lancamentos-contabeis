@@ -45,6 +45,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Cadastro'
             ClientHeight = 182
             ClientWidth = 436
+            PopupMenu = popEmpresa
             TabOrder = 0
             object edtCodigoEmpresa: TEdit
               Left = 89
@@ -52,6 +53,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 8
               Width = 56
               Enabled = False
+              PopupMenu = popEmpresa
               TabOrder = 0
             end
             object Label1: TLabel
@@ -61,6 +63,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 46
               Caption = 'Código:.'
               ParentColor = False
+              PopupMenu = popEmpresa
             end
             object edtNomeEmpresa: TEdit
               Left = 89
@@ -68,6 +71,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 40
               Width = 296
               Enabled = False
+              PopupMenu = popEmpresa
               TabOrder = 1
             end
             object Label3: TLabel
@@ -77,6 +81,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 58
               Caption = 'Descrição:.'
               ParentColor = False
+              PopupMenu = popEmpresa
             end
             object edtCNPJEmpresa: TEdit
               Left = 89
@@ -85,6 +90,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 144
               Enabled = False
               MaxLength = 18
+              PopupMenu = popEmpresa
               TabOrder = 2
             end
             object Label6: TLabel
@@ -94,6 +100,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 35
               Caption = 'CNPJ:.'
               ParentColor = False
+              PopupMenu = popEmpresa
             end
             object btnNovaEmpresa: TButton
               Left = 25
@@ -138,6 +145,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 40
               Caption = '>>'
               OnClick = EmpresaProxima
+              PopupMenu = popEmpresa
               TabOrder = 7
             end
             object Button1: TButton
@@ -147,6 +155,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 36
               Caption = '<<'
               OnClick = EmpresaAnterior
+              PopupMenu = popEmpresa
               TabOrder = 8
             end
           end
@@ -250,15 +259,6 @@ object frmPrincipal: TfrmPrincipal
               OnChange = edtMascaraPlanoContasChange
               TabOrder = 0
               Text = 'X.X.X.XX.XXX.XXX'
-            end
-            object Button13: TButton
-              Left = 280
-              Height = 25
-              Top = 26
-              Width = 75
-              Caption = 'Button13'
-              OnClick = Button13Click
-              TabOrder = 1
             end
           end
           object GroupBox5: TGroupBox
@@ -408,6 +408,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Conta'
             ClientHeight = 206
             ClientWidth = 348
+            PopupMenu = popPlanoContas
             TabOrder = 2
             object edtPlanoContasCodigo: TEdit
               Left = 78
@@ -533,6 +534,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Cadastro de Lançamentos'
             ClientHeight = 431
             ClientWidth = 684
+            PopupMenu = popVinculador
             TabOrder = 1
             object edtCodigoVinculador: TEdit
               Left = 73
@@ -843,6 +845,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 175
             ClientWidth = 292
             Enabled = False
+            PopupMenu = popVinculador
             TabOrder = 0
             object chkCamposDisponiveis: TCheckListBox
               Left = 14
@@ -862,6 +865,7 @@ object frmPrincipal: TfrmPrincipal
                 'Histórico'
               )
               ItemHeight = 17
+              PopupMenu = popVinculador
               TabOrder = 0
               Data = {
                 0A00000000000000000000000000
@@ -877,6 +881,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 175
             ClientWidth = 292
             Enabled = False
+            PopupMenu = popVinculador
             TabOrder = 1
             object chkCamposUtilizados: TCheckListBox
               Left = 14
@@ -884,6 +889,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               ItemHeight = 0
+              PopupMenu = popVinculador
               TabOrder = 0
             end
           end
@@ -894,6 +900,7 @@ object frmPrincipal: TfrmPrincipal
             Width = 41
             ArrowType = atRight
             OnClick = Arrow1Click
+            PopupMenu = popVinculador
           end
           object Arrow2: TArrow
             Left = 352
@@ -901,6 +908,7 @@ object frmPrincipal: TfrmPrincipal
             Top = 208
             Width = 41
             OnClick = Arrow2Click
+            PopupMenu = popVinculador
           end
           object GroupBox14: TGroupBox
             Left = 760
@@ -936,6 +944,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 146
             ClientWidth = 710
             Enabled = False
+            PopupMenu = popVinculador
             TabOrder = 5
             object Label13: TLabel
               Left = 14
@@ -959,6 +968,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 17
               Width = 100
               ItemHeight = 15
+              PopupMenu = popVinculador
               Style = csSimple
               TabOrder = 0
             end
@@ -968,6 +978,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 49
               Width = 100
               ItemHeight = 15
+              PopupMenu = popVinculador
               Style = csSimple
               TabOrder = 1
             end
@@ -985,6 +996,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 79
               Width = 100
               ItemHeight = 15
+              PopupMenu = popVinculador
               Style = csSimple
               TabOrder = 2
             end
@@ -997,6 +1009,7 @@ object frmPrincipal: TfrmPrincipal
               Columns = <>
               FixedCols = 0
               Options = [dgEditing, dgColumnResize, dgColumnMove, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              PopupMenu = popVinculador
               TabOrder = 3
             end
             object Button13: TButton
@@ -1005,6 +1018,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 2
               Width = 32
               Caption = '+'
+              PopupMenu = popVinculador
               TabOrder = 4
             end
           end
@@ -1033,13 +1047,13 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 0
             end
           end
-          object Button14: TButton
+          object btnGravarLayout: TButton
             Left = 288
             Height = 25
             Top = 440
             Width = 75
             Caption = 'Gravar'
-            OnClick = Button14Click
+            OnClick = btnGravarLayoutClick
             TabOrder = 7
           end
           object btnCancelarLayout: TButton
@@ -1330,5 +1344,37 @@ object frmPrincipal: TfrmPrincipal
   object OpenDialog1: TOpenDialog
     left = 816
     top = 424
+  end
+  object popEmpresa: TPopupMenu
+    left = 160
+    top = 72
+    object MenuItem1: TMenuItem
+      Caption = 'Excluir Empresa'
+      OnClick = MenuItem1Click
+    end
+  end
+  object popPlanoContas: TPopupMenu
+    left = 256
+    top = 72
+    object MenuItem2: TMenuItem
+      Caption = 'Excluir Plano de Contas'
+      OnClick = MenuItem2Click
+    end
+  end
+  object popVinculador: TPopupMenu
+    left = 376
+    top = 72
+    object MenuItem3: TMenuItem
+      Caption = 'Excluir Vinculador'
+      OnClick = MenuItem3Click
+    end
+  end
+  object popLayout: TPopupMenu
+    left = 488
+    top = 72
+    object MenuItem4: TMenuItem
+      Caption = 'Excluir Leiaute'
+      OnClick = MenuItem4Click
+    end
   end
 end

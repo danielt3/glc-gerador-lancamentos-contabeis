@@ -37,11 +37,15 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
+<<<<<<< .mine
+    Button13: TButton;
+=======
     Button13: TButton;
     Button14: TButton;
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
     btnNovoLayout: TButton;
+>>>>>>> .r24
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -172,9 +176,13 @@ type
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure btnNovoLayoutClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
+<<<<<<< .mine
+    procedure Button13Click(Sender: TObject);
+=======
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
     procedure Button14Click(Sender: TObject);
+>>>>>>> .r24
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
@@ -1320,6 +1328,13 @@ begin
   CancelarPlanoContas;
 end;
 
+<<<<<<< .mine
+procedure TfrmPrincipal.Button13Click(Sender: TObject);
+begin
+  DataModule1.qPlanoContas.SortedFields := 'classificacao';
+end;
+
+=======
 procedure TfrmPrincipal.Button11Click(Sender: TObject);
 begin
   DataModule1.qVinculadores.Next;
@@ -1335,6 +1350,7 @@ begin
 
 end;
 
+>>>>>>> .r24
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 begin
   DataModule1.Conexao.Connect;

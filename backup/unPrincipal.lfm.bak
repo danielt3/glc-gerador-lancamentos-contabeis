@@ -251,6 +251,15 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 0
               Text = 'X.X.X.XX.XXX.XXX'
             end
+            object Button13: TButton
+              Left = 280
+              Height = 25
+              Top = 26
+              Width = 75
+              Caption = 'Button13'
+              OnClick = Button13Click
+              TabOrder = 1
+            end
           end
           object GroupBox5: TGroupBox
             Left = 376

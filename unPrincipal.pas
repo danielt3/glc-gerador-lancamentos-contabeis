@@ -38,7 +38,7 @@ type
     Button11: TButton;
     Button12: TButton;
     Button13: TButton;
-    Button14: TButton;
+    btnGravarLayout: TButton;
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
     btnNovoLayout: TButton;
@@ -159,6 +159,8 @@ type
     Splitter1: TSplitter;
     TabSheet1: TTabSheet;
     pLeiaute: TTabSheet;
+    procedure Arrow1Click(Sender: TObject);
+    procedure Arrow2Click(Sender: TObject);
     procedure btnCancelarLayoutClick(Sender: TObject);
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
@@ -172,6 +174,7 @@ type
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
+    procedure btnGravarLayoutClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
@@ -264,6 +267,11 @@ type
     procedure HabilitarLayout(Habilitar: Boolean);
     procedure NovoLayout;
     procedure CancelarLayout;
+    function  TemCampoSelecionado(pLista: TCheckListBox): Integer;
+    function GravarLayout: Boolean;
+    function GravarInserirLayout: Boolean;
+    function GravarInserirLayoutCampos: Boolean;
+    function GravarAlterarLayout: Boolean;
   public
     { public declarations }
   end; 
@@ -1091,7 +1099,9 @@ begin
 
     edtNomeLayout.Text := DataModule1.qLayouts.FieldByName('nome').AsString;
     CarregarCamposLayout;
-  end;
+  end
+  else
+    LimparTelaLayouts;
 end;
 
 procedure TfrmPrincipal.CarregarCamposLayout;
@@ -1145,7 +1155,7 @@ procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
 begin
   gbNomeLayout.Enabled := Habilitar;
   gbTabelasDisponiveis.Enabled := Habilitar;
-  gbTabelasDisponiveis.Enabled := Habilitar;
+  gbTabelasUtilizadas.Enabled := Habilitar;
   gbInformacoes.Enabled := Habilitar;
 end;
 
@@ -1163,6 +1173,104 @@ begin
 end;
 
 procedure TfrmPrincipal.CancelarLayout;
+begin
+  CarregarLayout;
+  fEstadoLayout := taNada;
+  HabilitarLayout(false);
+end;
+
+function TfrmPrincipal.TemCampoSelecionado(pLista: TCheckListBox): Integer;
+var
+  i: Integer;
+begin
+  result := -1;
+
+  for i := 0 to pLista.Items.Count - 1 do
+  begin
+    if pLista.Checked[i] then
+    begin
+      result := i;
+      break;
+    end;
+  end;
+end;
+
+function TfrmPrincipal.GravarLayout: Boolean;
+var
+  lComandoSQL: String;
+  lLayoutAtual: Integer;
+begin
+  result := false;
+  if (fEstadoLayout = taInclusao) then
+  begin
+    result := GravarInserirLayout;
+    lLayoutAtual := fLayoutAtual;
+  end
+  else if (fEstadoLayout = taEdicao) then
+  begin
+    lLayoutAtual := fLayoutAtual;
+    result := GravarAlterarLayout;
+  end;
+
+  CarregarLayouts(fEmpresaAtual);
+  DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lLayoutAtual), []);
+  CarregarLayout;
+
+  HabilitarLayout(false);
+end;
+
+function TfrmPrincipal.GravarInserirLayout: Boolean;
+var
+  lComando: String;
+begin
+  result := false;
+
+  try
+    fLayoutAtual := DataModule1.GerarChave('GEN_LAYOUTS');
+    lComando := 'INSERT INTO layouts (' + NewLine +
+                'chave,' + NewLine +
+                'empresa,' + NewLine +
+                'nome)' + NewLine +
+                'VALUES (' + NewLine +
+                '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                '' + QuotedStr(edtNomeLayout.Text) + ')';
+
+    result := DataModule1.Executar(lComando);
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir Layout.');
+  end;
+end;
+
+function TfrmPrincipal.GravarInserirLayoutCampos: Boolean;
+var
+  lComando: String;
+  i: Integer;
+  lCampoAtual: Integer;
+begin
+  result := false;
+
+  try
+    for i := 0 to chkCamposUtilizados.Items.Count do
+    begin
+      lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
+      lComando := 'INSERT INTO layout_campos (' + NewLine +
+                  'chave,' + NewLine +
+                  'layout,' + NewLine +
+                  'nome)' + NewLine +
+                  'VALUES (' + NewLine +
+                  '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                  '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                  '' + QuotedStr(chkCamposUtilizados.Items.Strings[i]) + ')';
+
+      result := result and DataModule1.Executar(lComando);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir Campos Layout.');
+  end;
+end;
+
+function TfrmPrincipal.GravarAlterarLayout: Boolean;
 begin
 
 end;
@@ -1220,6 +1328,11 @@ end;
 procedure TfrmPrincipal.Button12Click(Sender: TObject);
 begin
   DataModule1.qVinculadores.Prior;
+end;
+
+procedure TfrmPrincipal.btnGravarLayoutClick(Sender: TObject);
+begin
+  GravarLayout;
 end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
@@ -1388,7 +1501,33 @@ end;
 
 procedure TfrmPrincipal.btnCancelarLayoutClick(Sender: TObject);
 begin
+  CancelarLayout;
+end;
 
+procedure TfrmPrincipal.Arrow1Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  while TemCampoSelecionado(chkCamposDisponiveis) > -1 do
+  begin
+    i := TemCampoSelecionado(chkCamposDisponiveis);
+
+    chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
+    chkCamposDisponiveis.Items.Delete(i);
+  end;
+end;
+
+procedure TfrmPrincipal.Arrow2Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  while TemCampoSelecionado(chkCamposUtilizados) > -1 do
+  begin
+    i := TemCampoSelecionado(chkCamposUtilizados);
+
+    chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
+    chkCamposUtilizados.Items.Delete(i);
+  end;
 end;
 
 end.

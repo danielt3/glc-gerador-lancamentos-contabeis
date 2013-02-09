@@ -884,12 +884,14 @@ object frmPrincipal: TfrmPrincipal
             Top = 104
             Width = 41
             ArrowType = atRight
+            OnClick = Arrow1Click
           end
           object Arrow2: TArrow
             Left = 352
             Height = 26
             Top = 208
             Width = 41
+            OnClick = Arrow2Click
           end
           object GroupBox14: TGroupBox
             Left = 760
@@ -1022,12 +1024,13 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 0
             end
           end
-          object Button14: TButton
+          object btnGravarLayout: TButton
             Left = 288
             Height = 25
             Top = 440
             Width = 75
             Caption = 'Gravar'
+            OnClick = btnGravarLayoutClick
             TabOrder = 7
           end
           object btnCancelarLayout: TButton

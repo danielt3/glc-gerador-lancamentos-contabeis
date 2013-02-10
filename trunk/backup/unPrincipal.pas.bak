@@ -269,6 +269,7 @@ type
     function GravarPlanoContas: Boolean;
     function GravarInserirPlanoContas: Boolean;
     function GravarAlterarPlanoContas: Boolean;
+    function ProximoCodigoPlanoConta: String;
     //Vinculadores
     function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
     procedure LimparTelaVinculadores;
@@ -636,7 +637,8 @@ begin
           lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
 
           AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
-          pBarraProgresso.StepBy(1);
+          if Assigned(pBarraProgresso) then
+            pBarraProgresso.StepBy(1);
         end;
       finally
         FreeAndNil(lArquivo);
@@ -806,14 +808,15 @@ begin
   LimparTelaPlanoContas;
   fEstadoPlano := taInclusao;
 
-  edtPlanoContasCodigo.Enabled := true;
+  //edtPlanoContasCodigo.Enabled := true;
+  edtPlanoContasCodigo.Text := ProximoCodigoPlanoConta;
   edtPlanoContasClassificacao.Enabled := true;
   edtPlanoContasDescricao.Enabled := true;
   cmbPlanoContasTipo.Enabled := true;
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pPlanoContas;
-  edtPlanoContasCodigo.SetFocus;
+  cmbPlanoContasTipo.SetFocus;
 end;
 
 procedure TfrmPrincipal.EditarPlanoContas;
@@ -823,7 +826,7 @@ begin
     CarregarTelaPlanoDeContas;
     fEstadoPlano := taEdicao;
 
-    edtPlanoContasCodigo.Enabled := true;
+    //edtPlanoContasCodigo.Enabled := true;
     edtPlanoContasClassificacao.Enabled := true;
     edtPlanoContasDescricao.Enabled := true;
     cmbPlanoContasTipo.Enabled := true;
@@ -923,6 +926,22 @@ begin
   end;
 end;
 
+function TfrmPrincipal.ProximoCodigoPlanoConta: String;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  MAX(CAST(codigo_externo AS INT)) as codigo' + NewLine +
+                 'FROM' + NewLine +
+                 '  plano_contas a' + NewLine +
+                 'WHERE' + NewLine +
+                 '  empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                 '  codigo_externo <= ''999999''';
+
+  if DataModule1.NovaConsulta('NovoPlanoContas', lComandoSQL) > 0 then
+   result := IntToStr(DataModule1.getQuery('NovoPlanoContas').FieldByName('codigo').AsInteger + 1);
+end;
+
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
@@ -996,7 +1015,7 @@ begin
 
   edtNomeVinculador.Color := lCor;
   edtNomeVinculador.Enabled := Habilitar;
-  cmbCodigoDebitar.Color := lCor;
+  {cmbCodigoDebitar.Color := lCor;
   cmbCodigoDebitar.Enabled := Habilitar;
   cmbCodigoCreditar.Color := lCor;
   cmbCodigoCreditar.Enabled := Habilitar;
@@ -1007,7 +1026,7 @@ begin
   cmbNomeDebitar.Color := lCor;
   cmbNomeDebitar.Enabled := Habilitar;
   cmbNomeCreditar.Color := lCor;
-  cmbNomeCreditar.Enabled := Habilitar;
+  cmbNomeCreditar.Enabled := Habilitar;}
   edtHistorico.Color := lCor;
   edtHistorico.Enabled := Habilitar;
 
@@ -1572,7 +1591,7 @@ end;
 
 procedure TfrmPrincipal.Button9Click(Sender: TObject);
 begin
-  NovoPlanoContas;;
+  NovoPlanoContas;
 end;
 
 procedure TfrmPrincipal.cmbCodigoCreditarChange(Sender: TObject);

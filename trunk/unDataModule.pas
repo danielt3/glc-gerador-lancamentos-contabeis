@@ -317,6 +317,7 @@ var
   lQuery: TZQuery;
   lDataSource: TDataSource;
 begin
+  result := 0;
   lQuery := getQuery(NomeConsulta);
 
   if not Assigned(lQuery) then

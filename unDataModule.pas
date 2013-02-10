@@ -47,6 +47,7 @@ type
     procedure CriarTabelaVinculadores;
     procedure CriarTabelaLayouts;
     procedure CriarTabelaLayoutsCampos;
+    procedure CriarTabelaLayoutsPagamento;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
@@ -158,6 +159,11 @@ begin
   TabelaExiste('LAYOUT_CAMPOS');
   CampoExiste('LAYOUT_CAMPOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LAYOUT_CAMPOS', 'NOME', 'VARCHAR(20) NOT NULL');
+end;
+
+procedure TDataModule1.CriarTabelaLayoutsPagamento;
+begin
+
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;

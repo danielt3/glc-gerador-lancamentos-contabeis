@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
-  PopupNotifier, Calendar, Arrow, ZConnection, unDataModule, unListaCodigo,
+  PopupNotifier, Arrow, ZConnection, unDataModule, unListaCodigo,
   unGarbageCollector, unUtilitario, db, ExtendedNotebook, RTTICtrls, types,
   ZAbstractRODataset;
 

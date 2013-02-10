@@ -50,17 +50,15 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="20">
       <Unit0>
         <Filename Value="LancamentoExtrato.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="LancamentoExtrato"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="34" Y="18"/>
+        <CursorPos X="28" Y="10"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="unPrincipal.pas"/>
@@ -68,17 +66,16 @@
         <ComponentName Value="frmPrincipal"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unPrincipal"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="512"/>
-        <CursorPos X="17" Y="519"/>
+        <TopLine Value="656"/>
+        <CursorPos X="55" Y="667"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
-          <Item0 X="3" Y="816" ID="3"/>
-          <Item1 X="5" Y="914" ID="9"/>
-          <Item2 X="3" Y="921" ID="2"/>
-          <Item3 X="3" Y="504" ID="1"/>
+          <Item0 X="3" Y="827" ID="3"/>
+          <Item1 X="5" Y="925" ID="9"/>
+          <Item2 X="3" Y="932" ID="2"/>
+          <Item3 X="3" Y="514" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -89,10 +86,10 @@
         <ComponentName Value="DataModule1"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="unDataModule"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="149"/>
-        <CursorPos X="36" Y="160"/>
+        <TopLine Value="157"/>
+        <CursorPos X="3" Y="159"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -109,33 +106,33 @@
         <Filename Value="unListaCodigo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unListaCodigo"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="36"/>
         <CursorPos X="21" Y="67"/>
-        <UsageCount Value="191"/>
+        <UsageCount Value="196"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="unGarbageCollector.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unGarbageCollector"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="22" Y="8"/>
-        <UsageCount Value="190"/>
+        <CursorPos X="49" Y="5"/>
+        <UsageCount Value="195"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="unUtilitario.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unUtilitario"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="95"/>
         <CursorPos X="75" Y="116"/>
-        <UsageCount Value="184"/>
+        <UsageCount Value="189"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -149,12 +146,10 @@
       <Unit8>
         <Filename Value="..\..\Intaladores\ZEOSDBO-7.0.3-stable\src\dbc\ZDbcInterbase6Utils.pas"/>
         <UnitName Value="ZDbcInterbase6Utils"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="813"/>
-        <CursorPos X="48" Y="830"/>
+        <TopLine Value="807"/>
+        <CursorPos X="20" Y="830"/>
         <UsageCount Value="35"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\Intaladores\ZEOSDBO-7.0.3-stable\src\component\ZDatasetUtils.pas"/>
@@ -190,158 +185,188 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="11" Y="17"/>
-        <UsageCount Value="122"/>
+        <UsageCount Value="127"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
         <UnitName Value="Dialogs"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="468"/>
         <CursorPos X="10" Y="489"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="96"/>
         <CursorPos X="39" Y="118"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="3" Y="56"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="11"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="unNovoCampo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmNovoCampo"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unNovoCampo"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="61" Y="22"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\lazarus\lcl\include\customform.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="936"/>
+        <CursorPos X="23" Y="946"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="C:\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="151"/>
+        <CursorPos X="27" Y="164"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="C:\lazarus\lcl\include\progressbar.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="243"/>
+        <CursorPos X="36" Y="258"/>
+        <UsageCount Value="10"/>
+      </Unit19>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="232" Column="22" TopLine="210"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="241" Column="1" TopLine="233"/>
       </Position1>
       <Position2>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="325" Column="17" TopLine="302"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="243" Column="1" TopLine="233"/>
       </Position2>
       <Position3>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="513" Column="21" TopLine="491"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="244" Column="1" TopLine="233"/>
       </Position3>
       <Position4>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="320" Column="22" TopLine="301"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="245" Column="1" TopLine="233"/>
       </Position4>
       <Position5>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="488" Column="10" TopLine="486"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="246" Column="1" TopLine="233"/>
       </Position5>
       <Position6>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="248" Column="36" TopLine="211"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="247" Column="1" TopLine="233"/>
       </Position6>
       <Position7>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="319" Column="38" TopLine="315"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="248" Column="1" TopLine="233"/>
       </Position7>
       <Position8>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="19" Column="69" TopLine="1"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="249" Column="1" TopLine="233"/>
       </Position8>
       <Position9>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="116" Column="19" TopLine="114"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="251" Column="1" TopLine="233"/>
       </Position9>
       <Position10>
-        <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
-        <Caret Line="180" Column="23" TopLine="170"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="1455" Column="1" TopLine="1437"/>
       </Position10>
       <Position11>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="116" Column="81" TopLine="114"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="13" Column="38" TopLine="1"/>
       </Position11>
       <Position12>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="114" Column="72" TopLine="95"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="23" Column="85" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="115" Column="78" TopLine="95"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="25" Column="63" TopLine="1"/>
       </Position13>
       <Position14>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="116" Column="67" TopLine="95"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="40" Column="15" TopLine="2"/>
       </Position14>
       <Position15>
-        <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
-        <Caret Line="119" Column="24" TopLine="96"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="296" Column="14" TopLine="284"/>
       </Position15>
       <Position16>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="13" Column="31" TopLine="1"/>
+        <Caret Line="297" Column="14" TopLine="277"/>
       </Position16>
       <Position17>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="116" Column="71" TopLine="95"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="283" Column="51" TopLine="272"/>
       </Position17>
       <Position18>
-        <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
-        <Caret Line="118" Column="39" TopLine="96"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="285" Column="51" TopLine="274"/>
       </Position18>
       <Position19>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="13" Column="21" TopLine="1"/>
+        <Caret Line="1657" Column="3" TopLine="1655"/>
       </Position19>
       <Position20>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="320" Column="44" TopLine="298"/>
+        <Caret Line="1670" Column="39" TopLine="1666"/>
       </Position20>
       <Position21>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="751" Column="30" TopLine="738"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="25" Column="30" TopLine="11"/>
       </Position21>
       <Position22>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="759" Column="30" TopLine="746"/>
+        <Filename Value="unDataModule.pas"/>
+        <Caret Line="50" Column="42" TopLine="33"/>
       </Position22>
       <Position23>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="501" Column="13" TopLine="487"/>
+        <Filename Value="unNovoCampo.pas"/>
+        <Caret Line="41" Column="28" TopLine="11"/>
       </Position23>
       <Position24>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="265" Column="33" TopLine="230"/>
+        <Caret Line="1657" Column="55" TopLine="1651"/>
       </Position24>
       <Position25>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="757" Column="30" TopLine="747"/>
+        <Caret Line="10" Column="32" TopLine="1"/>
       </Position25>
       <Position26>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="767" Column="32" TopLine="755"/>
+        <Caret Line="1695" Column="10" TopLine="1693"/>
       </Position26>
       <Position27>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="505" Column="12" TopLine="496"/>
+        <Caret Line="363" Column="30" TopLine="355"/>
       </Position27>
       <Position28>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="281" Column="29" TopLine="247"/>
+        <Caret Line="418" Column="33" TopLine="405"/>
       </Position28>
       <Position29>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1272" Column="13" TopLine="1263"/>
+        <Caret Line="411" Column="25" TopLine="405"/>
       </Position29>
       <Position30>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1280" Column="13" TopLine="1271"/>
+        <Caret Line="1703" Column="17" TopLine="1699"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -370,10 +395,10 @@
     <BreakPoints Count="1">
       <Item1>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="1114"/>
+        <Line Value="1125"/>
       </Item1>
     </BreakPoints>
-    <Watches Count="6">
+    <Watches Count="8">
       <Item1>
         <Expression Value="DataModule1.Conexao"/>
         <Enabled Value="False"/>
@@ -398,6 +423,14 @@
         <Expression Value="DataModule1.GravarListaCampos"/>
         <Enabled Value="False"/>
       </Item6>
+      <Item7>
+        <Expression Value="AWinControl"/>
+        <Enabled Value="False"/>
+      </Item7>
+      <Item8>
+        <Expression Value="CamposLayout"/>
+        <Enabled Value="False"/>
+      </Item8>
     </Watches>
     <Exceptions Count="3">
       <Item1>

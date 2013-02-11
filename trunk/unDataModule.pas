@@ -45,9 +45,10 @@ type
 
     procedure CriarTabelaContas;
     procedure CriarTabelaVinculadores;
+    procedure CriarTabelaVinculadoresLayouts;
     procedure CriarTabelaLayouts;
     procedure CriarTabelaLayoutsCampos;
-    procedure CriarTabelaLayoutsPagamento;
+    procedure CriarListaDadosCampo;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
@@ -147,6 +148,13 @@ begin
   CampoExiste('VINCULADORES', 'HISTORICO', 'VARCHAR(100) NOT NULL');
 end;
 
+procedure TDataModule1.CriarTabelaVinculadoresLayouts;
+begin
+  TabelaExiste('VINCULADORES_LAYOUT');
+  CampoExiste('VINCULADORES_LAYOUT', 'VINCULADOR', 'INT NOT NULL');
+  CampoExiste('VINCULADORES_LAYOUT', 'LAYOUT', 'INT NOT NULL');
+end;
+
 procedure TDataModule1.CriarTabelaLayouts;
 begin
   TabelaExiste('LAYOUTS');
@@ -161,17 +169,22 @@ begin
   CampoExiste('LAYOUT_CAMPOS', 'NOME', 'VARCHAR(20) NOT NULL');
 end;
 
-procedure TDataModule1.CriarTabelaLayoutsPagamento;
+procedure TDataModule1.CriarListaDadosCampo;
 begin
-
+  TabelaExiste('LAYOUT_CAMPOS_DADOS');
+  CampoExiste('LAYOUT_CAMPOS_DADOS', 'LAYOUT', 'INT NOT NULL');
+  CampoExiste('LAYOUT_CAMPOS_DADOS', 'CAMPO', 'VARCHAR(20) NOT NULL');
+  CampoExiste('LAYOUT_CAMPOS_DADOS', 'DADO', 'VARCHAR(100) NOT NULL');
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
 begin
   CriarTabelaContas;
   CriarTabelaVinculadores;
+  CriarTabelaVinculadoresLayouts;
   CriarTabelaLayouts;
   CriarTabelaLayoutsCampos;
+  CriarListaDadosCampo;
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

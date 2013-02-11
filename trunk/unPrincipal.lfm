@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 561
+  Left = 462
   Height = 606
-  Top = 154
+  Top = 233
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pVinculador
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 2
+        TabIndex = 3
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -584,7 +584,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Novo'
               OnClick = btnNovaEmpresa1Click
-              TabOrder = 2
+              TabOrder = 5
             end
             object btnEditarEmpresa1: TButton
               Left = 123
@@ -593,7 +593,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Editar'
               OnClick = btnEditarEmpresa1Click
-              TabOrder = 3
+              TabOrder = 6
             end
             object btnGravarEmpresa2: TButton
               Left = 334
@@ -602,7 +602,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Gravar'
               OnClick = btnGravarEmpresa2Click
-              TabOrder = 4
+              TabOrder = 7
             end
             object btnGravarEmpresa3: TButton
               Left = 227
@@ -611,7 +611,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 75
               Caption = 'Cancelar'
               OnClick = btnGravarEmpresa3Click
-              TabOrder = 5
+              TabOrder = 8
             end
             object Button11: TButton
               Left = 633
@@ -620,7 +620,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 36
               Caption = '>>'
               OnClick = Button11Click
-              TabOrder = 6
+              TabOrder = 9
             end
             object Button12: TButton
               Left = 558
@@ -629,7 +629,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 36
               Caption = '<<'
               OnClick = Button12Click
-              TabOrder = 7
+              TabOrder = 10
             end
             object Label25: TLabel
               Left = 11
@@ -645,7 +645,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 168
               Width = 596
               Enabled = False
-              TabOrder = 8
+              TabOrder = 4
             end
             object Label26: TLabel
               Left = 11
@@ -655,90 +655,6 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Histórico:.'
               ParentColor = False
             end
-            object cmbCodigoDebitar: TComboBox
-              Left = 73
-              Height = 23
-              Top = 93
-              Width = 56
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoDebitarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csSimple
-              TabOrder = 9
-            end
-            object cmbClassificacaoDebitar: TComboBox
-              Left = 150
-              Height = 23
-              Top = 93
-              Width = 232
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoDebitarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csDropDownList
-              TabOrder = 10
-            end
-            object cmbNomeDebitar: TComboBox
-              Left = 406
-              Height = 23
-              Top = 93
-              Width = 263
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoDebitarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csDropDownList
-              TabOrder = 11
-            end
-            object cmbCodigoCreditar: TComboBox
-              Left = 73
-              Height = 23
-              Top = 131
-              Width = 56
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoCreditarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csSimple
-              TabOrder = 12
-            end
-            object cmbClassificacaoCreditar: TComboBox
-              Left = 151
-              Height = 23
-              Top = 131
-              Width = 232
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoCreditarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csDropDownList
-              TabOrder = 13
-            end
-            object cmbNomeCreditar: TComboBox
-              Left = 406
-              Height = 23
-              Top = 131
-              Width = 263
-              AutoComplete = True
-              AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-              Enabled = False
-              ItemHeight = 15
-              OnChange = cmbCodigoCreditarChange
-              OnKeyPress = cmbLookupKeyPress
-              Style = csDropDownList
-              TabOrder = 14
-            end
             object GroupBox20: TGroupBox
               Left = 11
               Height = 166
@@ -747,7 +663,7 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Leiautes'
               ClientHeight = 148
               ClientWidth = 646
-              TabOrder = 15
+              TabOrder = 11
               object Arrow3: TArrow
                 Left = 313
                 Height = 30
@@ -799,6 +715,57 @@ object frmPrincipal: TfrmPrincipal
                   TabOrder = 0
                 end
               end
+            end
+            object edtCodigoDebitar: TEdit
+              Left = 76
+              Height = 23
+              Top = 88
+              Width = 56
+              Enabled = False
+              OnExit = edtCodigoDebitarExit
+              TabOrder = 2
+            end
+            object edtCodigoCreditar: TEdit
+              Left = 78
+              Height = 23
+              Top = 129
+              Width = 56
+              Enabled = False
+              OnExit = edtCodigoCreditarExit
+              OnKeyPress = edtCodigoCreditarKeyPress
+              TabOrder = 3
+            end
+            object edtClassificacaoDebitar: TEdit
+              Left = 142
+              Height = 23
+              Top = 88
+              Width = 248
+              Enabled = False
+              TabOrder = 12
+            end
+            object edtClassificacaoCreditar: TEdit
+              Left = 142
+              Height = 23
+              Top = 129
+              Width = 248
+              Enabled = False
+              TabOrder = 13
+            end
+            object edtNomeDebitar: TEdit
+              Left = 399
+              Height = 23
+              Top = 88
+              Width = 270
+              Enabled = False
+              TabOrder = 14
+            end
+            object edtNomeCreditar: TEdit
+              Left = 399
+              Height = 23
+              Top = 129
+              Width = 270
+              Enabled = False
+              TabOrder = 15
             end
           end
           object GroupBox15: TGroupBox
@@ -854,8 +821,8 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               Items.Strings = (
-                'Crédito'
-                'Débito'
+                'Entrada'
+                'Saída'
                 'Data'
                 'Data de Pagamento'
                 'Forma de Pagamento'
@@ -866,7 +833,8 @@ object frmPrincipal: TfrmPrincipal
                 'Histórico'
               )
               ItemHeight = 17
-              PopupMenu = popVinculador
+              OnClick = chkCamposDisponiveisClick
+              PopupMenu = popLayout
               TabOrder = 0
               Data = {
                 0A00000000000000000000000000
@@ -882,7 +850,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 175
             ClientWidth = 292
             Enabled = False
-            PopupMenu = popVinculador
+            PopupMenu = popLayout
             TabOrder = 1
             object chkCamposUtilizados: TCheckListBox
               Left = 14
@@ -890,7 +858,8 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               ItemHeight = 0
-              PopupMenu = popVinculador
+              OnClick = chkCamposUtilizadosClick
+              PopupMenu = popLayout
               TabOrder = 0
             end
           end
@@ -932,6 +901,7 @@ object frmPrincipal: TfrmPrincipal
                   Width = 205
                   FieldName = 'nome'
                 end>
+              PopupMenu = popLayout
               ReadOnly = True
               TabOrder = 0
               OnMouseUp = dbgLayoutsMouseUp
@@ -946,7 +916,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 146
             ClientWidth = 710
             Enabled = False
-            PopupMenu = popVinculador
+            PopupMenu = popPlanoContas
             TabOrder = 5
             object Label13: TLabel
               Left = 14
@@ -964,26 +934,6 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Formato:.'
               ParentColor = False
             end
-            object ComboBox1: TComboBox
-              Left = 94
-              Height = 23
-              Top = 17
-              Width = 100
-              ItemHeight = 15
-              PopupMenu = popVinculador
-              Style = csSimple
-              TabOrder = 0
-            end
-            object ComboBox2: TComboBox
-              Left = 94
-              Height = 23
-              Top = 49
-              Width = 100
-              ItemHeight = 15
-              PopupMenu = popVinculador
-              Style = csSimple
-              TabOrder = 1
-            end
             object Label31: TLabel
               Left = 14
               Height = 16
@@ -992,36 +942,53 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Tam. Máx.:.'
               ParentColor = False
             end
-            object ComboBox6: TComboBox
-              Left = 94
-              Height = 23
-              Top = 79
-              Width = 100
-              ItemHeight = 15
-              PopupMenu = popVinculador
-              Style = csSimple
-              TabOrder = 2
-            end
-            object DBGrid4: TDBGrid
-              Left = 430
-              Height = 136
-              Top = 2
-              Width = 264
-              Color = clWindow
-              Columns = <>
-              FixedCols = 0
-              Options = [dgEditing, dgColumnResize, dgColumnMove, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
-              PopupMenu = popVinculador
-              TabOrder = 3
-            end
-            object Button13: TButton
+            object btnAdicionarDadosCampo: TButton
               Left = 390
               Height = 25
               Top = 2
               Width = 32
               Caption = '+'
-              OnClick = Button13Click
+              Enabled = False
+              OnClick = btnAdicionarDadosCampoClick
               PopupMenu = popVinculador
+              TabOrder = 0
+            end
+            object edtTipoCampo: TEdit
+              Left = 94
+              Height = 23
+              Top = 17
+              Width = 100
+              Enabled = False
+              PopupMenu = popLayout
+              TabOrder = 1
+            end
+            object edtFormatoCampo: TEdit
+              Left = 94
+              Height = 23
+              Top = 48
+              Width = 100
+              Enabled = False
+              PopupMenu = popLayout
+              TabOrder = 2
+            end
+            object edtTamanhoCampo: TEdit
+              Left = 94
+              Height = 23
+              Top = 79
+              Width = 100
+              Enabled = False
+              PopupMenu = popLayout
+              TabOrder = 3
+            end
+            object dbgDadosCampos: TDBGrid
+              Left = 430
+              Height = 140
+              Top = 0
+              Width = 264
+              Color = clWindow
+              Columns = <>
+              FixedCols = 0
+              Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
               TabOrder = 4
             end
           end
@@ -1033,7 +1000,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Leiaute:.'
             ClientHeight = 33
             ClientWidth = 965
-            PopupMenu = popVinculador
+            PopupMenu = popLayout
             TabOrder = 6
             object Label23: TLabel
               Left = 8

@@ -6,7 +6,7 @@ SELECT
   b.codigo_externo AS debitar,
   b.codigo AS cd_debitar,
   b.descricao AS no_debitar,
-  b.chave AS id_creditar,
+  c.chave AS id_creditar,
   c.codigo_externo AS creditar,
   c.codigo AS cd_creditar,
   c.descricao AS no_creditar,
@@ -20,4 +20,4 @@ FROM
     c.empresa = a.empresa AND
     c.chave = a.creditar)
 where
-  a.empresa = 5
+  a.empresa = 2

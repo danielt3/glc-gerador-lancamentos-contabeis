@@ -1,8 +1,7 @@
-select
-  RDB$RELATION_NAME,
-  RDB$FIELD_NAME
-from
-  RDB$RELATION_FIELDS
-where
-  RDB$RELATION_NAME = 'LAYOUT_CAMPOS' AND
-  RDB$FIELD_NAME = 'NOME'
+SELECT
+  dado
+FROM
+  layout_campos_dados
+WHERE
+  layout = 1 AND
+  campo = 'Pago Por'

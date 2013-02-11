@@ -1,4 +1,4 @@
-DELETE FROM
-  plano_contas
+UPDATE layouts SET
+  nome = 'Teste 0'
 WHERE
-  chave = 1008
+  chave = 1

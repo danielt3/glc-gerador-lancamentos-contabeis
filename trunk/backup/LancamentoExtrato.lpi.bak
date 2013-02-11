@@ -133,7 +133,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="95"/>
         <CursorPos X="75" Y="116"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="199"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -186,7 +186,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="11" Y="17"/>
-        <UsageCount Value="136"/>
+        <UsageCount Value="137"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
@@ -221,7 +221,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="39" Y="24"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit16>

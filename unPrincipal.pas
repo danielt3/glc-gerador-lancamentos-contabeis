@@ -37,7 +37,7 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
-    Button13: TButton;
+    btnAdicionarDadosCampo: TButton;
     btnGravarLayout: TButton;
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
@@ -56,23 +56,23 @@ type
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
-    cmbCodigoDebitar: TComboBox;
-    ComboBox1: TComboBox;
-    ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
-    cmbClassificacaoDebitar: TComboBox;
-    cmbNomeDebitar: TComboBox;
-    cmbCodigoCreditar: TComboBox;
-    cmbClassificacaoCreditar: TComboBox;
-    cmbNomeCreditar: TComboBox;
     ComboBox5: TComboBox;
-    ComboBox6: TComboBox;
     Conexao: TZConnection;
     dbgPlano1: TDBGrid;
     dbgLayouts: TDBGrid;
+    dbgDadosCampos: TDBGrid;
     DBGrid2: TDBGrid;
-    DBGrid4: TDBGrid;
+    edtCodigoDebitar: TEdit;
+    edtCodigoCreditar: TEdit;
+    edtClassificacaoDebitar: TEdit;
+    edtClassificacaoCreditar: TEdit;
+    edtTipoCampo: TEdit;
+    edtFormatoCampo: TEdit;
+    edtTamanhoCampo: TEdit;
+    edtNomeDebitar: TEdit;
+    edtNomeCreditar: TEdit;
     edtNomeLayout: TEdit;
     dbgPlano: TDBGrid;
     cmbPlanoContasTipo: TDBLookupComboBox;
@@ -186,14 +186,14 @@ type
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
     procedure btnGravarLayoutClick(Sender: TObject);
-    procedure Button13Click(Sender: TObject);
+    procedure btnAdicionarDadosCampoClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
-    procedure cmbCodigoCreditarChange(Sender: TObject);
-    procedure cmbCodigoDebitarChange(Sender: TObject);
+    procedure chkCamposDisponiveisClick(Sender: TObject);
+    procedure chkCamposUtilizadosClick(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
@@ -204,6 +204,9 @@ type
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
+    procedure edtCodigoCreditarExit(Sender: TObject);
+    procedure edtCodigoCreditarKeyPress(Sender: TObject; var Key: char);
+    procedure edtCodigoDebitarExit(Sender: TObject);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -222,6 +225,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure GravarInserirCampo(pNomeCampo: String);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -237,7 +241,15 @@ type
     fEstadoVinculador: TTipoAcao;
     fVinculadorAtual: Integer;
     fListaDebito: TStringList;
+    fListaDebito2: TStringList;
+    fListaDebito3: TStringList;
+    fListaDebito4: TStringList;
     fListaCredito: TStringList;
+    fListaCredito2: TStringList;
+    fListaCredito3: TStringList;
+    fListaCredito4: TStringList;
+    fLayoutsDisponiveis: TStringList;
+    fLayoutsUtilizados: TStringList;
     //Layouts
     fLayoutAtual: Integer;
     fEstadoLayout: TTipoAcao;
@@ -282,6 +294,8 @@ type
     function GravarVinculador: Boolean;
     function GravarInserirVinculador: Boolean;
     function GravarAlterarVinculador: Boolean;
+    function CarregarLayoutsDisponiveis: Boolean;
+    function CarregarLayoutsUtilizados: Boolean;
     //Layouts
     function  CarregarLayouts(pEmpresa4: Integer): Boolean;
     procedure CarregarLayout;
@@ -298,7 +312,8 @@ type
     function GravarInserirLayoutCampos: Boolean;
     function GravarAlterarLayout: Boolean;
     function GravarAlterarLayoutCampos: Boolean;
-    procedure GravarInserirCampo(pNomeCampo: String);
+    procedure MostrarDadosCampo(pNomeCampo: String; HabilitarInsercao: Boolean);
+    procedure CarregarListaDadosCampo(pNomeCampo: String);
   public
     { public declarations }
   end; 
@@ -760,12 +775,12 @@ begin
   begin
     fListaDebito.Add(DataModule1.qPlanoContas.FieldByName('CHAVE').AsString);
     fListaCredito.Add(DataModule1.qPlanoContas.FieldByName('chave').AsString);
-    cmbCodigoDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
-    cmbCodigoCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
-    cmbClassificacaoDebitar.Items.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
-    cmbClassificacaoCreditar.Items.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
-    cmbNomeDebitar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
-    cmbNomeCreditar.Items.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+    fListaDebito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+    fListaCredito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+    fListaDebito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
+    fListaCredito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
+    fListaDebito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+    fListaCredito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
 
     DataModule1.qPlanoContas.Next;
   end;
@@ -957,7 +972,7 @@ begin
                  '  b.codigo_externo AS debitar,' + NewLine +
                  '  b.codigo AS cd_debitar,' + NewLine +
                  '  b.descricao AS no_debitar,' + NewLine +
-                 '  b.chave AS id_creditar,' + NewLine +
+                 '  c.chave AS id_creditar,' + NewLine +
                  '  c.codigo_externo AS creditar,' + NewLine +
                  '  c.codigo AS cd_creditar,' + NewLine +
                  '  c.descricao AS no_creditar,' + NewLine +
@@ -988,18 +1003,12 @@ procedure TfrmPrincipal.LimparTelaVinculadores;
 begin
   edtCodigoVinculador.Text := '';
   edtNomeVinculador.Text := '';
-  cmbCodigoDebitar.ItemIndex := -1;
-  cmbCodigoDebitar.Text := '';
-  cmbCodigoCreditar.ItemIndex := -1;
-  cmbCodigoCreditar.Text := '';
-  cmbClassificacaoDebitar.ItemIndex := -1;
-  cmbClassificacaoDebitar.Text := '';
-  cmbClassificacaoCreditar.ItemIndex := -1;
-  cmbClassificacaoCreditar.Text := '';
-  cmbNomeDebitar.ItemIndex := -1;
-  cmbNomeDebitar.Text := '';
-  cmbNomeCreditar.ItemIndex := -1;
-  cmbNomeCreditar.Text := '';
+  edtCodigoDebitar.Text := '';
+  edtCodigoCreditar.Text := '';
+  edtClassificacaoDebitar.Text := '';
+  edtClassificacaoCreditar.Text := '';
+  edtNomeDebitar.Text := '';
+  edtNomeCreditar.Text := '';
   edtHistorico.Text := '';
 end;
 
@@ -1015,18 +1024,10 @@ begin
 
   edtNomeVinculador.Color := lCor;
   edtNomeVinculador.Enabled := Habilitar;
-  cmbCodigoDebitar.Color := lCor;
-  cmbCodigoDebitar.Enabled := Habilitar;
-  cmbCodigoCreditar.Color := lCor;
-  cmbCodigoCreditar.Enabled := Habilitar;
-  cmbClassificacaoDebitar.Color := lCor;
-  cmbClassificacaoDebitar.Enabled := Habilitar;
-  cmbClassificacaoCreditar.Color := lCor;
-  cmbClassificacaoCreditar.Enabled := Habilitar;
-  cmbNomeDebitar.Color := lCor;
-  cmbNomeDebitar.Enabled := Habilitar;
-  cmbNomeCreditar.Color := lCor;
-  cmbNomeCreditar.Enabled := Habilitar;
+  edtCodigoDebitar.Color := lCor;
+  edtCodigoDebitar.Enabled := Habilitar;
+  edtCodigoCreditar.Color := lCor;
+  edtCodigoCreditar.Enabled := Habilitar;
   edtHistorico.Color := lCor;
   edtHistorico.Enabled := Habilitar;
 
@@ -1097,13 +1098,16 @@ begin
 
     edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('chave').AsString;
     edtNomeVinculador.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
-    cmbCodigoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
-    cmbClassificacaoDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
-    cmbNomeDebitar.ItemIndex := fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString);
-    cmbCodigoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
-    cmbClassificacaoCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
-    cmbNomeCreditar.ItemIndex := fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString);
+    edtCodigoDebitar.Text := fListaDebito2.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+    edtClassificacaoDebitar.Text := fListaDebito3.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+    edtNomeDebitar.Text := fListaDebito4.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+    edtCodigoCreditar.Text := fListaCredito2.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+    edtClassificacaoCreditar.Text := fListaCredito3.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+    edtNomeCreditar.Text := fListaCredito4.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
     edtHistorico.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
+
+    CarregarLayoutsDisponiveis;
+    CarregarLayoutsUtilizados;
   end
   else
     LimparTelaVinculadores;
@@ -1154,8 +1158,8 @@ begin
                 '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                 '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                 '' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
-                '' + fListaDebito.Strings[cmbCodigoDebitar.ItemIndex] + ',' + NewLine +
-                '' + fListaCredito.Strings[cmbCodigoCreditar.ItemIndex] + ',' + NewLine +
+                '' + fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)] + ',' + NewLine +
+                '' + fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)] + ',' + NewLine +
                 '' + QuotedStr(edtHistorico.Text) + ')';
 
     result := DataModule1.Executar(lComando);
@@ -1175,8 +1179,8 @@ begin
                 '  vinculadores' + NewLine +
                 'SET ' + NewLine +
                 '  descricao = ' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
-                '  debitar = ' + fListaDebito.Strings[cmbCodigoDebitar.ItemIndex] + ',' + NewLine +
-                '  creditar = ' + fListaCredito.Strings[cmbCodigoCreditar.ItemIndex] + ',' + NewLine +
+                '  debitar = ' + fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)] + ',' + NewLine +
+                '  creditar = ' + fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)] + ',' + NewLine +
                 '  historico = ' + QuotedStr(edtHistorico.Text) + NewLine +
                 'WHERE' + NewLine +
                 '  chave = ' + IntToStr(fVinculadorAtual);
@@ -1184,6 +1188,79 @@ begin
     result := DataModule1.Executar(lComando);
   except on e:exception do
     MensagemErro(e.Message, 'Alterar vinculador.');
+  end;
+end;
+
+function TfrmPrincipal.CarregarLayoutsDisponiveis: Boolean;
+const
+  lTabela = 'Vinculadores';
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  chkLayoutsDisponiveis.Items.Clear;
+  fLayoutsDisponiveis.Clear;
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  a.chave,' + NewLine +
+                 '  a.nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layouts a' + NewLine +
+                 '  LEFT JOIN vinculadores_layout b ON (' + NewLine +
+                 '    b.layout = a.chave)' + NewLine +
+                 'WHERE' + NewLine +
+                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                 '  b.chave IS NULL' + NewLine +
+                 'ORDER BY' + NewLine +
+                 '  a.nome';
+
+  if DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0 then
+  begin
+    DataModule1.getQuery(lTabela).First;
+
+    while not DataModule1.getQuery(lTabela).Eof do
+    begin
+      chkLayoutsDisponiveis.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      fLayoutsDisponiveis.Add(DataModule1.getQuery(lTabela).FieldByName('chave').AsString);
+
+      DataModule1.getQuery(lTabela).Next;
+    end;
+  end;
+end;
+
+function TfrmPrincipal.CarregarLayoutsUtilizados: Boolean;
+const
+  lTabela = 'Vinculadores';
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  chkLayoutsUtilizados.Items.Clear;
+  fLayoutsUtilizados.Clear;
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  a.chave,' + NewLine +
+                 '  a.nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layouts a' + NewLine +
+                 '  JOIN vinculadores_layout b ON (' + NewLine +
+                 '    b.layout = a.chave)' + NewLine +
+                 'WHERE' + NewLine +
+                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 'ORDER BY' + NewLine +
+                 '  a.nome';
+
+  if DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0 then
+  begin
+    DataModule1.getQuery(lTabela).First;
+
+    while not DataModule1.getQuery(lTabela).Eof do
+    begin
+      chkLayoutsUtilizados.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      fLayoutsUtilizados.Add(DataModule1.getQuery(lTabela).FieldByName('chave').AsString);
+
+      DataModule1.getQuery(lTabela).Next;
+    end;
   end;
 end;
 
@@ -1221,6 +1298,9 @@ begin
 
     edtNomeLayout.Text := DataModule1.qLayouts.FieldByName('nome').AsString;
     CarregarCamposLayout;
+
+    if (chkCamposUtilizados.ItemIndex > -1) then
+      CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
   end
   else
     LimparTelaLayouts;
@@ -1493,8 +1573,150 @@ begin
 end;
 
 procedure TfrmPrincipal.GravarInserirCampo(pNomeCampo: String);
+var
+  lComando: String;
+  i: Integer;
+  lCampoAtual: Integer;
 begin
+  try
+    lComando := 'DELETE FROM' + NewLine +
+                '  layout_campos_dados' + NewLine +
+                'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
+                 '  campo = ' + QuotedStr(pNomeCampo);
 
+    DataModule1.Executar(lComando);
+
+    lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS_DADOS');
+    lComando := 'INSERT INTO layout_campos_dados (' + NewLine +
+                'chave,' + NewLine +
+                'layout,' + NewLine +
+                'campo,' + NewLine +
+                'dado)' + NewLine +
+                'VALUES (' + NewLine +
+                '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                '' + QuotedStr(Copy(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex], 1, 20)) + ',' + NewLine +
+                '' + QuotedStr(Copy(pNomeCampo, 1, 100)) + ')';
+
+    DataModule1.Executar(lComando);
+
+    CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir Dados Campos Layout.');
+  end;
+end;
+
+procedure TfrmPrincipal.MostrarDadosCampo(pNomeCampo: String; HabilitarInsercao: Boolean);
+begin
+  if not Vazio(pNomeCampo) then
+  begin
+    if (pNomeCampo = 'Entrada') then
+    begin
+      edtTipoCampo.Text := 'Decimal';
+      edtFormatoCampo.Text := '####.####,###';
+      edtTamanhoCampo.Text := '9';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Saída') then
+    begin
+      edtTipoCampo.Text := 'Decimal';
+      edtFormatoCampo.Text := '####.####,###';
+      edtTamanhoCampo.Text := '9';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Data de Pagamento') then
+    begin
+      edtTipoCampo.Text := 'Data';
+      edtFormatoCampo.Text := 'DD/MM/AAAA';
+      edtTamanhoCampo.Text := '10';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Forma de Pagamento') then
+    begin
+      edtTipoCampo.Text := 'Caractere';
+      edtFormatoCampo.Text := '';
+      edtTamanhoCampo.Text := '15';
+      btnAdicionarDadosCampo.Enabled := HabilitarInsercao;
+    end
+    else if (pNomeCampo = 'Fornecedor') then
+    begin
+      edtTipoCampo.Text := 'Caractere';
+      edtFormatoCampo.Text := '';
+      edtTamanhoCampo.Text := '32';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Nota Fiscal') then
+    begin
+      edtTipoCampo.Text := 'Numeral';
+      edtFormatoCampo.Text := '##########';
+      edtTamanhoCampo.Text := '10';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Pago Por') then
+    begin
+      edtTipoCampo.Text := 'Caractere';
+      edtFormatoCampo.Text := '';
+      edtTamanhoCampo.Text := '32';
+      btnAdicionarDadosCampo.Enabled := HabilitarInsercao;
+    end
+    else if (pNomeCampo = 'Data') then
+    begin
+      edtTipoCampo.Text := 'Data';
+      edtFormatoCampo.Text := 'DD/MM/AAAA';
+      edtTamanhoCampo.Text := '10';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Vinculador') then
+    begin
+      edtTipoCampo.Text := 'Numeral';
+      edtFormatoCampo.Text := '##########';
+      edtTamanhoCampo.Text := '10';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else if (pNomeCampo = 'Histórico') then
+    begin
+      edtTipoCampo.Text := 'Caractere';
+      edtFormatoCampo.Text := '';
+      edtTamanhoCampo.Text := '100';
+      btnAdicionarDadosCampo.Enabled := false;
+    end
+    else
+    begin
+      edtTipoCampo.Text := '';
+      edtFormatoCampo.Text := '';
+      edtTamanhoCampo.Text := '';
+      btnAdicionarDadosCampo.Enabled := false;
+    end;
+  end
+  else
+  begin
+    edtTipoCampo.Text := '';
+    edtFormatoCampo.Text := '';
+    edtTamanhoCampo.Text := '';
+    btnAdicionarDadosCampo.Enabled := false;
+  end;
+end;
+
+procedure TfrmPrincipal.CarregarListaDadosCampo(pNomeCampo: String);
+const
+  lTabela = 'DadosCampos';
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  dado' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos_dados' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
+                 '  campo = ' + QuotedStr(pNomeCampo);
+
+  DataModule1.NovaConsulta(lTabela, lComandoSQL);
+  dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
@@ -1503,10 +1725,26 @@ begin
 
   fListaEmpresa := TListaCodigo.Create;
   fListaDebito := TStringList.Create;
+  fListaDebito2 := TStringList.Create;
+  fListaDebito3 := TStringList.Create;
+  fListaDebito4 := TStringList.Create;
   fListaCredito := TStringList.Create;
+  fListaCredito2 := TStringList.Create;
+  fListaCredito3 := TStringList.Create;
+  fListaCredito4 := TStringList.Create;
+  fLayoutsDisponiveis := TStringList.Create;
+  fLayoutsUtilizados := TStringList.Create;
   fGarbageCollector.Add(fListaEmpresa);
   fGarbageCollector.Add(fListaDebito);
+  fGarbageCollector.Add(fListaDebito2);
+  fGarbageCollector.Add(fListaDebito3);
+  fGarbageCollector.Add(fListaDebito4);
   fGarbageCollector.Add(fListaCredito);
+  fGarbageCollector.Add(fListaCredito2);
+  fGarbageCollector.Add(fListaCredito3);
+  fGarbageCollector.Add(fListaCredito4);
+  fGarbageCollector.Add(fLayoutsDisponiveis);
+  fGarbageCollector.Add(fLayoutsUtilizados);
   PrepararComboTipoPlanoContas;
 end;
 
@@ -1557,10 +1795,12 @@ begin
   GravarLayout;
 end;
 
-procedure TfrmPrincipal.Button13Click(Sender: TObject);
+procedure TfrmPrincipal.btnAdicionarDadosCampoClick(Sender: TObject);
 begin
   if not Assigned(frmNovoCampo) then
     Application.CreateForm(TfrmNovoCampo, frmNovoCampo);
+
+  frmNovoCampo.onGravarCampo := @GravarInserirCampo;
 
   if frmNovoCampo.ShowModal = mrOK then
   begin
@@ -1594,36 +1834,15 @@ begin
   NovoPlanoContas;
 end;
 
-procedure TfrmPrincipal.cmbCodigoCreditarChange(Sender: TObject);
-var
-  teste: Integer;
-  lteste: String;
+procedure TfrmPrincipal.chkCamposDisponiveisClick(Sender: TObject);
 begin
-  teste := TComboBox(Sender).ItemIndex;
-  lteste := TComboBox(Sender).Text;
-
-  if (TComboBox(Sender).Items.IndexOf(lteste) > -1) then
-    teste := TComboBox(Sender).Items.IndexOf(lteste);
-
-  cmbCodigoCreditar.ItemIndex := teste;
-  cmbClassificacaoCreditar.ItemIndex := teste;
-  cmbNomeCreditar.ItemIndex := teste;
+  MostrarDadosCampo(chkCamposDisponiveis.Items.Strings[chkCamposDisponiveis.ItemIndex], false);
 end;
 
-procedure TfrmPrincipal.cmbCodigoDebitarChange(Sender: TObject);
-var
-  teste: Integer;
-  lteste: String;
+procedure TfrmPrincipal.chkCamposUtilizadosClick(Sender: TObject);
 begin
-  teste := TComboBox(Sender).ItemIndex;
-  lteste := TComboBox(Sender).Text;
-
-  if (TComboBox(Sender).Items.IndexOf(lteste) > -1) then
-    teste := TComboBox(Sender).Items.IndexOf(lteste);
-
-  cmbCodigoDebitar.ItemIndex := teste;
-  cmbClassificacaoDebitar.ItemIndex := teste;
-  cmbNomeDebitar.ItemIndex := teste;
+  MostrarDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex], true);
+  CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
 end;
 
 procedure TfrmPrincipal.cmbEmpresaChange(Sender: TObject);
@@ -1678,6 +1897,41 @@ begin
   else
     edtCNPJEmpresa.Text := MascararTexto(ApenasNumeros(edtCNPJEmpresa.Text), 'XX.XXX.XXX/XXXX-XX');
   edtCNPJEmpresa.SelStart := Length(edtCNPJEmpresa.Text);
+end;
+
+procedure TfrmPrincipal.edtCodigoCreditarExit(Sender: TObject);
+begin
+  if not Vazio(edtCodigoCreditar.Text) then
+  begin
+    edtClassificacaoCreditar.Text := fListaCredito3.Strings[fListaCredito2.IndexOf(ApenasNumeros(edtCodigoCreditar.Text))];
+    edtNomeCreditar.Text := fListaCredito4.Strings[fListaCredito2.IndexOf(ApenasNumeros(edtCodigoCreditar.Text))];
+  end
+  else
+  begin
+    edtClassificacaoCreditar.Text := '';
+    edtNomeCreditar.Text := '';
+  end;
+end;
+
+procedure TfrmPrincipal.edtCodigoCreditarKeyPress(Sender: TObject; var Key: char
+  );
+begin
+  if (Key <> #8) and (fListaCredito2.IndexOf(edtCodigoCreditar.Text + Key) <= -1) then
+    Key := #0;
+end;
+
+procedure TfrmPrincipal.edtCodigoDebitarExit(Sender: TObject);
+begin
+  if not Vazio(edtCodigoDebitar.Text) then
+  begin
+    edtClassificacaoDebitar.Text := fListaDebito3.Strings[fListaDebito2.IndexOf(ApenasNumeros(edtCodigoDebitar.Text))];
+    edtNomeDebitar.Text := fListaDebito4.Strings[fListaDebito2.IndexOf(ApenasNumeros(edtCodigoDebitar.Text))];
+  end
+  else
+  begin
+    edtClassificacaoDebitar.Text := '';
+    edtNomeDebitar.Text := '';
+  end;
 end;
 
 procedure TfrmPrincipal.edtMascaraPlanoContasChange(Sender: TObject);

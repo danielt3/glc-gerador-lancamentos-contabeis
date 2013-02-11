@@ -3,8 +3,8 @@ object DataModule1: TDataModule1
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 440
-  HorizontalOffset = 526
-  VerticalOffset = 511
+  HorizontalOffset = 527
+  VerticalOffset = 278
   Width = 750
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8

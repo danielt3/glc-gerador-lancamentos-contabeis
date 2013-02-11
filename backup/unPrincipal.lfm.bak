@@ -834,7 +834,7 @@ object frmPrincipal: TfrmPrincipal
               )
               ItemHeight = 17
               OnClick = chkCamposDisponiveisClick
-              PopupMenu = popVinculador
+              PopupMenu = popLayout
               TabOrder = 0
               Data = {
                 0A00000000000000000000000000
@@ -850,7 +850,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 175
             ClientWidth = 292
             Enabled = False
-            PopupMenu = popVinculador
+            PopupMenu = popLayout
             TabOrder = 1
             object chkCamposUtilizados: TCheckListBox
               Left = 14
@@ -859,7 +859,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 264
               ItemHeight = 0
               OnClick = chkCamposUtilizadosClick
-              PopupMenu = popVinculador
+              PopupMenu = popLayout
               TabOrder = 0
             end
           end
@@ -901,6 +901,7 @@ object frmPrincipal: TfrmPrincipal
                   Width = 205
                   FieldName = 'nome'
                 end>
+              PopupMenu = popLayout
               ReadOnly = True
               TabOrder = 0
               OnMouseUp = dbgLayoutsMouseUp
@@ -915,7 +916,7 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 146
             ClientWidth = 710
             Enabled = False
-            PopupMenu = popVinculador
+            PopupMenu = popPlanoContas
             TabOrder = 5
             object Label13: TLabel
               Left = 14
@@ -958,6 +959,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 17
               Width = 100
               Enabled = False
+              PopupMenu = popLayout
               TabOrder = 1
             end
             object edtFormatoCampo: TEdit
@@ -966,6 +968,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 48
               Width = 100
               Enabled = False
+              PopupMenu = popLayout
               TabOrder = 2
             end
             object edtTamanhoCampo: TEdit
@@ -974,6 +977,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 79
               Width = 100
               Enabled = False
+              PopupMenu = popLayout
               TabOrder = 3
             end
             object dbgDadosCampos: TDBGrid
@@ -996,7 +1000,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Leiaute:.'
             ClientHeight = 33
             ClientWidth = 965
-            PopupMenu = popVinculador
+            PopupMenu = popLayout
             TabOrder = 6
             object Label23: TLabel
               Left = 8

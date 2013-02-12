@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 505
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 3
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -669,6 +669,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 30
                 Top = 104
                 Width = 41
+                OnClick = Arrow3Click
               end
               object GroupBox21: TGroupBox
                 Left = 14
@@ -695,6 +696,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 24
                 Width = 41
                 ArrowType = atRight
+                OnClick = Arrow4Click
               end
               object GroupBox22: TGroupBox
                 Left = 422

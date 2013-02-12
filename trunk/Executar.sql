@@ -1,8 +1,8 @@
 INSERT INTO vinculadores_layout (
 chave,
-layout,
-vinculador)
+vinculador,
+layout)
 VALUES (
-1,
-1,
+5,
+3,
 1)

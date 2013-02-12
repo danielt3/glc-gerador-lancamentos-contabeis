@@ -50,18 +50,15 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="20">
+    <Units Count="21">
       <Unit0>
         <Filename Value="LancamentoExtrato.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="LancamentoExtrato"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="28" Y="10"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="unPrincipal.pas"/>
@@ -69,16 +66,17 @@
         <ComponentName Value="frmPrincipal"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unPrincipal"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2"/>
-        <CursorPos X="43" Y="14"/>
+        <TopLine Value="1201"/>
+        <CursorPos X="49" Y="1220"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
-          <Item0 X="3" Y="844" ID="3"/>
-          <Item1 X="5" Y="942" ID="9"/>
-          <Item2 X="15" Y="1583" ID="1"/>
-          <Item3 X="3" Y="1708" ID="2"/>
+          <Item0 X="3" Y="847" ID="3"/>
+          <Item1 X="5" Y="945" ID="9"/>
+          <Item2 X="15" Y="1624" ID="1"/>
+          <Item3 X="3" Y="1749" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -89,13 +87,12 @@
         <ComponentName Value="DataModule1"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="unDataModule"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="31"/>
-        <CursorPos X="32" Y="35"/>
+        <TopLine Value="151"/>
+        <CursorPos X="3" Y="153"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="D:\Intaladores\ZEOSDBO-7.0.3-stable\src\dbc\ZDbcInterbase6Utils.pas"/>
@@ -109,34 +106,28 @@
         <Filename Value="unListaCodigo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unListaCodigo"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="36"/>
         <CursorPos X="21" Y="67"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="unGarbageCollector.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unGarbageCollector"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="29" Y="17"/>
         <UsageCount Value="201"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="unUtilitario.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unUtilitario"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="95"/>
         <CursorPos X="75" Y="116"/>
         <UsageCount Value="204"/>
-        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="D:\Intaladores\ZEOSDBO-7.0.3-stable\src\component\ZAbstractRODataset.pas"/>
@@ -180,7 +171,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="11" Y="17"/>
-        <UsageCount Value="142"/>
+        <UsageCount Value="145"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
@@ -211,11 +202,11 @@
         <ComponentName Value="frmNovoCampo"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unNovoCampo"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="40"/>
+        <CursorPos X="41" Y="17"/>
+        <UsageCount Value="43"/>
         <Loaded Value="True"/>
       </Unit15>
       <Unit16>
@@ -246,128 +237,114 @@
         <CursorPos X="13" Y="6403"/>
         <UsageCount Value="10"/>
       </Unit19>
+      <Unit20>
+        <Filename Value="..\..\Intaladores\ZEOSDBO-7.0.3-stable\src\dbc\ZDbcInterbase6Utils.pas"/>
+        <UnitName Value="ZDbcInterbase6Utils"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="813"/>
+        <CursorPos X="39" Y="833"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit20>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1581" Column="1" TopLine="1560"/>
+        <Caret Line="1213" Column="59" TopLine="1198"/>
       </Position1>
       <Position2>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1583" Column="1" TopLine="1560"/>
+        <Filename Value="..\..\Intaladores\ZEOSDBO-7.0.3-stable\src\dbc\ZDbcInterbase6Utils.pas"/>
+        <Caret Line="833" Column="39" TopLine="813"/>
       </Position2>
       <Position3>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1585" Column="1" TopLine="1560"/>
+        <Caret Line="1222" Column="1" TopLine="1198"/>
       </Position3>
       <Position4>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1587" Column="1" TopLine="1560"/>
+        <Caret Line="1205" Column="3" TopLine="1198"/>
       </Position4>
       <Position5>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1589" Column="1" TopLine="1560"/>
+        <Caret Line="1259" Column="19" TopLine="1232"/>
       </Position5>
       <Position6>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1595" Column="1" TopLine="1561"/>
+        <Caret Line="1216" Column="23" TopLine="1198"/>
       </Position6>
       <Position7>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1599" Column="1" TopLine="1565"/>
+        <Caret Line="1222" Column="1" TopLine="1198"/>
       </Position7>
       <Position8>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1601" Column="1" TopLine="1567"/>
+        <Caret Line="1224" Column="1" TopLine="1198"/>
       </Position8>
       <Position9>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1589" Column="1" TopLine="1567"/>
+        <Caret Line="1226" Column="1" TopLine="1198"/>
       </Position9>
       <Position10>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1595" Column="1" TopLine="1567"/>
+        <Caret Line="1228" Column="1" TopLine="1198"/>
       </Position10>
       <Position11>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1584" Column="33" TopLine="1567"/>
+        <Caret Line="1229" Column="1" TopLine="1198"/>
       </Position11>
       <Position12>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1799" Column="43" TopLine="1794"/>
+        <Caret Line="1231" Column="1" TopLine="1198"/>
       </Position12>
       <Position13>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1596" Column="47" TopLine="1572"/>
+        <Caret Line="1228" Column="1" TopLine="1198"/>
       </Position13>
       <Position14>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1991" Column="10" TopLine="1989"/>
+        <Caret Line="1229" Column="1" TopLine="1198"/>
       </Position14>
       <Position15>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1415" Column="16" TopLine="1411"/>
+        <Caret Line="1231" Column="1" TopLine="1198"/>
       </Position15>
       <Position16>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="301" Column="15" TopLine="280"/>
+        <Caret Line="1208" Column="26" TopLine="1200"/>
       </Position16>
       <Position17>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1302" Column="19" TopLine="1293"/>
+        <Caret Line="1255" Column="16" TopLine="1238"/>
       </Position17>
       <Position18>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1314" Column="29" TopLine="1309"/>
+        <Caret Line="1222" Column="6" TopLine="1201"/>
       </Position18>
       <Position19>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1844" Column="13" TopLine="1841"/>
+        <Caret Line="1259" Column="1" TopLine="1238"/>
       </Position19>
       <Position20>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1708" Column="1" TopLine="1700"/>
+        <Caret Line="1222" Column="1" TopLine="1201"/>
       </Position20>
       <Position21>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1714" Column="1" TopLine="1700"/>
+        <Caret Line="1259" Column="1" TopLine="1238"/>
       </Position21>
       <Position22>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1716" Column="1" TopLine="1700"/>
+        <Caret Line="1222" Column="1" TopLine="1192"/>
       </Position22>
       <Position23>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1718" Column="1" TopLine="1700"/>
+        <Caret Line="1259" Column="1" TopLine="1238"/>
       </Position23>
       <Position24>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1719" Column="1" TopLine="1700"/>
+        <Caret Line="1294" Column="39" TopLine="1260"/>
       </Position24>
-      <Position25>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1844" Column="17" TopLine="1824"/>
-      </Position25>
-      <Position26>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1715" Column="52" TopLine="1701"/>
-      </Position26>
-      <Position27>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1713" Column="34" TopLine="1700"/>
-      </Position27>
-      <Position28>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="13" Column="23" TopLine="2"/>
-      </Position28>
-      <Position29>
-        <Filename Value="unNovoCampo.pas"/>
-        <Caret Line="24" Column="39" TopLine="11"/>
-      </Position29>
-      <Position30>
-        <Filename Value="LancamentoExtrato.lpr"/>
-        <Caret Line="10" Column="28" TopLine="1"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -392,13 +369,21 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="3">
       <Item1>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="1147"/>
+        <Line Value="1279"/>
       </Item1>
+      <Item2>
+        <Source Value="unPrincipal.pas"/>
+        <Line Value="1259"/>
+      </Item2>
+      <Item3>
+        <Source Value="unPrincipal.pas"/>
+        <Line Value="1222"/>
+      </Item3>
     </BreakPoints>
-    <Watches Count="10">
+    <Watches Count="11">
       <Item1>
         <Expression Value="DataModule1.Conexao"/>
         <Enabled Value="False"/>
@@ -439,6 +424,10 @@
         <Expression Value="bounds"/>
         <Enabled Value="False"/>
       </Item10>
+      <Item11>
+        <Expression Value="qExecutar.ExecSQL"/>
+        <Enabled Value="False"/>
+      </Item11>
     </Watches>
     <Exceptions Count="3">
       <Item1>

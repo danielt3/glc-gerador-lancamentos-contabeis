@@ -1211,10 +1211,10 @@ begin
                  'FROM' + NewLine +
                  '  layouts a' + NewLine +
                  '  LEFT JOIN vinculadores_layout b ON (' + NewLine +
-                 '    b.layout = a.chave)' + NewLine +
+                 '    b.layout = a.chave AND' + NewLine +
+                 '    b.vinculador = ' + IntToStr(fVinculadorAtual) + ')' + NewLine +
                  'WHERE' + NewLine +
                  '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
-                 '  b.vinculador = ' + IntToStr(fVinculadorAtual) + ' AND' + NewLine +
                  '  b.chave IS NULL' + NewLine +
                  'ORDER BY' + NewLine +
                  '  a.nome';
@@ -1291,11 +1291,11 @@ begin
       lCampoAtual := DataModule1.GerarChave('GEN_VINCULADORES_LAYOUT');
       lComando := 'INSERT INTO vinculadores_layout (' + NewLine +
                   'chave,' + NewLine +
-                  'layout,' + NewLine +
-                  'vinculador)' + NewLine +
+                  'vinculador,' + NewLine +
+                  'layout)' + NewLine +
                   'VALUES (' + NewLine +
                   '' + IntToStr(lCampoAtual) + ',' + NewLine +
-                  '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                  '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                   '' + fLayoutsUtilizados.Strings[i] + ')';
 
       result := DataModule1.Executar(lComando);

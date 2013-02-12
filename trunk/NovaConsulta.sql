@@ -1,13 +1,7 @@
 SELECT
-  a.chave,
-  a.nome
+  chave,
+  nome
 FROM
-  layouts a
-  LEFT JOIN vinculadores_layout b ON (
-    b.layout = a.chave)
+  layout_campos
 WHERE
-  a.empresa = 2 AND
-  b.vinculador = 2 AND
-  b.chave IS NULL
-ORDER BY
-  a.nome
+  layout = 1

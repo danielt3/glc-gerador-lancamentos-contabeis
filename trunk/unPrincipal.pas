@@ -171,6 +171,8 @@ type
     pLeiaute: TTabSheet;
     procedure Arrow1Click(Sender: TObject);
     procedure Arrow2Click(Sender: TObject);
+    procedure Arrow3Click(Sender: TObject);
+    procedure Arrow4Click(Sender: TObject);
     procedure btnCancelarLayoutClick(Sender: TObject);
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
@@ -296,6 +298,7 @@ type
     function GravarAlterarVinculador: Boolean;
     function CarregarLayoutsDisponiveis: Boolean;
     function CarregarLayoutsUtilizados: Boolean;
+    function GravarLayoutsUtilizados: Boolean;
     //Layouts
     function  CarregarLayouts(pEmpresa4: Integer): Boolean;
     procedure CarregarLayout;
@@ -1130,6 +1133,7 @@ begin
     result := GravarAlterarVinculador;
   end;
 
+  GravarLayoutsUtilizados;
   CarregarVinculadores(fEmpresaAtual);
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lVinculadorAtual), []);
   CarregarVinculador;
@@ -1144,7 +1148,7 @@ begin
   result := false;
 
   try
-    fVinculadorAtual := DataModule1.GerarChave('GEN_VINCULADORES');
+    fVinculadorAtual := DataModule1.GerarChave('GEN_VINCULADORES', true);
     lComando := 'INSERT INTO vinculadores (' + NewLine +
                 'chave,' + NewLine +
                 'empresa,' + NewLine +
@@ -1210,6 +1214,7 @@ begin
                  '    b.layout = a.chave)' + NewLine +
                  'WHERE' + NewLine +
                  '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                 '  b.vinculador = ' + IntToStr(fVinculadorAtual) + ' AND' + NewLine +
                  '  b.chave IS NULL' + NewLine +
                  'ORDER BY' + NewLine +
                  '  a.nome';
@@ -1246,7 +1251,8 @@ begin
                  '  JOIN vinculadores_layout b ON (' + NewLine +
                  '    b.layout = a.chave)' + NewLine +
                  'WHERE' + NewLine +
-                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                 '  b.vinculador = ' + IntToStr(fVinculadorAtual) + NewLine +
                  'ORDER BY' + NewLine +
                  '  a.nome';
 
@@ -1261,6 +1267,41 @@ begin
 
       DataModule1.getQuery(lTabela).Next;
     end;
+  end;
+end;
+
+function TfrmPrincipal.GravarLayoutsUtilizados: Boolean;
+var
+  lComando: String;
+  i: Integer;
+  lCampoAtual: Integer;
+begin
+  result := false;
+
+  try
+    lComando := 'DELETE FROM' + NewLine +
+                '  vinculadores_layout' + NewLine +
+                'WHERE' + NewLine +
+                '  vinculador = ' + IntToStr(fVinculadorAtual);
+
+    DataModule1.Executar(lComando);
+
+    for i := 0 to chkLayoutsUtilizados.Items.Count - 1 do
+    begin
+      lCampoAtual := DataModule1.GerarChave('GEN_VINCULADORES_LAYOUT');
+      lComando := 'INSERT INTO vinculadores_layout (' + NewLine +
+                  'chave,' + NewLine +
+                  'layout,' + NewLine +
+                  'vinculador)' + NewLine +
+                  'VALUES (' + NewLine +
+                  '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                  '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                  '' + fLayoutsUtilizados.Strings[i] + ')';
+
+      result := DataModule1.Executar(lComando);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir Layouts Utilizados.');
   end;
 end;
 
@@ -2038,6 +2079,36 @@ begin
 
     chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
     chkCamposUtilizados.Items.Delete(i);
+  end;
+end;
+
+procedure TfrmPrincipal.Arrow3Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  while TemCampoSelecionado(chkLayoutsUtilizados) > -1 do
+  begin
+    i := TemCampoSelecionado(chkLayoutsUtilizados);
+
+    chkLayoutsDisponiveis.Items.Add(chkLayoutsUtilizados.Items.Strings[i]);
+    chkLayoutsUtilizados.Items.Delete(i);
+    fLayoutsDisponiveis.Add(fLayoutsUtilizados.Strings[i]);
+    fLayoutsUtilizados.Delete(i);
+  end;
+end;
+
+procedure TfrmPrincipal.Arrow4Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  while TemCampoSelecionado(chkLayoutsDisponiveis) > -1 do
+  begin
+    i := TemCampoSelecionado(chkLayoutsDisponiveis);
+
+    chkLayoutsUtilizados.Items.Add(chkLayoutsDisponiveis.Items.Strings[i]);
+    chkLayoutsDisponiveis.Items.Delete(i);
+    fLayoutsUtilizados.Add(fLayoutsDisponiveis.Strings[i]);
+    fLayoutsDisponiveis.Delete(i);
   end;
 end;
 

@@ -1,7 +1,13 @@
 SELECT
-  dado
+  a.chave,
+  a.nome
 FROM
-  layout_campos_dados
+  layouts a
+  LEFT JOIN vinculadores_layout b ON (
+    b.layout = a.chave)
 WHERE
-  layout = 1 AND
-  campo = 'Pago Por'
+  a.empresa = 2 AND
+  b.vinculador = 2 AND
+  b.chave IS NULL
+ORDER BY
+  a.nome

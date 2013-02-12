@@ -59,7 +59,7 @@ type
     function getDataSource(NomeConsulta: String): TDataSource;
     function NovaConsulta(SQL: String): TZQuery; Overload;
     function NovaConsulta(NomeConsulta: String; SQL: String): Integer;
-    function GerarChave(NomeGenerator: String): Integer;
+    function GerarChave(NomeGenerator: String; Testar: Boolean = false): Integer;
 
     procedure GravarListaCampos(pTabela: TZQuery; pNomeArquivo: String);
 
@@ -360,18 +360,40 @@ begin
   end;
 end;
 
-function TDataModule1.GerarChave(NomeGenerator: String): Integer;
+function TDataModule1.GerarChave(NomeGenerator: String; Testar: Boolean): Integer;
+var
+  Testado: Boolean;
+  lComandoSQL: String;
 begin
   result := 0;
+  Testado := false;
 
   try
-    qConsulta.Close;
-    qConsulta.SQL.Clear;
-    qConsulta.SQL.Add('SELECT GEN_ID(' + NomeGenerator + ', 1 ) AS chave FROM RDB$DATABASE');
-    qConsulta.Open;
+    while not Testado do
+    begin
+      qConsulta.Close;
+      qConsulta.SQL.Clear;
+      qConsulta.SQL.Add('SELECT GEN_ID(' + NomeGenerator + ', 1 ) AS chave FROM RDB$DATABASE');
+      qConsulta.Open;
 
-    if not qConsulta.IsEmpty then
-      result := qConsulta.FieldByName('chave').AsInteger;
+      if not qConsulta.IsEmpty then
+        result := qConsulta.FieldByName('chave').AsInteger;
+
+      if Testar then
+      begin
+        lComandoSQL := 'SELECT' + NewLine +
+                       '  chave' + NewLine +
+                       'FROM' + NewLine +
+                       '  ' + Copy(NomeGenerator, 5, Length(NomeGenerator)) + NewLine +
+                       'WHERE' + NewLine +
+                       '  chave = ' + IntToStr(Result);
+
+        if Consultar(lComandoSQL) = 0 then
+          Testado := true;
+      end
+      else
+        Testado := true;
+    end;
   except
     RaiseLastOSError;
   end;

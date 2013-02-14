@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pPlanoContas
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 1
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -331,7 +331,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 1
             end
             object Label28: TLabel
-              Left = 233
+              Left = 230
               Height = 16
               Top = 0
               Width = 58
@@ -395,7 +395,7 @@ object frmPrincipal: TfrmPrincipal
             object cmbPlanoContasTipo2: TDBLookupComboBox
               Left = 486
               Height = 23
-              Top = 20
+              Top = 24
               Width = 124
               ListFieldIndex = 0
               LookupCache = False
@@ -726,6 +726,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 56
               Enabled = False
               OnExit = edtCodigoDebitarExit
+              OnKeyDown = edtCodigoDebitarKeyDown
               TabOrder = 2
             end
             object edtCodigoCreditar: TEdit
@@ -735,6 +736,7 @@ object frmPrincipal: TfrmPrincipal
               Width = 56
               Enabled = False
               OnExit = edtCodigoCreditarExit
+              OnKeyDown = edtCodigoCreditarKeyDown
               OnKeyPress = edtCodigoCreditarKeyPress
               TabOrder = 3
             end

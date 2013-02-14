@@ -1,0 +1,44 @@
+inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
+  Caption = 'Consultar Plano Contas'
+  inherited edtConsultarPlanoClassificacao: TEdit
+    Width = 216
+    OnChange = edtConsultarPlanoClassificacaoChange
+  end
+  inherited Label27: TLabel
+    Width = 64
+    Caption = 'Clasificacao'
+  end
+  inherited dbgConsulta: TDBGrid
+    Columns = <    
+      item
+        PickList.Strings = (        )
+        Title.Caption = 'Classificação'
+        Width = 144
+        FieldName = 'codigo'
+      end    
+      item
+        PickList.Strings = (        )
+        Title.Caption = 'Descrição'
+        Width = 377
+        FieldName = 'descricao'
+      end>
+    OnDrawColumnCell = dbgConsultaDrawColumnCell
+    OnDblClick = dbgConsultaDblClick
+  end
+  object edtConsultarPlanoDescricao: TEdit[5]
+    Left = 240
+    Height = 23
+    Top = 32
+    Width = 216
+    OnChange = edtConsultarPlanoDescricaoChange
+    TabOrder = 4
+  end
+  object Label28: TLabel[6]
+    Left = 240
+    Height = 16
+    Top = 8
+    Width = 52
+    Caption = 'Descrição'
+    ParentColor = False
+  end
+end

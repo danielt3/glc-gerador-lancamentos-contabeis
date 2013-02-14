@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 172
+  Left = 462
   Height = 606
-  Top = 227
+  Top = 233
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606
@@ -22,16 +22,16 @@ object frmPrincipal: TfrmPrincipal
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
-      ClientHeight = 505
+      ClientHeight = 503
       ClientWidth = 1037
       object PageControl2: TPageControl
         Left = 0
-        Height = 505
+        Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pVinculador
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 2
+        TabIndex = 1
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -302,6 +302,7 @@ object frmPrincipal: TfrmPrincipal
               Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
               ReadOnly = True
               TabOrder = 0
+              OnDrawColumnCell = dbgPlanoDrawColumnCell
               OnMouseUp = dbgPlanoMouseUp
             end
             object Label17: TLabel
@@ -355,10 +356,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox3: TComboBox
               Left = 14
-              Height = 21
+              Height = 23
               Top = 80
               Width = 100
-              ItemHeight = 13
+              ItemHeight = 15
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -370,10 +371,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox4: TComboBox
               Left = 158
-              Height = 21
+              Height = 23
               Top = 80
               Width = 100
-              ItemHeight = 13
+              ItemHeight = 15
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -393,7 +394,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo2: TDBLookupComboBox
               Left = 486
-              Height = 21
+              Height = 23
               Top = 20
               Width = 124
               ListFieldIndex = 0
@@ -507,7 +508,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo: TDBLookupComboBox
               Left = 78
-              Height = 21
+              Height = 23
               Top = 41
               Width = 124
               Enabled = False
@@ -804,7 +805,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object pLeiaute: TTabSheet
           Caption = 'Leiaute'
-          ClientHeight = 479
+          ClientHeight = 475
           ClientWidth = 1029
           object gbTabelasDisponiveis: TGroupBox
             Left = 8
@@ -834,7 +835,7 @@ object frmPrincipal: TfrmPrincipal
                 'Vinculador'
                 'Histórico'
               )
-              ItemHeight = 15
+              ItemHeight = 17
               OnClick = chkCamposDisponiveisClick
               PopupMenu = popLayout
               TabOrder = 0
@@ -922,25 +923,25 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 5
             object Label13: TLabel
               Left = 14
-              Height = 14
+              Height = 16
               Top = 24
-              Width = 29
+              Width = 31
               Caption = 'Tipo:.'
               ParentColor = False
             end
             object Label15: TLabel
               Left = 14
-              Height = 14
+              Height = 16
               Top = 56
-              Width = 49
+              Width = 52
               Caption = 'Formato:.'
               ParentColor = False
             end
             object Label31: TLabel
               Left = 14
-              Height = 14
+              Height = 16
               Top = 86
-              Width = 60
+              Width = 62
               Caption = 'Tam. Máx.:.'
               ParentColor = False
             end
@@ -957,7 +958,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object edtTipoCampo: TEdit
               Left = 94
-              Height = 21
+              Height = 23
               Top = 17
               Width = 100
               Enabled = False
@@ -966,7 +967,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object edtFormatoCampo: TEdit
               Left = 94
-              Height = 21
+              Height = 23
               Top = 48
               Width = 100
               Enabled = False
@@ -975,7 +976,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object edtTamanhoCampo: TEdit
               Left = 94
-              Height = 21
+              Height = 23
               Top = 79
               Width = 100
               Enabled = False
@@ -1006,15 +1007,15 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 6
             object Label23: TLabel
               Left = 8
-              Height = 14
+              Height = 16
               Top = 6
-              Width = 36
+              Width = 40
               Caption = 'Nome:.'
               ParentColor = False
             end
             object edtNomeLayout: TEdit
               Left = 54
-              Height = 21
+              Height = 23
               Top = 3
               Width = 392
               Enabled = False
@@ -1113,12 +1114,12 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Leiate:.'
               ParentColor = False
             end
-            object ComboBox5: TComboBox
+            object cmbLancamentoLayout: TComboBox
               Left = 65
               Height = 23
               Top = 11
               Width = 319
-              ItemHeight = 13
+              ItemHeight = 15
               Style = csSimple
               TabOrder = 0
             end
@@ -1285,18 +1286,18 @@ object frmPrincipal: TfrmPrincipal
   end
   object Label2: TLabel
     Left = 16
-    Height = 14
+    Height = 16
     Top = 543
-    Width = 42
+    Width = 46
     Caption = 'Empresa'
     ParentColor = False
   end
   object cmbEmpresa: TComboBox
     Left = 63
-    Height = 21
+    Height = 23
     Top = 536
     Width = 289
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = cmbEmpresaChange
     Style = csDropDownList
     TabOrder = 1

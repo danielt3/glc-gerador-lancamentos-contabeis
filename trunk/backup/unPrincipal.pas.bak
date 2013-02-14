@@ -58,7 +58,7 @@ type
     cmbPlanoContasTipo2: TDBLookupComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
-    ComboBox5: TComboBox;
+    cmbLancamentoLayout: TComboBox;
     Conexao: TZConnection;
     dbgPlano1: TDBGrid;
     dbgLayouts: TDBGrid;
@@ -203,6 +203,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure dbgPlanoDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
@@ -255,6 +257,8 @@ type
     //Layouts
     fLayoutAtual: Integer;
     fEstadoLayout: TTipoAcao;
+    //Lançamentos
+    fLancamentoLayouts: TStringList;
 
     //Empresa
     procedure NovaEmpresa;
@@ -317,6 +321,8 @@ type
     function GravarAlterarLayoutCampos: Boolean;
     procedure MostrarDadosCampo(pNomeCampo: String; HabilitarInsercao: Boolean);
     procedure CarregarListaDadosCampo(pNomeCampo: String);
+    //Cliente
+    procedure CarregarLancamentoLayouts;
   public
     { public declarations }
   end; 
@@ -487,6 +493,7 @@ begin
       CarregarPlanoDeContas(fEmpresaAtual);
       CarregarVinculadores(fEmpresaAtual);
       CarregarLayouts(fEmpresaAtual);
+      CarregarLancamentoLayouts;
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -1291,8 +1298,8 @@ begin
       lCampoAtual := DataModule1.GerarChave('GEN_VINCULADORES_LAYOUT');
       lComando := 'INSERT INTO vinculadores_layout (' + NewLine +
                   'chave,' + NewLine +
-                  'layout,' + NewLine +
-                  'vinculador)' + NewLine +
+                  'vinculador,' + NewLine +
+                  'layout)' + NewLine +
                   'VALUES (' + NewLine +
                   '' + IntToStr(lCampoAtual) + ',' + NewLine +
                   '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
@@ -1760,6 +1767,39 @@ begin
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 end;
 
+procedure TfrmPrincipal.CarregarLancamentoLayouts;
+const
+  lTabela = 'LancamentoLayouts';
+var
+  lComandoSQL: String;
+begin
+  cmbLancamentoLayout.Items.Clear;
+  fLancamentoLayouts.Clear;
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  chave,' + NewLine +
+                 '  nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layouts' + NewLine +
+                 'WHERE' + NewLine +
+                 '  empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 'ORDER BY' + NewLine +
+                 '  nome';
+
+  if DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0 then
+  begin
+    DataModule1.getQuery(lTabela).First;
+
+    while not (DataModule1.getQuery(lTabela).EOF) do
+    begin
+      cmbLancamentoLayout.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      fLancamentoLayouts.Add(DataModule1.getQuery(lTabela).FieldByName('chave').AsString);
+
+      DataModule1.getQuery(lTabela).Next;
+    end;
+  end;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   fGarbageCollector := TGarbageCollector.Create;
@@ -1775,6 +1815,7 @@ begin
   fListaCredito4 := TStringList.Create;
   fLayoutsDisponiveis := TStringList.Create;
   fLayoutsUtilizados := TStringList.Create;
+  fLancamentoLayouts := TStringList.Create;
   fGarbageCollector.Add(fListaEmpresa);
   fGarbageCollector.Add(fListaDebito);
   fGarbageCollector.Add(fListaDebito2);
@@ -1786,6 +1827,7 @@ begin
   fGarbageCollector.Add(fListaCredito4);
   fGarbageCollector.Add(fLayoutsDisponiveis);
   fGarbageCollector.Add(fLayoutsUtilizados);
+  fGarbageCollector.Add(fLancamentoLayouts);
   PrepararComboTipoPlanoContas;
 end;
 
@@ -1919,6 +1961,25 @@ procedure TfrmPrincipal.dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   CarregarVinculador;
+end;
+
+procedure TfrmPrincipal.dbgPlanoDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if (DataModule1.qPlanoContas.FieldByName('sintetico').AsString = 'S') then
+  begin
+    //dbgPlano.Canvas.Font.Color := clRed;
+    dbgPlano.Canvas.Font.Style := [fsBold];
+    dbgPlano.Canvas.FillRect(Rect);
+    dbgPlano.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  end
+  else
+  begin
+    //dbgPlano.Canvas.Font.Color := clRed;
+    dbgPlano.Canvas.Font.Style := [];
+    dbgPlano.Canvas.FillRect(Rect);
+    dbgPlano.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  end;
 end;
 
 procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;

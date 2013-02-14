@@ -2,6 +2,8 @@ SELECT
   chave,
   nome
 FROM
-  layout_campos
+  layouts
 WHERE
-  layout = 1
+  empresa = 2
+ORDER BY
+  nome

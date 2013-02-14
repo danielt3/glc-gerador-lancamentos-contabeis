@@ -10,7 +10,7 @@ uses
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
   PopupNotifier, Calendar, Arrow, ZConnection, unDataModule, unListaCodigo,
   unGarbageCollector, unUtilitario, db, ExtendedNotebook, RTTICtrls, types,
-  ZAbstractRODataset, unNovoCampo;
+  ZAbstractRODataset, unNovoCampo, unConsultarPlanoContas;
 
 type
   { TfrmPrincipal }
@@ -209,8 +209,12 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoCreditarExit(Sender: TObject);
+    procedure edtCodigoCreditarKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure edtCodigoCreditarKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoDebitarExit(Sender: TObject);
+    procedure edtCodigoDebitarKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -288,6 +292,8 @@ type
     function GravarInserirPlanoContas: Boolean;
     function GravarAlterarPlanoContas: Boolean;
     function ProximoCodigoPlanoConta: String;
+    procedure ConsultarVinculadorDebito(pRegistro: Integer);
+    procedure ConsultarVinculadorCredito(pRegistro: Integer);
     //Vinculadores
     function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
     procedure LimparTelaVinculadores;
@@ -965,6 +971,18 @@ begin
 
   if DataModule1.NovaConsulta('NovoPlanoContas', lComandoSQL) > 0 then
    result := IntToStr(DataModule1.getQuery('NovoPlanoContas').FieldByName('codigo').AsInteger + 1);
+end;
+
+procedure TfrmPrincipal.ConsultarVinculadorDebito(pRegistro: Integer);
+begin
+  edtCodigoDebitar.Text := fListaDebito.Strings[fListaDebito.IndexOf(IntToStr(pRegistro))];
+  edtCodigoDebitarExit(edtCodigoDebitar);
+end;
+
+procedure TfrmPrincipal.ConsultarVinculadorCredito(pRegistro: Integer);
+begin
+  edtCodigoCreditar.Text := fListaCredito.Strings[fListaCredito.IndexOf(IntToStr(pRegistro))];
+  edtCodigoCreditarExit(edtCodigoCreditar);
 end;
 
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
@@ -2015,6 +2033,32 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.edtCodigoCreditarKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+var
+  lConsultarPlano: TfrmConsultarPlanoContas;
+begin
+  if (Key = 113) then
+  begin
+    lConsultarPlano := TfrmConsultarPlanoContas.Create(nil);
+
+    try
+      try
+        lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
+        lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorCredito;
+        lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
+        lConsultarPlano.Consultar;
+
+        lConsultarPlano.ShowModal;
+      except on e:exception do
+        MensagemErro(e.Message, 'Vinculador');
+      end;
+    finally
+      FreeAndNil(lConsultarPlano)
+    end;
+  end;
+end;
+
 procedure TfrmPrincipal.edtCodigoCreditarKeyPress(Sender: TObject; var Key: char
   );
 begin
@@ -2033,6 +2077,31 @@ begin
   begin
     edtClassificacaoDebitar.Text := '';
     edtNomeDebitar.Text := '';
+  end;
+end;
+
+procedure TfrmPrincipal.edtCodigoDebitarKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
+var
+  lConsultarPlano: TfrmConsultarPlanoContas;
+begin
+  if (Key = 113) then
+  begin
+    lConsultarPlano := TfrmConsultarPlanoContas.Create(nil);
+
+    try
+      try
+        lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
+        lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
+        lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
+        lConsultarPlano.Consultar;
+
+        lConsultarPlano.ShowModal;
+      except on e:exception do
+        MensagemErro(e.Message, 'Vinculador');
+      end;
+    finally
+      FreeAndNil(lConsultarPlano)
+    end;
   end;
 end;
 

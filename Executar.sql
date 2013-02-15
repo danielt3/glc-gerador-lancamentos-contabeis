@@ -1,8 +1,8 @@
-INSERT INTO vinculadores_layout (
+INSERT INTO layouts (
 chave,
-vinculador,
-layout)
+empresa,
+nome)
 VALUES (
 7,
-4,
-2)
+2,
+'Teste 0')

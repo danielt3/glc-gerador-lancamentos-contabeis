@@ -1110,7 +1110,7 @@ begin
   if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse vinculador?', 'GLC')) then
   begin
     lComandoSQL := 'DELETE FROM' + NewLine +
-                   '  vinculador' + NewLine +
+                   '  vinculadores' + NewLine +
                    'WHERE' + NewLine +
                    '  chave = ' + IntToStr(fVinculadorAtual);
 

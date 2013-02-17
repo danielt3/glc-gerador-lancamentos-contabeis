@@ -1,6 +1,12 @@
 SELECT
-  vinculador
+  a.chave,
+  a.nome
 FROM
-  vinculadores_layout
+  layouts a
+  JOIN vinculadores_layout b ON (
+    b.layout = a.chave)
 WHERE
-  layout = 1
+  a.empresa = 2 AND
+  b.vinculador = 4
+ORDER BY
+  a.nome

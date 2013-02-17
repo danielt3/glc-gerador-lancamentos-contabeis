@@ -83,6 +83,7 @@ type
     function  CampoLancamentoTipo: String;
     function  CampoLancamentoTamanho: Integer;
     function  CampoLancamentoDados: Boolean; overload;
+    function  CampoLancamentoDisPlayFormat: String;
     function  CampoLancamentoDescricao(NomeCampo: String): String; overload;
     function  CampoLancamentoDescricao: String; overload;
     procedure CarregarCamposDisponiveis(var pLista: TCheckListBox);
@@ -353,7 +354,7 @@ end;
 
 function TDataModule1.CampoLancamentoEof: Boolean;
 begin
-  result := fCampoLancamentoAtual > Length(fCamposLancamento);
+  result := fCampoLancamentoAtual > Length(fCamposLancamento) -1;
 end;
 
 function TDataModule1.CampoLancamentoLocate(NomeCampo: String): Integer;
@@ -435,6 +436,14 @@ end;
 function TDataModule1.CampoLancamentoDados: Boolean;
 begin
   result := CampoLancamentoValor('temdados') = 'S';
+end;
+
+function TDataModule1.CampoLancamentoDisPlayFormat: String;
+begin
+  if (CampoLancamentoTipo = 'Decimal') then
+    result := CampoLancamentoValor('formato')
+  else
+    result := '';
 end;
 
 function TDataModule1.CampoLancamentoDescricao(NomeCampo: String): String;

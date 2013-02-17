@@ -83,6 +83,7 @@ type
     function  CampoLancamentoTipo: String;
     function  CampoLancamentoTamanho: Integer;
     function  CampoLancamentoDados: Boolean; overload;
+    function  CampoLancamentoDisPlayFormat: String;
     function  CampoLancamentoDescricao(NomeCampo: String): String; overload;
     function  CampoLancamentoDescricao: String; overload;
     procedure CarregarCamposDisponiveis(var pLista: TCheckListBox);
@@ -315,13 +316,13 @@ begin
   AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,###', 9, false);
   AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false);
   AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false);
-  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false);
+  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, true);
   AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false);
-  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, false);
+  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, true);
   AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, false);
   AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, false);
-  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false);
-  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false);
+  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, true);
+  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, true);
   AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,###', 9, false);
   //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
 end;
@@ -435,6 +436,14 @@ end;
 function TDataModule1.CampoLancamentoDados: Boolean;
 begin
   result := CampoLancamentoValor('temdados') = 'S';
+end;
+
+function TDataModule1.CampoLancamentoDisPlayFormat: String;
+begin
+  if (CampoLancamentoTipo = 'Decimal') then
+    result := CampoLancamentoValor('formato')
+  else
+    result := '';
 end;
 
 function TDataModule1.CampoLancamentoDescricao(NomeCampo: String): String;

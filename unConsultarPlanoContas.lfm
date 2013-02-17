@@ -56,6 +56,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
       'Crescente'
       'Decrescente'
     )
+    OnChange = ComboBox3Change
     TabOrder = 5
     Text = 'Crescente'
   end
@@ -78,6 +79,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
       'Crescente'
       'Decrescente'
     )
+    OnChange = ComboBox4Change
     TabOrder = 6
     Text = 'Crescente'
   end

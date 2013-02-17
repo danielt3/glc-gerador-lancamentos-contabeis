@@ -338,6 +338,8 @@ type
     procedure MontarTelaLancamento;
     procedure CriarCampoLancamento(pNomeCampo: String);
     procedure ConsultarLancamentos;
+    procedure CarregarListaDadosCampoLancamento(var pColumn: TColumn; pNomeCampo: String);
+    procedure CarregarListaVinculadoresCampoLancamento(var pColumn: TColumn);
     procedure NovoLancamento;
   public
     { public declarations }
@@ -1692,7 +1694,10 @@ begin
     edtTipoCampo.Text := DataModule1.CampoLancamentoDescricao;
     edtFormatoCampo.Text := DataModule1.CampoLancamentoTipo;
     edtTamanhoCampo.Text := IntToStr(DataModule1.CampoLancamentoTamanho);
-    btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados;
+    if DataModule1.CampoLancamentoDados then
+      btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados
+    else
+      btnAdicionarDadosCampo.Enabled := false;
   end
   else
   begin
@@ -1797,6 +1802,7 @@ procedure TfrmPrincipal.CriarCampoLancamento(pNomeCampo: String);
 var
   lNovoCampo: TFieldDef;
   lColumn: TColumn;
+  lFormat: String;
 begin
   DataModule1.CampoLancamentoLocate(pNomeCampo);
   //DataModule1.qLancamentos.FieldDefs.Add(DataModule1.CampoLancamentoNome,
@@ -1805,6 +1811,15 @@ begin
 
   lColumn := dbgLancamento.Columns.Add;
   lColumn.FieldName := DataModule1.CampoLancamentoNome;
+  lFormat := DataModule1.CampoLancamentoDisPlayFormat;
+  lColumn.DisplayFormat := lFormat;
+
+  if DataModule1.CampoLancamentoType = ftString then
+    lColumn.Width := 224;
+
+  if (DataModule1.CampoLancamentoDados) then
+    CarregarListaDadosCampoLancamento(lColumn, DataModule1.CampoLancamentoDescricao);
+
   lColumn.Title.Caption := DataModule1.CampoLancamentoDescricao;
 end;
 
@@ -1827,6 +1842,63 @@ begin
   DataModule1.qLancamentos.Open;
 
   dbgLancamento.DataSource := DataModule1.dsLancamentos;
+end;
+
+procedure TfrmPrincipal.CarregarListaDadosCampoLancamento(var pColumn: TColumn; pNomeCampo: String);
+const
+  lTabela = 'DadosCampos';
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  pColumn.ButtonStyle := cbsPickList;
+  dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  dado' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos_dados' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual) + ' AND' + NewLine +
+                 '  campo = ' + QuotedStr(pNomeCampo);
+
+  DataModule1.NovaConsulta(lTabela, lComandoSQL);
+
+  DataModule1.getQuery(lTabela).First;
+  while not DataModule1.getQuery(lTabela).EOF do
+  begin
+    pColumn.PickList.Add(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
+
+    DataModule1.getQuery(lTabela).Next;
+  end;
+end;
+
+procedure TfrmPrincipal.CarregarListaVinculadoresCampoLancamento(var pColumn: TColumn);
+const
+  lTabela = 'DadosCampos';
+var
+  lComandoSQL: String;
+  teste: Integer;
+begin
+  pColumn.ButtonStyle := cbsPickList;
+  dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
+
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  vinculador' + NewLine +
+                 'FROM' + NewLine +
+                 '  vinculadores_layout' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual);
+
+  DataModule1.NovaConsulta(lTabela, lComandoSQL);
+
+  DataModule1.getQuery(lTabela).First;
+  while not DataModule1.getQuery(lTabela).EOF do
+  begin
+    pColumn.PickList.Add(DataModule1.getQuery(lTabela).FieldByName('vinculador').AsString);
+
+    DataModule1.getQuery(lTabela).Next;
+  end;
 end;
 
 procedure TfrmPrincipal.NovoLancamento;
@@ -1997,7 +2069,9 @@ end;
 
 procedure TfrmPrincipal.dbgLancamentoColExit(Sender: TObject);
 begin
-  ShowMessage('oi');
+  if (dbgLancamento.SelectedColumn.ButtonStyle = cbsPickList) and
+     (dbgLancamento.SelectedColumn.PickList.IndexOf(dbgLancamento.SelectedField.AsString) < 0) then
+    dbgLancamento.SelectedField.AsString := '';
 end;
 
 procedure TfrmPrincipal.dbgLayoutsMouseUp(Sender: TObject;

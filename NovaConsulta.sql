@@ -1,6 +1,6 @@
 SELECT
-  nome
+  vinculador
 FROM
-  layout_campos
+  vinculadores_layout
 WHERE
   layout = 1

@@ -1,4 +1,4 @@
 UPDATE layouts SET
-  nome = 'TESTE 2'
+  nome = 'TESTE 0'
 WHERE
-  chave = 8
+  chave = 1

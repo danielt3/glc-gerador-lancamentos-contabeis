@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 291
+  Left = 356
   Height = 606
-  Top = 203
+  Top = 186
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 606

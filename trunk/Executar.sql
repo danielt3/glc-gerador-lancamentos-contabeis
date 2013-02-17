@@ -1,4 +1,4 @@
-UPDATE layouts SET
-  nome = 'TESTE 0'
+DELETE FROM
+  vinculadores
 WHERE
-  chave = 1
+  chave = 3

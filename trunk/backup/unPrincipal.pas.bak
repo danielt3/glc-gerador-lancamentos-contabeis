@@ -1818,7 +1818,9 @@ begin
     lColumn.Width := 224;
 
   if (DataModule1.CampoLancamentoDados) then
-    CarregarListaDadosCampoLancamento(lColumn, DataModule1.CampoLancamentoDescricao);
+    CarregarListaDadosCampoLancamento(lColumn, DataModule1.CampoLancamentoDescricao)
+  else if (DataModule1.CampoLancamentoNome = 'vinculador') then
+    CarregarListaVinculadoresCampoLancamento(lColumn);
 
   lColumn.Title.Caption := DataModule1.CampoLancamentoDescricao;
 end;

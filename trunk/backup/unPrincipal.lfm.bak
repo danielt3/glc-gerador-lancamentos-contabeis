@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pClientes
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 3
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -668,6 +668,7 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Leiautes'
               ClientHeight = 148
               ClientWidth = 646
+              PopupMenu = popVinculador
               TabOrder = 11
               object Arrow3: TArrow
                 Left = 313
@@ -678,17 +679,18 @@ object frmPrincipal: TfrmPrincipal
               end
               object GroupBox21: TGroupBox
                 Left = 14
-                Height = 150
-                Top = 0
+                Height = 146
+                Top = -2
                 Width = 207
                 Caption = 'Leiautes Disponiveis:.'
-                ClientHeight = 132
+                ClientHeight = 128
                 ClientWidth = 203
+                PopupMenu = popVinculador
                 TabOrder = 1
                 object chkLayoutsDisponiveis: TCheckListBox
                   Left = 9
-                  Height = 112
-                  Top = 8
+                  Height = 116
+                  Top = 3
                   Width = 184
                   Enabled = False
                   ItemHeight = 0
@@ -705,17 +707,18 @@ object frmPrincipal: TfrmPrincipal
               end
               object GroupBox22: TGroupBox
                 Left = 422
-                Height = 150
-                Top = 0
+                Height = 146
+                Top = -2
                 Width = 207
                 Caption = 'Leiautes Utilizados:.'
-                ClientHeight = 132
+                ClientHeight = 128
                 ClientWidth = 203
+                PopupMenu = popVinculador
                 TabOrder = 3
                 object chkLayoutsUtilizados: TCheckListBox
                   Left = 9
-                  Height = 120
-                  Top = 8
+                  Height = 116
+                  Top = 3
                   Width = 180
                   Enabled = False
                   ItemHeight = 0

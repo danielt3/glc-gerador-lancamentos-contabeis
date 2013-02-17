@@ -30,6 +30,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Height = 23
     Top = 32
     Width = 216
+    CharCase = ecUppercase
     OnChange = edtConsultarPlanoDescricaoChange
     TabOrder = 4
   end

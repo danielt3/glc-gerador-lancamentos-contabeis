@@ -22,6 +22,18 @@ uses
   function  ENumero(Caractere: Char): Boolean;
   function  ELetra(Caractere: Char): Boolean;
   function  ENumeroOuLetra(Caractere: Char): Boolean;
+  function  iif(Validacao: Boolean; Valor1, Valor2: String): String;
+
+  type
+    TCampoLancamento = record
+      Nome: String;
+      Descricao: String;
+      Tipo: String;
+      Formato: String;
+      Tamanho: Integer;
+      TemDados: Boolean;
+    end;
+    TCamposLancamento = array of TCampoLancamento;
 const
   NewLine = #13#10;
 
@@ -162,6 +174,14 @@ end;
 function ENumeroOuLetra(Caractere: Char): Boolean;
 begin
   result := ENumero(Caractere) or ELetra(Caractere);
+end;
+
+function iif(Validacao: Boolean; Valor1, Valor2: String): String;
+begin
+  if Validacao then
+    result := Valor1
+  else
+    result := Valor2;
 end;
 
 end.

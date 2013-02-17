@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ZConnection, ZDataset, unUtilitario,
-  unGarbageCollector, db;
+  unGarbageCollector, db, CheckLst;
 
 type
 
@@ -15,10 +15,12 @@ type
   TDataModule1 = class(TDataModule)
     Conexao: TZConnection;
     Datasource1: TDatasource;
+    dsLancamentos: TDatasource;
     dsPlanoContas: TDatasource;
     dsVinculadores: TDatasource;
     dsLayouts: TDatasource;
     qConsulta: TZQuery;
+    qLancamentos: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
     qVinculadores: TZQuery;
@@ -33,6 +35,7 @@ type
     procedure qPlanoContasclassificacao1GetText(Sender: TField;
       var aText: string; DisplayText: Boolean);
   private
+    fCamposLancamento: TCamposLancamento;
     fGarbageCollector: TGarbageCollector;
 
     fNomesConsultas: TStringList;
@@ -40,6 +43,7 @@ type
     fSourceConsultas: TList;
 
     fMascaraPlanoContas: String;
+    fCampoLancamentoAtual: Integer;
 
     function Conectar: Boolean;
 
@@ -49,9 +53,15 @@ type
     procedure CriarTabelaLayouts;
     procedure CriarTabelaLayoutsCampos;
     procedure CriarListaDadosCampo;
+    procedure CriarTabelaLancamentos;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
+
+    procedure MontarCamposLancamento;
+    procedure AddCampoLancamento(Nome, Descricao, Tipo, Formato: String; Tamanho: Integer; TemDados: Boolean = false);
+
+    function  getDataSetType(Nome: String): TFieldType;
   public
     function Executar(SQL: String): Boolean;
     function Consultar(SQL: String): Integer;
@@ -61,9 +71,26 @@ type
     function NovaConsulta(NomeConsulta: String; SQL: String): Integer;
     function GerarChave(NomeGenerator: String; Testar: Boolean = false): Integer;
 
+
+    procedure CampoLancamentoFirst;
+    procedure CampoLancamentoNext;
+    function  CampoLancamentoEof: Boolean;
+    function  CampoLancamentoLocate(NomeCampo: String): Integer;
+    function  CampoLancamentoLocateDescricao(Descricao: String): Integer;
+    function  CampoLancamentoValor(Atributo: String): String;
+    function  CampoLancamentoNome: String;
+    function  CampoLancamentoType: TFieldType;
+    function  CampoLancamentoTipo: String;
+    function  CampoLancamentoTamanho: Integer;
+    function  CampoLancamentoDados: Boolean; overload;
+    function  CampoLancamentoDescricao(NomeCampo: String): String; overload;
+    function  CampoLancamentoDescricao: String; overload;
+    procedure CarregarCamposDisponiveis(var pLista: TCheckListBox);
+
     procedure GravarListaCampos(pTabela: TZQuery; pNomeArquivo: String);
 
     property MascaraPlanoContas: String read fMascaraPlanoContas write fMascaraPlanoContas;
+    property CamposLancamento: TCamposLancamento read fCamposLancamento;
   end; 
 
 var
@@ -95,7 +122,8 @@ begin
     lConf.SaveToFile(ExtractFileDir(ApplicationName) + 'firebird.conf');
     FreeAndNil(lConf);
 
-    AtualizarBaseDeDados
+    MontarCamposLancamento;
+    AtualizarBaseDeDados;
   except on e:exception do
     MensagemErro(e.Message, 'DataModuleCreate');
   end;
@@ -177,6 +205,31 @@ begin
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'DADO', 'VARCHAR(100) NOT NULL');
 end;
 
+procedure TDataModule1.CriarTabelaLancamentos;
+begin
+  TabelaExiste('LANCAMENTOS');
+  CampoExiste('LANCAMENTOS', 'EMPRESA', 'INT NOT NULL');
+  CampoExiste('LANCAMENTOS', 'LAYOUT', 'INT NOT NULL');
+  CampoExiste('LANCAMENTOS', 'DATA_LANC', 'DATE NOT NULL');
+
+  CampoLancamentoFirst;
+  while not CampoLancamentoEof do
+  begin
+    if (CampoLancamentoType = ftString) then
+      CampoExiste('LANCAMENTOS', UpperCase(CampoLancamentoNome), 'VARCHAR(200)')
+    else if (CampoLancamentoType = ftInteger) then
+      CampoExiste('LANCAMENTOS', UpperCase(CampoLancamentoNome), 'INT')
+    else if (CampoLancamentoType = ftFloat) then
+      CampoExiste('LANCAMENTOS', UpperCase(CampoLancamentoNome), 'DECIMAL(18,6)')
+    else if (CampoLancamentoType = ftDateTime) then
+      CampoExiste('LANCAMENTOS', UpperCase(CampoLancamentoNome), 'DATE')
+    else
+      CampoExiste('LANCAMENTOS', UpperCase(CampoLancamentoNome), 'VARCHAR(100)');
+
+    CampoLancamentoNext;
+  end;
+end;
+
 procedure TDataModule1.AtualizarBaseDeDados;
 begin
   CriarTabelaContas;
@@ -185,6 +238,7 @@ begin
   CriarTabelaLayouts;
   CriarTabelaLayoutsCampos;
   CriarListaDadosCampo;
+  CriarTabelaLancamentos;
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);
@@ -253,6 +307,169 @@ begin
                    'ADD ' + Trim(lNomeCampo) + ' ' + Trim(lTipo);
     Executar(lComandoSQL);
   end;
+end;
+
+procedure TDataModule1.MontarCamposLancamento;
+begin
+  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,###', 9, false);
+  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,###', 9, false);
+  AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false);
+  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false);
+  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false);
+  AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false);
+  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, false);
+  AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, false);
+  AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, false);
+  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false);
+  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false);
+  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,###', 9, false);
+  //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
+end;
+
+procedure TDataModule1.AddCampoLancamento(Nome, Descricao, Tipo, Formato: String;Tamanho: Integer; TemDados: Boolean);
+var
+  i: Integer;
+begin
+  i := Length(fCamposLancamento);
+  SetLength(fCamposLancamento, i + 1);
+
+  fCamposLancamento[i].Nome := Nome;
+  fCamposLancamento[i].Descricao := Descricao;
+  fCamposLancamento[i].Tipo := Tipo;
+  fCamposLancamento[i].Formato := Formato;
+  fCamposLancamento[i].Tamanho := Tamanho;
+  fCamposLancamento[i].TemDados := TemDados;
+end;
+
+procedure TDataModule1.CampoLancamentoFirst;
+begin
+  fCampoLancamentoAtual := 0;
+end;
+
+procedure TDataModule1.CampoLancamentoNext;
+begin
+  fCampoLancamentoAtual := fCampoLancamentoAtual + 1
+end;
+
+function TDataModule1.CampoLancamentoEof: Boolean;
+begin
+  result := fCampoLancamentoAtual > Length(fCamposLancamento) -1;
+end;
+
+function TDataModule1.CampoLancamentoLocate(NomeCampo: String): Integer;
+var
+  i: Integer;
+begin
+  result := -1;
+
+  for i := Low(fCamposLancamento) to High(fCamposLancamento) do
+  begin
+    if (fCamposLancamento[i].Nome = NomeCampo) then
+    begin
+      fCampoLancamentoAtual := i;
+      result := fCampoLancamentoAtual;
+      break;
+    end;
+  end;
+end;
+
+function TDataModule1.CampoLancamentoLocateDescricao(Descricao: String): Integer;
+var
+  i: Integer;
+begin
+  result := -1;
+
+  for i := Low(fCamposLancamento) to High(fCamposLancamento) do
+  begin
+    if (fCamposLancamento[i].Descricao = Descricao) then
+    begin
+      fCampoLancamentoAtual := i;
+      result := fCampoLancamentoAtual;
+      break;
+    end;
+  end;
+end;
+
+function TDataModule1.CampoLancamentoValor(Atributo: String): String;
+begin
+  if not CampoLancamentoEof then
+  begin
+    if (LowerCase(Atributo) = 'nome') then
+      result := fCamposLancamento[fCampoLancamentoAtual].Nome
+    else if (LowerCase(Atributo) = 'descricao') then
+      result := fCamposLancamento[fCampoLancamentoAtual].Descricao
+    else if (LowerCase(Atributo) = 'tipo') then
+      result := fCamposLancamento[fCampoLancamentoAtual].Tipo
+    else if (LowerCase(Atributo) = 'formato') then
+      result := fCamposLancamento[fCampoLancamentoAtual].Formato
+    else if (LowerCase(Atributo) = 'tamanho') then
+      result := IntToStr(fCamposLancamento[fCampoLancamentoAtual].Tamanho)
+    else if (LowerCase(Atributo) = 'temdados') then
+      result := iif(fCamposLancamento[fCampoLancamentoAtual].TemDados, 'S', 'N');
+  end;
+end;
+
+function TDataModule1.CampoLancamentoNome: String;
+begin
+  result := CampoLancamentoValor('nome');
+end;
+
+function TDataModule1.CampoLancamentoType: TFieldType;
+begin
+  result := getDataSetType(CampoLancamentoValor('tipo'));
+end;
+
+function TDataModule1.CampoLancamentoTipo: String;
+begin
+  result := CampoLancamentoValor('tipo');
+end;
+
+function TDataModule1.CampoLancamentoTamanho: Integer;
+begin
+  if (CampoLancamentoValor('tipo') = 'numeral') or (CampoLancamentoValor('tipo') = 'data') then
+    result := 0
+  else
+    result := StrToIntDef(CampoLancamentoValor('tamanho'), 0);
+end;
+
+function TDataModule1.CampoLancamentoDados: Boolean;
+begin
+  result := CampoLancamentoValor('temdados') = 'S';
+end;
+
+function TDataModule1.CampoLancamentoDescricao(NomeCampo: String): String;
+begin
+  if CampoLancamentoLocate(NomeCampo) > -1 then
+    Result := fCamposLancamento[fCampoLancamentoAtual].Descricao
+  else
+    Result := '';
+end;
+
+function TDataModule1.CampoLancamentoDescricao: String;
+begin
+  result := CampoLancamentoValor('descricao');
+end;
+
+procedure TDataModule1.CarregarCamposDisponiveis(var pLista: TCheckListBox);
+var
+  i: Integer;
+begin
+  pLista.Items.Clear;
+
+  for i := Low(fCamposLancamento) to High(fCamposLancamento) do
+    pLista.Items.Add(fCamposLancamento[i].Descricao);
+end;
+
+function TDataModule1.getDataSetType(Nome: String): TFieldType;
+begin
+  if (LowerCase(Nome) = 'decimal') then
+    result := ftFloat
+  else if (LowerCase(Nome) = 'data') then
+    result := ftDateTime
+  else if (LowerCase(Nome) = 'caractere') then
+    result := ftString
+  else if (LowerCase(Nome) = 'numeral') then
+    result := ftInteger;
 end;
 
 function TDataModule1.Executar(SQL: String): Boolean;

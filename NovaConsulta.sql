@@ -1,12 +1,6 @@
 SELECT
-  a.chave,
-  a.codigo_externo,
-  a.codigo,
-  a.descricao
+  nome
 FROM
-  plano_contas a
+  layout_campos
 WHERE
-  a.empresa = 2
-  AND a.sintetica = 'A'
-ORDER BY
-  a.codigo
+  layout = 1

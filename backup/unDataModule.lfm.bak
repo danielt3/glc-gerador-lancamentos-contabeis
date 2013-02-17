@@ -127,4 +127,16 @@ object DataModule1: TDataModule1
     left = 464
     top = 176
   end
+  object qLancamentos: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 328
+    top = 277
+  end
+  object dsLancamentos: TDatasource
+    DataSet = qLancamentos
+    left = 432
+    top = 272
+  end
 end

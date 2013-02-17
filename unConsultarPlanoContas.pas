@@ -14,8 +14,12 @@ type
   { TfrmConsultarPlanoContas }
 
   TfrmConsultarPlanoContas = class(TfrmConsultar)
+    ComboBox3: TComboBox;
+    ComboBox4: TComboBox;
     edtConsultarPlanoDescricao: TEdit;
     Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
     procedure dbgConsultaDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure edtConsultarPlanoClassificacaoChange(Sender: TObject);

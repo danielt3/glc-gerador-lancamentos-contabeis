@@ -8,6 +8,6 @@ FROM
 WHERE
   a.empresa = 2
   AND a.sintetica = 'A'
-  AND a.codigo >= '2'
+  AND a.codigo >= '3'
 ORDER BY
   a.codigo

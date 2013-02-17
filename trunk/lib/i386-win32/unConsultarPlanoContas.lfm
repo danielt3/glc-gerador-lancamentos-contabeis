@@ -1,6 +1,7 @@
 inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
   Caption = 'Consultar Plano Contas'
   inherited edtConsultarPlanoClassificacao: TEdit
+    Top = 30
     Width = 216
     OnChange = edtConsultarPlanoClassificacaoChange
   end
@@ -9,6 +10,8 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Caption = 'Clasificacao'
   end
   inherited dbgConsulta: TDBGrid
+    Height = 248
+    Top = 112
     Columns = <    
       item
         PickList.Strings = (        )
@@ -28,7 +31,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
   object edtConsultarPlanoDescricao: TEdit[5]
     Left = 240
     Height = 23
-    Top = 32
+    Top = 30
     Width = 216
     CharCase = ecUppercase
     OnChange = edtConsultarPlanoDescricaoChange
@@ -40,6 +43,52 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Top = 8
     Width = 52
     Caption = 'Descrição'
+    ParentColor = False
+  end
+  object ComboBox3: TComboBox[7]
+    Left = 8
+    Height = 23
+    Top = 80
+    Width = 100
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'Crescente'
+      'Decrescente'
+    )
+    OnChange = ComboBox3Change
+    TabOrder = 5
+    Text = 'Crescente'
+  end
+  object Label29: TLabel[8]
+    Left = 8
+    Height = 16
+    Top = 56
+    Width = 100
+    Caption = 'Ordem Alfabetica:.'
+    ParentColor = False
+  end
+  object ComboBox4: TComboBox[9]
+    Left = 152
+    Height = 23
+    Top = 80
+    Width = 100
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'Crescente'
+      'Decrescente'
+    )
+    OnChange = ComboBox4Change
+    TabOrder = 6
+    Text = 'Crescente'
+  end
+  object Label30: TLabel[10]
+    Left = 152
+    Height = 16
+    Top = 56
+    Width = 99
+    Caption = 'Ordem Númerica:.'
     ParentColor = False
   end
 end

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  DBGrids, unConsultar, unDataModule, unListaCodigo,
+  DBGrids, unConsultar, unDataModule, unListaCodigo, ZAbstractRODataset,
   unGarbageCollector, unUtilitario, Grids, Windows;
 
 type
@@ -20,6 +20,8 @@ type
     Label28: TLabel;
     Label29: TLabel;
     Label30: TLabel;
+    procedure ComboBox3Change(Sender: TObject);
+    procedure ComboBox4Change(Sender: TObject);
     procedure dbgConsultaDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure edtConsultarPlanoClassificacaoChange(Sender: TObject);
@@ -89,16 +91,31 @@ begin
   end;
 end;
 
-procedure TfrmConsultarPlanoContas.edtConsultarPlanoClassificacaoChange(
-  Sender: TObject);
+procedure TfrmConsultarPlanoContas.ComboBox3Change(Sender: TObject);
+begin
+  DataModule1.getQuery(NomeTabela).SortedFields := 'descricao';
+  if ComboBox3.ItemIndex = 0 then
+    DataModule1.getQuery(NomeTabela).SortType := stAscending
+  else
+    DataModule1.getQuery(NomeTabela).SortType := stDescending;
+end;
+
+procedure TfrmConsultarPlanoContas.ComboBox4Change(Sender: TObject);
+begin
+  DataModule1.getQuery(NomeTabela).SortedFields := 'codigo';
+  if ComboBox3.ItemIndex = 0 then
+    DataModule1.getQuery(NomeTabela).SortType := stAscending
+  else
+    DataModule1.getQuery(NomeTabela).SortType := stDescending;
+end;
+
+procedure TfrmConsultarPlanoContas.edtConsultarPlanoClassificacaoChange(Sender: TObject);
 begin
   Consultar(edtConsultarPlanoClassificacao.Text, edtConsultarPlanoDescricao.Text);
 end;
 
-procedure TfrmConsultarPlanoContas.edtConsultarPlanoDescricaoChange(
-  Sender: TObject);
+procedure TfrmConsultarPlanoContas.edtConsultarPlanoDescricaoChange(Sender: TObject);
 begin
-
   Consultar(edtConsultarPlanoClassificacao.Text, edtConsultarPlanoDescricao.Text);
 end;
 

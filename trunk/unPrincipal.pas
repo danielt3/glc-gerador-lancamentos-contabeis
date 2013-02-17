@@ -10,7 +10,7 @@ uses
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
   PopupNotifier, Calendar, Arrow, ZConnection, unDataModule, unListaCodigo,
   unGarbageCollector, unUtilitario, db, ExtendedNotebook, RTTICtrls, types,
-  ZAbstractRODataset, unNovoCampo, unConsultarPlanoContas;
+  ZAbstractRODataset, ZDataset, unNovoCampo, unConsultarPlanoContas;
 
 type
   { TfrmPrincipal }
@@ -63,7 +63,8 @@ type
     dbgPlano1: TDBGrid;
     dbgLayouts: TDBGrid;
     dbgDadosCampos: TDBGrid;
-    DBGrid2: TDBGrid;
+    dbgLancamento: TDBGrid;
+    Edit1: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
@@ -113,6 +114,7 @@ type
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
     gbTabelasDisponiveis: TGroupBox;
+    GroupBox8: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -130,6 +132,7 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
+    Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
     Label27: TLabel;
@@ -197,8 +200,10 @@ type
     procedure chkCamposDisponiveisClick(Sender: TObject);
     procedure chkCamposUtilizadosClick(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
+    procedure cmbLancamentoLayoutChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
+    procedure dbgLancamentoColExit(Sender: TObject);
     procedure dbgLayoutsMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -260,6 +265,7 @@ type
     fLayoutsUtilizados: TStringList;
     //Layouts
     fLayoutAtual: Integer;
+    fLancamentoLayoutAtual: Integer;
     fEstadoLayout: TTipoAcao;
     //Lançamentos
     fLancamentoLayouts: TStringList;
@@ -325,10 +331,14 @@ type
     function GravarInserirLayoutCampos: Boolean;
     function GravarAlterarLayout: Boolean;
     function GravarAlterarLayoutCampos: Boolean;
-    procedure MostrarDadosCampo(pNomeCampo: String; HabilitarInsercao: Boolean);
+    procedure MostrarDadosCampo(pDescricao: String; HabilitarInsercao: Boolean);
     procedure CarregarListaDadosCampo(pNomeCampo: String);
     //Cliente
     procedure CarregarLancamentoLayouts;
+    procedure MontarTelaLancamento;
+    procedure CriarCampoLancamento(pNomeCampo: String);
+    procedure ConsultarLancamentos;
+    procedure NovoLancamento;
   public
     { public declarations }
   end; 
@@ -736,6 +746,7 @@ begin
   DataModule1.qPlanoContas.Close;
   DataModule1.qPlanoContas.SQl.Clear;
   DataModule1.qPlanoContas.SQL.Add(lComandoSQL);
+  DataModule1.qPlanoContas.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'PlanoContas.sql');
   DataModule1.qPlanoContas.Open;
 
   CarregarCombosPlano;
@@ -758,9 +769,7 @@ begin
     else
       cmbPlanoContasTipo.ItemIndex := 1;
     edtPlanoContasDescricao.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
-  end
-  else
-    LimparTelaPlanoContas;
+  end;
 end;
 
 procedure TfrmPrincipal.PrepararComboTipoPlanoContas;
@@ -1376,9 +1385,9 @@ procedure TfrmPrincipal.CarregarCamposLayout;
 var
   lComandoSQL: String;
   i: Integer;
+  lCampo: String;
 begin
-  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
-    chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
+  DataModule1.CarregarCamposDisponiveis(chkCamposDisponiveis);
 
   while (chkCamposUtilizados.Items.Count > 0) do
     chkCamposUtilizados.Items.Delete(0);
@@ -1397,10 +1406,11 @@ begin
 
     while not DataModule1.getQuery('CamposLayout').Eof do
     begin
-      chkCamposUtilizados.Items.Add(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString);
+      lCampo := DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString;
+      chkCamposUtilizados.Items.Add(DataModule1.CampoLancamentoDescricao(lCampo));
 
-      if (chkCamposDisponiveis.Items.IndexOf(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString) > -1) then
-        chkCamposDisponiveis.Items.Delete(chkCamposDisponiveis.Items.IndexOf(DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString));
+      if (chkCamposDisponiveis.Items.IndexOf(DataModule1.CampoLancamentoDescricao(lCampo)) > -1) then
+        chkCamposDisponiveis.Items.Delete(chkCamposDisponiveis.Items.IndexOf(DataModule1.CampoLancamentoDescricao(lCampo)));
 
       DataModule1.getQuery('CamposLayout').Next;
     end;
@@ -1413,13 +1423,8 @@ var
 begin
   edtNomeLayout.Text := '';
 
-  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
-    chkCamposDisponiveis.Items.Append(chkCamposUtilizados.Items.Strings[i]);
-
+  DataModule1.CarregarCamposDisponiveis(chkCamposDisponiveis);
   chkCamposUtilizados.Items.Clear;
-
-  for i := 0 to chkCamposDisponiveis.Items.Count - 1 do
-    chkCamposDisponiveis.Checked[i] := false;
 end;
 
 procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
@@ -1568,17 +1573,21 @@ begin
   try
     for i := 0 to chkCamposUtilizados.Items.Count - 1 do
     begin
-      lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
-      lComando := 'INSERT INTO layout_campos (' + NewLine +
-                  'chave,' + NewLine +
-                  'layout,' + NewLine +
-                  'nome)' + NewLine +
-                  'VALUES (' + NewLine +
-                  '' + IntToStr(lCampoAtual) + ',' + NewLine +
-                  '' + IntToStr(fLayoutAtual) + ',' + NewLine +
-                  '' + QuotedStr(chkCamposUtilizados.Items.Strings[i]) + ')';
+      if (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) then
+      begin
+        lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
+        lComando := 'INSERT INTO layout_campos (' + NewLine +
+                    'chave,' + NewLine +
+                    'layout,' + NewLine +
+                    'nome)' + NewLine +
+                    'VALUES (' + NewLine +
+                    '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                    '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                    '' + QuotedStr(DataModule1.CampoLancamentoNome) + ')';
 
-      result := result and DataModule1.Executar(lComando);
+        result := DataModule1.Executar(lComando);
+
+      end;
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Inserir Campos Layout.');
@@ -1621,17 +1630,20 @@ begin
 
     for i := 0 to chkCamposUtilizados.Items.Count - 1 do
     begin
-      lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
-      lComando := 'INSERT INTO layout_campos (' + NewLine +
-                  'chave,' + NewLine +
-                  'layout,' + NewLine +
-                  'nome)' + NewLine +
-                  'VALUES (' + NewLine +
-                  '' + IntToStr(lCampoAtual) + ',' + NewLine +
-                  '' + IntToStr(fLayoutAtual) + ',' + NewLine +
-                  '' + QuotedStr(chkCamposUtilizados.Items.Strings[i]) + ')';
+      if (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) then
+      begin
+        lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
+        lComando := 'INSERT INTO layout_campos (' + NewLine +
+                    'chave,' + NewLine +
+                    'layout,' + NewLine +
+                    'nome)' + NewLine +
+                    'VALUES (' + NewLine +
+                    '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                    '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                    '' + QuotedStr(DataModule1.CampoLancamentoNome) + ')';
 
-      result := DataModule1.Executar(lComando);
+        result := DataModule1.Executar(lComando);
+      end;
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Inserir Campos Layout.');
@@ -1673,87 +1685,14 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.MostrarDadosCampo(pNomeCampo: String; HabilitarInsercao: Boolean);
+procedure TfrmPrincipal.MostrarDadosCampo(pDescricao: String; HabilitarInsercao: Boolean);
 begin
-  if not Vazio(pNomeCampo) then
+  if (DataModule1.CampoLancamentoLocateDescricao(pDescricao) > -1) then
   begin
-    if (pNomeCampo = 'Entrada') then
-    begin
-      edtTipoCampo.Text := 'Decimal';
-      edtFormatoCampo.Text := '####.####,###';
-      edtTamanhoCampo.Text := '9';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Saída') then
-    begin
-      edtTipoCampo.Text := 'Decimal';
-      edtFormatoCampo.Text := '####.####,###';
-      edtTamanhoCampo.Text := '9';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Data de Pagamento') then
-    begin
-      edtTipoCampo.Text := 'Data';
-      edtFormatoCampo.Text := 'DD/MM/AAAA';
-      edtTamanhoCampo.Text := '10';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Forma de Pagamento') then
-    begin
-      edtTipoCampo.Text := 'Caractere';
-      edtFormatoCampo.Text := '';
-      edtTamanhoCampo.Text := '15';
-      btnAdicionarDadosCampo.Enabled := HabilitarInsercao;
-    end
-    else if (pNomeCampo = 'Fornecedor') then
-    begin
-      edtTipoCampo.Text := 'Caractere';
-      edtFormatoCampo.Text := '';
-      edtTamanhoCampo.Text := '32';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Nota Fiscal') then
-    begin
-      edtTipoCampo.Text := 'Numeral';
-      edtFormatoCampo.Text := '##########';
-      edtTamanhoCampo.Text := '10';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Pago Por') then
-    begin
-      edtTipoCampo.Text := 'Caractere';
-      edtFormatoCampo.Text := '';
-      edtTamanhoCampo.Text := '32';
-      btnAdicionarDadosCampo.Enabled := HabilitarInsercao;
-    end
-    else if (pNomeCampo = 'Data') then
-    begin
-      edtTipoCampo.Text := 'Data';
-      edtFormatoCampo.Text := 'DD/MM/AAAA';
-      edtTamanhoCampo.Text := '10';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Vinculador') then
-    begin
-      edtTipoCampo.Text := 'Numeral';
-      edtFormatoCampo.Text := '##########';
-      edtTamanhoCampo.Text := '10';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else if (pNomeCampo = 'Histórico') then
-    begin
-      edtTipoCampo.Text := 'Caractere';
-      edtFormatoCampo.Text := '';
-      edtTamanhoCampo.Text := '100';
-      btnAdicionarDadosCampo.Enabled := false;
-    end
-    else
-    begin
-      edtTipoCampo.Text := '';
-      edtFormatoCampo.Text := '';
-      edtTamanhoCampo.Text := '';
-      btnAdicionarDadosCampo.Enabled := false;
-    end;
+    edtTipoCampo.Text := DataModule1.CampoLancamentoDescricao;
+    edtFormatoCampo.Text := DataModule1.CampoLancamentoTipo;
+    edtTamanhoCampo.Text := IntToStr(DataModule1.CampoLancamentoTamanho);
+    btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados;
   end
   else
   begin
@@ -1815,7 +1754,88 @@ begin
 
       DataModule1.getQuery(lTabela).Next;
     end;
+
+    cmbLancamentoLayout.ItemIndex := 0;
+    fLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[0], 0);
+    cmbLancamentoLayoutChange(cmbLancamentoLayout);
   end;
+end;
+
+procedure TfrmPrincipal.MontarTelaLancamento;
+const
+  lTabela = 'MontarLancamento';
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual);
+
+  if (DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0) then
+  begin
+    //DataModule1.qLancamentos.Close;
+    //DataModule1.qLancamentos.FieldDefs.Clear;
+    dbgLancamento.Columns.Clear;
+
+    DataModule1.getQuery(lTabela).First;
+
+    while not DataModule1.getQuery(lTabela).EOF do
+    begin
+      CriarCampoLancamento(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+
+      DataModule1.getQuery(lTabela).Next;
+    end;
+
+    ConsultarLancamentos;
+  end;
+end;
+
+procedure TfrmPrincipal.CriarCampoLancamento(pNomeCampo: String);
+var
+  lNovoCampo: TFieldDef;
+  lColumn: TColumn;
+begin
+  DataModule1.CampoLancamentoLocate(pNomeCampo);
+  //DataModule1.qLancamentos.FieldDefs.Add(DataModule1.CampoLancamentoNome,
+  //                                       DataModule1.CampoLancamentoType,
+  //                                       DataModule1.CampoLancamentoTamanho);
+
+  lColumn := dbgLancamento.Columns.Add;
+  lColumn.FieldName := DataModule1.CampoLancamentoNome;
+  lColumn.Title.Caption := DataModule1.CampoLancamentoDescricao;
+end;
+
+procedure TfrmPrincipal.ConsultarLancamentos;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  *' + NewLine +
+                 'FROM' + NewLine +
+                 '  lancamentos' + NewLine +
+                 'WHERE' + NewLine +
+                 '  empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 '  AND layout = ' + IntToStr(fLancamentoLayoutAtual);
+
+  DataModule1.qLancamentos.Close;
+  DataModule1.qLancamentos.SQL.Clear;
+  DataModule1.qLancamentos.SQL.Add(lComandoSQL);
+  DataModule1.qLancamentos.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'ConsultarLancamentos.sql');
+  DataModule1.qLancamentos.Open;
+
+  dbgLancamento.DataSource := DataModule1.dsLancamentos;
+end;
+
+procedure TfrmPrincipal.NovoLancamento;
+begin
+  DataModule1.qLancamentos.Append;
+  DataModule1.qLancamentos.FieldByName('chave').AsInteger := DataModule1.GerarChave('GEN_LANCAMENTOS');
+  DataModule1.qLancamentos.FieldByName('empresa').AsInteger := fEmpresaAtual;
+  DataModule1.qLancamentos.FieldByName('layout').AsInteger := fLancamentoLayoutAtual;
+  DataModule1.qLancamentos.FieldByName('data_lanc').AsDateTime := Now;
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
@@ -1951,6 +1971,12 @@ begin
   CarregarEmpresa(fListaEmpresa.Value(cmbEmpresa.ItemIndex));
 end;
 
+procedure TfrmPrincipal.cmbLancamentoLayoutChange(Sender: TObject);
+begin
+  fLancamentoLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0);
+  MontarTelaLancamento;
+end;
+
 procedure TfrmPrincipal.ComboBox3Change(Sender: TObject);
 begin
   DataModule1.qPlanoContas.SortedFields := 'descricao';
@@ -1967,6 +1993,11 @@ begin
     DataModule1.qPlanoContas.SortType := stAscending
   else
     DataModule1.qPlanoContas.SortType := stDescending;
+end;
+
+procedure TfrmPrincipal.dbgLancamentoColExit(Sender: TObject);
+begin
+  //ShowMessage('oi');
 end;
 
 procedure TfrmPrincipal.dbgLayoutsMouseUp(Sender: TObject;

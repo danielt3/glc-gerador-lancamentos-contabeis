@@ -12,6 +12,7 @@ object frmNovoCampo: TfrmNovoCampo
     Height = 23
     Top = 24
     Width = 392
+    CharCase = ecUppercase
     TabOrder = 0
   end
   object Label23: TLabel

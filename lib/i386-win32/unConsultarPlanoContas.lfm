@@ -1,5 +1,6 @@
 inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
   Caption = 'Consultar Plano Contas'
+  OnCreate = FormCreate
   inherited edtConsultarPlanoClassificacao: TEdit
     Top = 30
     Width = 216
@@ -89,6 +90,24 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Top = 56
     Width = 99
     Caption = 'Ordem Númerica:.'
+    ParentColor = False
+  end
+  object cmbPlanoContasTipo2: TDBLookupComboBox[11]
+    Left = 332
+    Height = 23
+    Top = 80
+    Width = 124
+    ListFieldIndex = 0
+    LookupCache = False
+    OnChange = cmbPlanoContasTipo2Change
+    TabOrder = 7
+  end
+  object Label17: TLabel[12]
+    Left = 381
+    Height = 16
+    Top = 56
+    Width = 31
+    Caption = 'Tipo:.'
     ParentColor = False
   end
 end

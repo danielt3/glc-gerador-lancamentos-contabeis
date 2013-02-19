@@ -127,16 +127,34 @@ object DataModule1: TDataModule1
     left = 464
     top = 176
   end
-  object qLancamentos: TZQuery
+  object qLancamentos2: TZQuery
     Connection = Conexao
     AutoCalcFields = False
     Params = <>
     left = 328
     top = 277
+    object qLancamentos2no_vinculador: TStringField
+      DisplayWidth = 100
+      FieldKind = fkCalculated
+      FieldName = 'no_vinculador'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 100
+    end
   end
   object dsLancamentos: TDatasource
     DataSet = qLancamentos
     left = 432
     top = 272
+  end
+  object qLancamentos: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 360
+    top = 336
   end
 end

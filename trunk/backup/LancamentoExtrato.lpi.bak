@@ -69,14 +69,14 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2226"/>
-        <CursorPos X="41" Y="2247"/>
+        <TopLine Value="2008"/>
+        <CursorPos X="1" Y="2042"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
-          <Item0 X="5" Y="2054" ID="1"/>
+          <Item0 X="5" Y="2055" ID="1"/>
           <Item1 X="6" Y="2015" ID="3"/>
-          <Item2 X="30" Y="2379" ID="4"/>
-          <Item3 X="1" Y="2586" ID="9"/>
+          <Item2 X="30" Y="2380" ID="4"/>
+          <Item3 X="1" Y="2587" ID="9"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -87,7 +87,7 @@
         <ComponentName Value="DataModule1"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="unDataModule"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="211"/>
         <CursorPos X="48" Y="217"/>
@@ -125,7 +125,7 @@
         <Filename Value="unUtilitario.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unUtilitario"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="25" Y="35"/>
@@ -205,7 +205,7 @@
         <ComponentName Value="frmNovoCampo"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unNovoCampo"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="32" Y="27"/>
@@ -215,24 +215,26 @@
       </Unit15>
       <Unit16>
         <Filename Value="C:\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1727"/>
-        <CursorPos X="28" Y="1736"/>
-        <UsageCount Value="3"/>
+        <CursorPos X="16" Y="1748"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="151"/>
         <CursorPos X="33" Y="162"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\lcl\include\progressbar.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="243"/>
         <CursorPos X="36" Y="258"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\lcl\include\wincontrol.inc"/>
@@ -255,7 +257,7 @@
         <ComponentName Value="frmConsultar"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unConsultar"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="34"/>
         <CursorPos X="23" Y="54"/>
@@ -269,7 +271,7 @@
         <ComponentName Value="frmConsultarPlanoContas"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unConsultarPlanoContas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="53"/>
         <CursorPos X="55" Y="66"/>
@@ -354,10 +356,12 @@
       </Unit31>
       <Unit32>
         <Filename Value="C:\lazarus\lcl\include\customcombobox.inc"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="562"/>
-        <CursorPos X="38" Y="579"/>
+        <TopLine Value="182"/>
+        <CursorPos X="10" Y="187"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\lazarus\ideintf\objectinspector.pp"/>
@@ -397,123 +401,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="50" Column="121" TopLine="41"/>
+        <Caret Line="954" Column="54" TopLine="920"/>
       </Position1>
       <Position2>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="663" Column="27" TopLine="629"/>
+        <Caret Line="955" Column="36" TopLine="921"/>
       </Position2>
       <Position3>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="728" Column="37" TopLine="694"/>
+        <Caret Line="984" Column="31" TopLine="950"/>
       </Position3>
       <Position4>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="760" Column="27" TopLine="726"/>
+        <Caret Line="1005" Column="27" TopLine="971"/>
       </Position4>
       <Position5>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="852" Column="29" TopLine="818"/>
+        <Caret Line="1040" Column="39" TopLine="1006"/>
       </Position5>
       <Position6>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="954" Column="54" TopLine="920"/>
+        <Caret Line="1044" Column="39" TopLine="1010"/>
       </Position6>
       <Position7>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="955" Column="36" TopLine="921"/>
+        <Caret Line="1048" Column="37" TopLine="1014"/>
       </Position7>
       <Position8>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="984" Column="31" TopLine="950"/>
+        <Caret Line="1051" Column="37" TopLine="1017"/>
       </Position8>
       <Position9>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1005" Column="27" TopLine="971"/>
+        <Caret Line="1866" Column="30" TopLine="1832"/>
       </Position9>
       <Position10>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1040" Column="39" TopLine="1006"/>
+        <Caret Line="1868" Column="26" TopLine="1834"/>
       </Position10>
       <Position11>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1044" Column="39" TopLine="1010"/>
+        <Caret Line="1900" Column="39" TopLine="1866"/>
       </Position11>
       <Position12>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1048" Column="37" TopLine="1014"/>
+        <Caret Line="1901" Column="36" TopLine="1867"/>
       </Position12>
       <Position13>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1051" Column="37" TopLine="1017"/>
+        <Caret Line="1887" Column="56" TopLine="1868"/>
       </Position13>
       <Position14>
-        <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1866" Column="30" TopLine="1832"/>
+        <Filename Value="unUtilitario.pas"/>
+        <Caret Line="35" Column="25" TopLine="27"/>
       </Position14>
       <Position15>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1868" Column="26" TopLine="1834"/>
+        <Caret Line="2060" Column="1" TopLine="2039"/>
       </Position15>
       <Position16>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1900" Column="39" TopLine="1866"/>
+        <Caret Line="2330" Column="1" TopLine="2309"/>
       </Position16>
       <Position17>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1901" Column="36" TopLine="1867"/>
+        <Caret Line="2327" Column="50" TopLine="2309"/>
       </Position17>
       <Position18>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="1887" Column="56" TopLine="1868"/>
+        <Caret Line="601" Column="3" TopLine="593"/>
       </Position18>
       <Position19>
-        <Filename Value="unUtilitario.pas"/>
-        <Caret Line="35" Column="25" TopLine="27"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="361" Column="22" TopLine="336"/>
       </Position19>
       <Position20>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2060" Column="1" TopLine="2039"/>
+        <Caret Line="2571" Column="12" TopLine="2549"/>
       </Position20>
       <Position21>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2330" Column="1" TopLine="2309"/>
+        <Caret Line="2572" Column="17" TopLine="2549"/>
       </Position21>
       <Position22>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2327" Column="50" TopLine="2309"/>
+        <Caret Line="2076" Column="26" TopLine="2068"/>
       </Position22>
       <Position23>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="601" Column="3" TopLine="593"/>
+        <Caret Line="2583" Column="19" TopLine="2580"/>
       </Position23>
       <Position24>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="361" Column="22" TopLine="336"/>
+        <Caret Line="2076" Column="112" TopLine="2068"/>
       </Position24>
       <Position25>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2571" Column="12" TopLine="2549"/>
+        <Caret Line="2293" Column="41" TopLine="2262"/>
       </Position25>
       <Position26>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2572" Column="17" TopLine="2549"/>
+        <Caret Line="2244" Column="42" TopLine="2226"/>
       </Position26>
       <Position27>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2076" Column="26" TopLine="2068"/>
+        <Caret Line="2041" Column="5" TopLine="2007"/>
       </Position27>
       <Position28>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2583" Column="19" TopLine="2580"/>
+        <Caret Line="2022" Column="29" TopLine="2007"/>
       </Position28>
       <Position29>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2076" Column="112" TopLine="2068"/>
+        <Caret Line="2040" Column="1" TopLine="2007"/>
       </Position29>
       <Position30>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="2293" Column="41" TopLine="2262"/>
+        <Caret Line="2042" Column="1" TopLine="2008"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -539,31 +543,35 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="6">
+    <BreakPoints Count="7">
       <Item1>
         <Source Value="unPrincipal.pas"/>
         <Line Value="580"/>
       </Item1>
       <Item2>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="2699"/>
+        <Line Value="2700"/>
       </Item2>
       <Item3>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="2776"/>
+        <Line Value="2777"/>
       </Item3>
       <Item4>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="2838"/>
+        <Line Value="2839"/>
       </Item4>
       <Item5>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="2899"/>
+        <Line Value="2900"/>
       </Item5>
       <Item6>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="2552"/>
+        <Line Value="2553"/>
       </Item6>
+      <Item7>
+        <Source Value="unPrincipal.pas"/>
+        <Line Value="2040"/>
+      </Item7>
     </BreakPoints>
     <Watches Count="13">
       <Item1>

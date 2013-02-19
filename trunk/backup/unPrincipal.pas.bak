@@ -8,9 +8,10 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
   ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
-  PopupNotifier, Calendar, Arrow, ZConnection, unDataModule, unListaCodigo,
-  unGarbageCollector, unUtilitario, db, ExtendedNotebook, RTTICtrls, types,
-  ZAbstractRODataset, ZDataset, unNovoCampo, unConsultarPlanoContas;
+  PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
+  unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
+  RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo,
+  unConsultarPlanoContas;
 
 type
   { TfrmPrincipal }
@@ -42,6 +43,7 @@ type
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
     btnNovoLayout: TButton;
+    btnGravarLancamento: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -102,7 +104,7 @@ type
     GroupBox15: TGroupBox;
     gbInformacoes: TGroupBox;
     GroupBox17: TGroupBox;
-    GroupBox18: TGroupBox;
+    gbLancamentos: TGroupBox;
     gbNomeLayout: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox20: TGroupBox;
@@ -183,6 +185,7 @@ type
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
+    procedure btnGravarLancamentoClick(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
@@ -203,7 +206,7 @@ type
     procedure cmbLancamentoLayoutChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
-    procedure dbgLancamentoColExit(Sender: TObject);
+    procedure dbgLancamentoDblClick(Sender: TObject);
     procedure dbgLayoutsMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -212,6 +215,7 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Edit2KeyPress(Sender: TObject; var Key: char);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoCreditarExit(Sender: TObject);
     procedure edtCodigoCreditarKeyDown(Sender: TObject; var Key: Word;
@@ -239,6 +243,10 @@ type
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure GravarInserirCampo(pNomeCampo: String);
+    procedure DateValidator(Sender: TObject; var Key: char);
+    procedure DecimalValidator(Sender: TObject; var Key: char);
+    procedure ComboValidator(Sender: TObject; var Key: char);
+    procedure MenuItem5Click(Sender: TObject);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -269,6 +277,14 @@ type
     fEstadoLayout: TTipoAcao;
     //Lançamentos
     fLancamentoLayouts: TStringList;
+    fVinculadoresLayout: TStringList;
+    fEstadoLancamento: TTipoAcao;
+    fLancamentoAtual: Integer;
+    fListaCampos: TList;
+    fListaCamposNome: TStringList;
+    fLeft: Integer;
+    fTop: Integer;
+    fLength: Integer;
 
     //Empresa
     procedure NovaEmpresa;
@@ -338,9 +354,22 @@ type
     procedure MontarTelaLancamento;
     procedure CriarCampoLancamento(pNomeCampo: String);
     procedure ConsultarLancamentos;
-    procedure CarregarListaDadosCampoLancamento(var pColumn: TColumn; pNomeCampo: String);
-    procedure CarregarListaVinculadoresCampoLancamento(var pColumn: TColumn);
+    procedure CarregarListaDadosCampoLancamento(var pCombo: TComboBox; pNomeCampo: String); overload;
+    procedure CarregarListaVinculadorCampoLancamento(var pCombo: TComboBox);
     procedure NovoLancamento;
+    procedure EditarLancamento;
+    procedure ExcluirLancamento;
+    procedure CreateStringField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure CreateDecimalField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure CreateDateField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure CreateVinculadorField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure CreateComboField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+
+    procedure GravarLancamento;
+    procedure GravarLancamentoInserir;
+    procedure GravarLancamentoAlterar;
+    function getValue(pNomeCampo: String): String;
+    procedure setValue(pNomeCampo: String); Overload;
   public
     { public declarations }
   end; 
@@ -1771,6 +1800,7 @@ const
   lTabela = 'MontarLancamento';
 var
   lComandoSQL: String;
+  i: Integer;
 begin
   lComandoSQL := 'SELECT' + NewLine +
                  '  nome' + NewLine +
@@ -1783,6 +1813,30 @@ begin
   begin
     //DataModule1.qLancamentos.Close;
     //DataModule1.qLancamentos.FieldDefs.Clear;
+    fLeft := 16;
+    fTop := 66;
+    fLength := 1800;
+
+    if not assigned(fListaCampos) then
+    begin
+      fListaCampos :=  TList.Create;
+      fGarbageCollector.Add(fListaCampos);
+    end;
+
+    if not Assigned(fListaCamposNome) then
+    begin
+      fListaCamposNome := TStringList.Create;
+      fGarbageCollector.Add(fListaCamposNome);
+    end;
+
+    fListaCamposNome.Clear;
+
+    while fListaCampos.Count > 0 do
+    begin
+      TObject(fListaCampos.Items[0]).Free;
+      fListaCampos.Delete(0);
+    end;
+
     dbgLancamento.Columns.Clear;
 
     DataModule1.getQuery(lTabela).First;
@@ -1795,6 +1849,7 @@ begin
     end;
 
     ConsultarLancamentos;
+    NovoLancamento;
   end;
 end;
 
@@ -1805,24 +1860,37 @@ var
   lFormat: String;
 begin
   DataModule1.CampoLancamentoLocate(pNomeCampo);
-  //DataModule1.qLancamentos.FieldDefs.Add(DataModule1.CampoLancamentoNome,
-  //                                       DataModule1.CampoLancamentoType,
-  //                                       DataModule1.CampoLancamentoTamanho);
+  fListaCamposNome.Add(pNomeCampo);
 
   lColumn := dbgLancamento.Columns.Add;
-  lColumn.FieldName := DataModule1.CampoLancamentoNome;
+
+  if (DataModule1.CampoLancamentoNome = 'vinculador') then
+    lColumn.FieldName := 'no_vinculador'
+  else if (DataModule1.CampoLancamentoDados) then
+    lColumn.FieldName := DataModule1.CampoLancamentoNome
+  else
+    lColumn.FieldName := DataModule1.CampoLancamentoNome;
+
   lFormat := DataModule1.CampoLancamentoDisPlayFormat;
   lColumn.DisplayFormat := lFormat;
 
   if DataModule1.CampoLancamentoType = ftString then
-    lColumn.Width := 224;
-
-  if (DataModule1.CampoLancamentoDados) then
-    CarregarListaDadosCampoLancamento(lColumn, DataModule1.CampoLancamentoDescricao)
+    lColumn.Width := 224
   else if (DataModule1.CampoLancamentoNome = 'vinculador') then
-    CarregarListaVinculadoresCampoLancamento(lColumn);
+    lColumn.Width := 164;
 
   lColumn.Title.Caption := DataModule1.CampoLancamentoDescricao;
+
+  if (DataModule1.CampoLancamentoNome = 'vinculador') then
+    CreateVinculadorField(fLeft, fTop, fLength)
+  else if (DataModule1.CampoLancamentoDados) then
+    CreateComboField(fLeft, fTop, fLength)
+  else if (DataModule1.CampoLancamentoType = ftString) then
+    CreateStringField(fLeft, fTop, fLength)
+  else if (DataModule1.CampoLancamentoType = ftFloat) then
+    CreateDecimalField(fLeft, fTop, fLength)
+  else if (DataModule1.CampoLancamentoType = ftDateTime) then
+    CreateDateField(fLeft, fTop, fLength);
 end;
 
 procedure TfrmPrincipal.ConsultarLancamentos;
@@ -1830,12 +1898,31 @@ var
   lComandoSQL: String;
 begin
   lComandoSQL := 'SELECT' + NewLine +
-                 '  *' + NewLine +
+                 '  a.*,' + NewLine +
+                 '  b.descricao AS no_vinculador' + NewLine +
+                 //'  c.dado AS no_fornecedor,' + NewLine +
+                 //'  d.dado AS no_pago_por,' + NewLine +
+                 //'  e.dado AS historico,' + NewLine +
+                 //'  f.dado AS cliente' + NewLine +
                  'FROM' + NewLine +
-                 '  lancamentos' + NewLine +
+                 '  lancamentos a' + NewLine +
+                 '  LEFT JOIN vinculadores b ON (' + NewLine +
+                 '    a.vinculador = b.chave)' + NewLine +
+                 {'  LEFT JOIN layout_campos_dados c ON (' + NewLine +
+                 '    c.layout = a.layout' + NewLine +
+                 '    AND c.chave = a.fornecedor)' + NewLine +
+                 '  LEFT JOIN layout_campos_dados d ON (' + NewLine +
+                 '    d.layout = a.layout' + NewLine +
+                 '    AND c.chave = a.pago_por)' + NewLine +
+                 '  LEFT JOIN layout_campos_dados e ON (' + NewLine +
+                 '    e.layout = a.layout' + NewLine +
+                 '    AND c.chave = a.historico)' + NewLine +
+                 '  LEFT JOIN layout_campos_dados f ON (' + NewLine +
+                 '    f.layout = a.layout' + NewLine +
+                 '    AND c.chave = a.cliente)' + NewLine }
                  'WHERE' + NewLine +
-                 '  empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
-                 '  AND layout = ' + IntToStr(fLancamentoLayoutAtual);
+                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 '  AND a.layout = ' + IntToStr(fLancamentoLayoutAtual);
 
   DataModule1.qLancamentos.Close;
   DataModule1.qLancamentos.SQL.Clear;
@@ -1846,14 +1933,13 @@ begin
   dbgLancamento.DataSource := DataModule1.dsLancamentos;
 end;
 
-procedure TfrmPrincipal.CarregarListaDadosCampoLancamento(var pColumn: TColumn; pNomeCampo: String);
+procedure TfrmPrincipal.CarregarListaDadosCampoLancamento(var pCombo: TComboBox; pNomeCampo: String);
 const
   lTabela = 'DadosCampos';
 var
   lComandoSQL: String;
   teste: Integer;
 begin
-  pColumn.ButtonStyle := cbsPickList;
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 
   lComandoSQL := 'SELECT' + NewLine +
@@ -1869,47 +1955,452 @@ begin
   DataModule1.getQuery(lTabela).First;
   while not DataModule1.getQuery(lTabela).EOF do
   begin
-    pColumn.PickList.Add(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
+    pCombo.Items.Add(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
 
     DataModule1.getQuery(lTabela).Next;
   end;
 end;
 
-procedure TfrmPrincipal.CarregarListaVinculadoresCampoLancamento(var pColumn: TColumn);
+procedure TfrmPrincipal.CarregarListaVinculadorCampoLancamento(var pCombo: TComboBox);
 const
   lTabela = 'DadosCampos';
 var
   lComandoSQL: String;
   teste: Integer;
 begin
-  pColumn.ButtonStyle := cbsPickList;
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 
+  if not Assigned(fVinculadoresLayout) then
+  begin
+    fVinculadoresLayout := TStringList.Create;
+    fGarbageCollector.Add(fVinculadoresLayout);
+  end;
+
   lComandoSQL := 'SELECT' + NewLine +
-                 '  vinculador' + NewLine +
+                 '  a.vinculador,' + NewLine +
+                 '  b.descricao' + NewLine +
                  'FROM' + NewLine +
-                 '  vinculadores_layout' + NewLine +
+                 '  vinculadores_layout a' + NewLine +
+                 '  JOIN vinculadores b ON (' + NewLine +
+                 '    b.chave = a.vinculador)' + NewLine +
                  'WHERE' + NewLine +
-                 '  layout = ' + IntToStr(fLancamentoLayoutAtual);
+                 '  a.layout = ' + IntToStr(fLancamentoLayoutAtual);
 
   DataModule1.NovaConsulta(lTabela, lComandoSQL);
 
   DataModule1.getQuery(lTabela).First;
   while not DataModule1.getQuery(lTabela).EOF do
   begin
-    pColumn.PickList.Add(DataModule1.getQuery(lTabela).FieldByName('vinculador').AsString);
+    fVinculadoresLayout.Add(DataModule1.getQuery(lTabela).FieldByName('vinculador').AsString);
+    pCombo.Items.Add(DataModule1.getQuery(lTabela).FieldByName('descricao').AsString);
 
     DataModule1.getQuery(lTabela).Next;
   end;
 end;
 
 procedure TfrmPrincipal.NovoLancamento;
+var
+  i: Integer;
+  lNome: String;
+  lField: TComponent;
+  lFirstField: TWinControl;
 begin
-  DataModule1.qLancamentos.Append;
-  DataModule1.qLancamentos.FieldByName('chave').AsInteger := DataModule1.GerarChave('GEN_LANCAMENTOS');
-  DataModule1.qLancamentos.FieldByName('empresa').AsInteger := fEmpresaAtual;
-  DataModule1.qLancamentos.FieldByName('layout').AsInteger := fLancamentoLayoutAtual;
-  DataModule1.qLancamentos.FieldByName('data_lanc').AsDateTime := Now;
+  lFirstField := nil;
+
+  for i := 0  to fListaCamposNome.Count - 1 do
+  begin
+    if DataModule1.CampoLancamentoLocate(fListaCamposNome.Strings[i]) > -1 then
+    begin
+      lNome := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+      lField := FindComponent(lNome);
+
+      if not Assigned(lFirstField) then
+        lFirstField := TWinControl(lField);
+
+      if Assigned(lField) then
+      begin
+        if (DataModule1.CampoLancamentoNome = 'vinculador') then
+        begin
+          TComboBox(lField).ItemIndex := -1;
+          TComboBox(lField).Text := '';
+        end
+        else if (DataModule1.CampoLancamentoDados) then
+        begin
+          TComboBox(lField).ItemIndex := -1;
+          TComboBox(lField).Text := '';
+        end
+        else if (DataModule1.CampoLancamentoType = ftString) then
+          TEdit(lField).Text := ''
+        else if (DataModule1.CampoLancamentoType = ftFloat) then
+          TEdit(lField).Text := '';
+      end;
+    end;
+  end;
+
+  lFirstField.SetFocus;
+  fEstadoLancamento := taInclusao;
+end;
+
+procedure TfrmPrincipal.EditarLancamento;
+var
+  i: Integer;
+  lFirstField: TWinControl;
+begin
+  lFirstField := nil;
+
+  if not (DataModule1.qLancamentos.IsEmpty) then
+  begin
+
+    for i := 0  to fListaCamposNome.Count - 1 do
+    begin
+      if not Assigned(lFirstField) then
+        lFirstField := TWinControl(FindComponent('edtLanc_' + fListaCamposNome.Strings[i]));
+
+      setValue(fListaCamposNome.Strings[i]);
+    end;
+
+    fLancamentoAtual := DataModule1.qLancamentos.FieldByName('chave').AsInteger;
+    fEstadoLancamento := taEdicao;
+    lFirstField.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.ExcluirLancamento;
+var
+  lComandoSQL: String;
+begin
+  if not (DataModule1.qLancamentos.IsEmpty) then
+  begin
+    lComandoSQL := 'DELETE FROM lancamentos' + NewLine;
+    lComandoSQL := lComandoSQL + 'WHERE' + NewLine +
+                                 '  chave = ' + DataModule1.qLancamentos.FieldByName('chave').AsString;
+
+    DataModule1.Executar(lComandoSQL);
+  end;
+
+  ConsultarLancamentos;
+end;
+
+procedure TfrmPrincipal.CreateStringField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+var
+  lWidth: Integer;
+  lLabel: TLabel;
+  lEdit: TEdit;
+begin
+  lWidth := 24 + (DataModule1.CampoLancamentoTamanho * 7);
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lEdit := TEdit.Create(frmPrincipal);
+  lEdit.Parent := gbLancamentos;
+  lEdit.Left := pLeft;
+  lEdit.Top := pTop;
+  lEdit.Width := lWidth;
+  lEdit.CharCase := ecUppercase;
+  lEdit.MaxLength := DataModule1.CampoLancamentoTamanho;
+  lEdit.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lEdit.Visible := true;
+  lEdit.Text := '';
+  fListaCampos.Add(lEdit);
+
+  pLeft := pLeft + lWidth + 12;
+
+  btnGravarLancamento.TabOrder := lEdit.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
+procedure TfrmPrincipal.CreateDecimalField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+var
+  lWidth: Integer;
+  lLabel: TLabel;
+  lEdit: TEdit;
+begin
+  lWidth := 88;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lEdit := TEdit.Create(frmPrincipal);
+  lEdit.Parent := gbLancamentos;
+  lEdit.Left := pLeft;
+  lEdit.Top := pTop;
+  lEdit.Width := lWidth;
+  lEdit.MaxLength := DataModule1.CampoLancamentoTamanho;
+  lEdit.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lEdit.Visible := true;
+  lEdit.Text := '';
+  lEdit.OnKeyPress := @DecimalValidator;
+  fListaCampos.Add(lEdit);
+
+  pLeft := pLeft + lWidth + 10;
+
+  btnGravarLancamento.TabOrder := lEdit.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
+procedure TfrmPrincipal.CreateDateField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+var
+  lWidth: Integer;
+  lLabel: TLabel;
+  lDate: TDateEdit;
+begin
+  lWidth := 84;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lDate := TDateEdit.Create(frmPrincipal);
+  lDate.Parent := gbLancamentos;
+  lDate.Left := pLeft;
+  lDate.Top := pTop;
+  lDate.Width := lWidth;
+  lDate.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lDate.Visible := true;
+  lDate.Date := Now;
+  lDate.OnKeyPress := @DateValidator;
+  fListaCampos.Add(lDate);
+
+  pLeft := pLeft + lWidth + 33;
+
+  btnGravarLancamento.TabOrder :=  lDate.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
+procedure TfrmPrincipal.CreateVinculadorField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+var
+  lCombo: TcomboBox;
+  lLabel:TLabel;
+  lWidth: Integer;
+begin
+  lWidth := 208;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lCombo := TComboBox.Create(frmPrincipal);
+  lCombo.Parent := gbLancamentos;
+  lCombo.AutoComplete := true;
+  lCombo.AutoCompleteText := [cbactEnabled];
+  lCombo.OnKeyPress := @ComboValidator;
+  lCombo.Left := pLeft;
+  lCombo.Top := pTop;
+  lCombo.Width := lWidth;
+  lCombo.CharCase := ecUppercase;
+  lCombo.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lCombo.Text := '';
+  lCombo.Visible := true;
+  CarregarListaVinculadorCampoLancamento(lCombo);
+  fListaCampos.Add(lCombo);
+
+  pLeft := pLeft + lWidth + 12;
+  lCombo.TabOrder := lEdit.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
+procedure TfrmPrincipal.CreateComboField(var pLeft: Integer; var pTop: Integer;
+  pLength: Integer);
+var
+  lCombo: TcomboBox;
+  lLabel: TLabel;
+  lWidth: Integer;
+begin
+  lWidth := 208;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lCombo := TComboBox.Create(frmPrincipal);
+  lCombo.Parent := gbLancamentos;
+  lCombo.AutoComplete := true;
+  lCombo.AutoCompleteText := [cbactEnabled];
+  lCombo.Style := csSimple;
+  lCombo.Left := pLeft;
+  lCombo.Top := pTop;
+  lCombo.Width := lWidth;
+  lCombo.CharCase := ecUppercase;
+  lCombo.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lCombo.Text := '';
+  lCombo.Visible := true;
+  CarregarListaDadosCampoLancamento(lCombo, DataModule1.CampoLancamentoDescricao);
+  lCombo.OnKeyPress := @ComboValidator;
+  fListaCampos.Add(lCombo);
+
+  pLeft := pLeft + lWidth + 12;
+  btnGravarLancamento.TabOrder := lcombo.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
+procedure TfrmPrincipal.GravarLancamento;
+begin
+  if (fEstadoLancamento = taInclusao) then
+    GravarLancamentoInserir
+  else if (fEstadoLancamento = taEdicao) then
+    GravarLancamentoAlterar;
+
+  ConsultarLancamentos;
+  NovoLancamento;
+end;
+
+procedure TfrmPrincipal.GravarLancamentoInserir;
+var
+  lComandoSQL: String;
+  i: Integer;
+begin
+  fLancamentoAtual := DataModule1.GerarChave('GEN_LANCAMENTOS');
+
+  lComandoSQL := 'INSERT INTO lancamentos (' + NewLine +
+                 '  chave,' + NewLine +
+                 '  empresa,' + NewLine +
+                 '  layout,' + NewLine;
+
+  for i := 0 to fListaCamposNome.Count - 1 do
+    lComandoSQL := lComandoSQL + '  ' + fListaCamposNome.Strings[i] + ',' + NewLine;
+
+  lComandoSQL := lComandoSQL + '  data_lanc)' + NewLine +
+                               'VALUES (' + NewLine +
+                               '  ' + IntToStr(fLancamentoAtual) + ',' + NewLine +
+                               '  ' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                               '  ' + IntToStr(fLancamentoLayoutAtual) + ',' + NewLine;
+
+  for i := 0 to fListaCamposNome.Count - 1 do
+    lComandoSQL := lComandoSQL + '  ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+
+  lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
+
+  DataModule1.Executar(lComandoSQL);
+end;
+
+procedure TfrmPrincipal.GravarLancamentoAlterar;
+var
+  lComandoSQL: String;
+  i: Integer;
+begin
+  lComandoSQL := 'UPDATE lancamentos SET' + NewLine;
+
+  for i := 0 to fListaCamposNome.Count - 1 do
+    lComandoSQL := lComandoSQL + '  ' + fListaCamposNome.Strings[i] + ' = ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+
+  lComandoSQL := lComandoSQL + '  data_edit = ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + NewLine +
+                               'WHERE' + NewLine +
+                               '  chave = ' + IntToStr(fLancamentoAtual);
+
+  DataModule1.Executar(lComandoSQL);
+end;
+
+function TfrmPrincipal.getValue(pNomeCampo: String): String;
+begin
+  DataModule1.CampoLancamentoLocate(pNomeCampo);
+
+  if (DataModule1.CampoLancamentoNome = 'vinculador') then
+    result := fVinculadoresLayout.Strings[TComboBox(FindComponent('edtLanc_' + pNomeCampo)).ItemIndex]
+  else if (DataModule1.CampoLancamentoDados) then
+    result := QuotedStr(TComboBox(FindComponent('edtLanc_' + pNomeCampo)).Text)
+  else if (DataModule1.CampoLancamentoType = ftString) then
+    result := QuotedStr(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text)
+  else if (DataModule1.CampoLancamentoType = ftFloat) then
+  begin
+    if Vazio(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text) then
+      result := '0'
+    else
+      result := QuotedStr(StringReplace(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, DecimalSeparator, '.', [rfReplaceAll]))
+  end
+  else if (DataModule1.CampoLancamentoType = ftDateTime) then
+    result := QuotedStr(FormatDateTime('dd.mm.yyyy', TDateEdit(FindComponent('edtLanc_' + pNomeCampo)).Date));
+end;
+
+procedure TfrmPrincipal.setValue(pNomeCampo: String);
+var
+  lNome: String;
+  lField: TComponent;
+begin
+  DataModule1.CampoLancamentoLocate(pNomeCampo);
+  lNome := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lField := FindComponent(lNome);
+
+  if Assigned(lField) then
+  begin
+    if (DataModule1.CampoLancamentoNome = 'vinculador') then
+    begin
+      TComboBox(lField).ItemIndex := fVinculadoresLayout.IndexOf(DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsString);
+    end
+    else if (DataModule1.CampoLancamentoDados) then
+    begin
+      TComboBox(lField).ItemIndex := TComboBox(lField).Items.IndexOf(DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsString);
+      TComboBox(lField).Text := DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsString;
+    end
+    else if (DataModule1.CampoLancamentoType = ftDateTime) then
+      TDateEdit(lField).Date := DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsDateTime
+    else if (DataModule1.CampoLancamentoType = ftFloat) then
+      TEdit(lField).Text := FormatFloat('####.##', DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsFloat)
+    else
+      TEdit(lField).Text := DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsString  ;
+  end;
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
@@ -2051,6 +2542,52 @@ begin
   MontarTelaLancamento;
 end;
 
+procedure TfrmPrincipal.ComboValidator(Sender: TObject; var Key: char);
+var
+  lText: String;
+  lSelStart: Integer;
+  i: Integer;
+  HasText: Boolean;
+begin
+  lText := TComboBox(Sender).Text;
+  lSelStart := TComboBox(Sender).SelStart;
+
+  if (lSelStart > 0) then
+    lText := Copy(lText, 1, lSelStart);
+
+  if (Key = #8) then
+  begin
+    lSelStart := lSelStart - 1;
+    if not Vazio(lText) then
+      lText := lText;
+  end
+  else
+    lText := lText + Key;
+
+  HasText := false;
+  for i := 0 to TComboBox(Sender).Items.Count - 1 do
+  begin
+    if Pos(lText, TComboBox(Sender).Items.Strings[i]) = 1 then
+    begin
+      HasText := true;
+      TComboBox(Sender).ItemIndex := i;
+      TComboBox(Sender).Text := TComboBox(Sender).Items.Strings[i];
+      TComboBox(Sender).SelStart := lSelStart;
+      TComboBox(Sender).SelLength := Length(TComboBox(Sender).Text);
+      break;
+    end;
+  end;
+
+  if not HasText and (Key <> #8) then
+    Key := #0;
+end;
+
+procedure TfrmPrincipal.MenuItem5Click(Sender: TObject);
+begin
+  if not DataModule1.qLancamentos.IsEmpty and MensagemConfirmacao('Deseja realmente excluir esse lançamento?', 'Lançamentos') then
+    ExcluirLancamento;
+end;
+
 procedure TfrmPrincipal.ComboBox3Change(Sender: TObject);
 begin
   DataModule1.qPlanoContas.SortedFields := 'descricao';
@@ -2069,11 +2606,97 @@ begin
     DataModule1.qPlanoContas.SortType := stDescending;
 end;
 
-procedure TfrmPrincipal.dbgLancamentoColExit(Sender: TObject);
+procedure TfrmPrincipal.dbgLancamentoDblClick(Sender: TObject);
 begin
-  if (dbgLancamento.SelectedColumn.ButtonStyle = cbsPickList) and
-     (dbgLancamento.SelectedColumn.PickList.IndexOf(dbgLancamento.SelectedField.AsString) < 0) then
-    dbgLancamento.SelectedField.AsString := '';
+  EditarLancamento;
+end;
+
+procedure TfrmPrincipal.DateValidator(Sender: TObject; var Key: char);
+var
+  IsDecimal: Boolean;
+  IsNumber: Boolean;
+  IsBackspace: Boolean;
+  lNumbers: String;
+  lNumbers1: String;
+  lNumbers2: String;
+  lLength: Integer;
+  lDia: Integer;
+  lMes: Integer;
+  lAno: Integer;
+  lDia1: String;
+  lMes1: String;
+  lAno1: String;
+begin
+  IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  IsBackspace := Key = #8;
+  lDia := 0;
+  lMes := 0;
+  lAno := 0;
+
+  if not IsNumber then
+    key := #0;
+
+  lLength := Length(ApenasNumeros(TEdit(Sender).Text));
+
+  if (lLength < 8) then
+    lNumbers := ApenasNumeros(TEdit(Sender).Text) + Key
+  else
+    lNumbers := Copy(ApenasNumeros(TEdit(Sender).Text), 1, 8);
+
+  if IsBackspace and not Vazio(lNumbers) then
+    lNumbers := Copy(lNumbers, 1, Length(lNumbers) - 2);
+
+  lLength := Length(lNumbers);
+
+  if (lLength >= 2) then
+    lDia := StrToIntDef(Copy(lNumbers, 1, 2), 1);
+  if (lLength >= 4) then
+    lMes := StrToIntDef(Copy(lNumbers, 3, 2), 1);
+  if (lLength >= 8) then
+    lAno := StrToIntDef(Copy(lNumbers, 5, 4), 0);
+
+  if (lMes > 12) then
+    lMes := 12;
+
+  if (lDia > 28) and (lMes = 2) and not IsLeapYear(lAno) then
+    lDia := 28
+  else if (lDia > 29) and (lMes = 2) then
+    lDia := 29
+  else if (lDia > 30) and (lMes in [4, 6, 9, 10]) then
+    lDia := 30
+  else if (lDia > 31) then
+    lDia := 31;
+
+  if (lLength = 3) then
+    lMes1 := lNumbers[3]
+  else if (lMes = 0) then
+    lMes1 := ''
+  else if (lMes < 10) then
+    lMes1 := '0' + IntToStr(lMes)
+  else
+    lMes1 := IntToStr(lMes);
+
+  if (lLength = 1) then
+    lDia1 := lNumbers[1]
+  else if (lDia = 0) then
+    lDia1 := ''
+  else if (lDia < 10) then
+    lDia1 := '0' + IntToStr(lDia)
+  else
+    lDia1 := IntToStr(lDia);
+
+  lNumbers1 := lDia1 + '/' + lMes1 + '/' + Copy(lNumbers, 5, Length(lNumbers));
+  lNumbers2 := lDia1 + '/' + lMes1;
+
+  if (lLength > 4) then
+    TEdit(Sender).Text := lNumbers1
+  else if (lLength > 2) then
+    TEdit(Sender).Text := lNumbers2
+  else
+    TEdit(Sender).Text := lNumbers;
+
+  TEdit(Sender).SelStart := Length(TEdit(Sender).Text);
+  key := #0;
 end;
 
 procedure TfrmPrincipal.dbgLayoutsMouseUp(Sender: TObject;
@@ -2112,6 +2735,109 @@ procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
 begin
   CarregarTelaPlanoDeContas;
 end;
+
+procedure TfrmPrincipal.DecimalValidator(Sender: TObject; var Key: char);
+var
+  IsDecimal: Boolean;
+  IsNumber: Boolean;
+  IsBackspace: Boolean;
+begin
+  IsDecimal := (Key = DecimalSeparator) and (Pos(DecimalSeparator, TEdit(Sender).Text) <= 0);
+  IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  IsBackspace := Key = #8;
+
+  if not IsDecimal and not IsNumber and not IsBackspace then
+    key := #0;
+end;
+
+procedure TfrmPrincipal.Edit2KeyPress(Sender: TObject; var Key: char);
+var
+  IsDecimal: Boolean;
+  IsNumber: Boolean;
+  IsBackspace: Boolean;
+  lNumbers: String;
+  lNumbers1: String;
+  lNumbers2: String;
+  lLength: Integer;
+  lDia: Integer;
+  lMes: Integer;
+  lAno: Integer;
+  lDia1: String;
+  lMes1: String;
+  lAno1: String;
+begin
+  IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  IsBackspace := Key = #8;
+  lDia := 0;
+  lMes := 0;
+  lAno := 0;
+
+  if not IsNumber then
+    key := #0;
+
+  lLength := Length(ApenasNumeros(TEdit(Sender).Text));
+
+  if (lLength < 8) then
+    lNumbers := ApenasNumeros(TEdit(Sender).Text) + Key
+  else
+    lNumbers := Copy(ApenasNumeros(TEdit(Sender).Text), 1, 8);
+
+  if IsBackspace and not Vazio(lNumbers) then
+    lNumbers := Copy(lNumbers, 1, Length(lNumbers) - 1);
+
+  lLength := Length(lNumbers);
+
+  if (lLength >= 2) then
+    lDia := StrToIntDef(Copy(lNumbers, 1, 2), 1);
+  if (lLength >= 4) then
+    lMes := StrToIntDef(Copy(lNumbers, 3, 2), 1);
+  if (lLength >= 8) then
+    lAno := StrToIntDef(Copy(lNumbers, 5, 4), 0);
+
+  if (lMes > 12) then
+    lMes := 12;
+
+  if (lDia > 28) and (lMes = 2) and not IsLeapYear(lAno) then
+    lDia := 28
+  else if (lDia > 29) and (lMes = 2) then
+    lDia := 29
+  else if (lDia > 30) and (lMes in [4, 6, 9, 10]) then
+    lDia := 30
+  else if (lDia > 31) then
+    lDia := 31;
+
+  if (lLength = 3) then
+    lMes1 := lNumbers[3]
+  else if (lMes = 0) then
+    lMes1 := ''
+  else if (lMes < 10) then
+    lMes1 := '0' + IntToStr(lMes)
+  else
+    lMes1 := IntToStr(lMes);
+
+  if (lLength = 1) then
+    lDia1 := lNumbers[1]
+  else if (lDia = 0) then
+    lDia1 := ''
+  else if (lDia < 10) then
+    lDia1 := '0' + IntToStr(lDia)
+  else
+    lDia1 := IntToStr(lDia);
+
+  lNumbers1 := lDia1 + '/' + lMes1 + '/' + Copy(lNumbers, 5, Length(lNumbers));
+  lNumbers2 := lDia1 + '/' + lMes1;
+
+  if (lLength > 4) then
+    TEdit(Sender).Text := lNumbers1
+  else if (lLength > 2) then
+    TEdit(Sender).Text := lNumbers2
+  else
+    TEdit(Sender).Text := lNumbers;
+
+  TEdit(Sender).SelStart := Length(TEdit(Sender).Text);
+  key := #0;
+end;
+
 
 procedure TfrmPrincipal.edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
 var
@@ -2245,6 +2971,11 @@ procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);
 begin
   GravarEmpresa;
   CarregarListaEmpresa;
+end;
+
+procedure TfrmPrincipal.btnGravarLancamentoClick(Sender: TObject);
+begin
+  GravarLancamento;
 end;
 
 procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);

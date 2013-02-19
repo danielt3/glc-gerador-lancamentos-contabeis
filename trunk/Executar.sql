@@ -1,13 +1,3 @@
-<<<<<<< .mine
-DELETE FROM
-  vinculador
-=======
-DELETE FROM
-  vinculadores
->>>>>>> .r52
+DELETE FROM lancamentos
 WHERE
-<<<<<<< .mine
-  chave = 2
-=======
-  chave = 3
->>>>>>> .r52
+  chave = 4

@@ -20,7 +20,9 @@ type
     dsVinculadores: TDatasource;
     dsLayouts: TDatasource;
     qConsulta: TZQuery;
+    qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
+    qLancamentos2no_vinculador: TStringField;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
     qVinculadores: TZQuery;
@@ -212,6 +214,7 @@ begin
   CampoExiste('LANCAMENTOS', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'DATA_LANC', 'DATE NOT NULL');
+  CampoExiste('LANCAMENTOS', 'DATA_EDIT', 'DATE');
 
   CampoLancamentoFirst;
   while not CampoLancamentoEof do

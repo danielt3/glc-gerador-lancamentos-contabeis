@@ -70,7 +70,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2226"/>
-        <CursorPos X="41" Y="2247"/>
+        <CursorPos X="42" Y="2244"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
           <Item0 X="5" Y="2054" ID="1"/>
@@ -225,14 +225,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="151"/>
         <CursorPos X="33" Y="162"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\lcl\include\progressbar.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="243"/>
         <CursorPos X="36" Y="258"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\lcl\include\wincontrol.inc"/>

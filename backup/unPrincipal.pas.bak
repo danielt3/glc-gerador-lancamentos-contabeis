@@ -172,7 +172,7 @@ type
     pIntegracao: TTabSheet;
     pAjuda: TTabSheet;
     Splitter1: TSplitter;
-    TabSheet1: TTabSheet;
+    pLancamentos: TTabSheet;
     pLeiaute: TTabSheet;
     procedure Arrow1Click(Sender: TObject);
     procedure Arrow2Click(Sender: TObject);
@@ -2037,7 +2037,8 @@ begin
     end;
   end;
 
-  lFirstField.SetFocus;
+  if (pLancamentos.Visible) and (pLancamentos.CanFocus) then
+    lFirstField.SetFocus;
   fEstadoLancamento := taInclusao;
 end;
 

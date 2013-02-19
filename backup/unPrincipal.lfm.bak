@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pEmpresa
         Align = alClient
-        TabIndex = 3
+        TabIndex = 0
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -1065,11 +1065,11 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = TabSheet1
+        ActivePage = pLancamentos
         Align = alClient
         TabIndex = 0
         TabOrder = 0
-        object TabSheet1: TTabSheet
+        object pLancamentos: TTabSheet
           Caption = 'Lançamentos'
           ClientHeight = 475
           ClientWidth = 1029
@@ -1137,12 +1137,13 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbLancamentoLayout: TComboBox
               Left = 65
-              Height = 23
+              Height = 21
               Top = 11
               Width = 319
               ItemHeight = 15
               OnChange = cmbLancamentoLayoutChange
-              Style = csSimple
+              ReadOnly = True
+              Style = csOwnerDrawFixed
               TabOrder = 0
             end
             object Edit1: TEdit

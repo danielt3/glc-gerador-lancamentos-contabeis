@@ -2244,7 +2244,7 @@ begin
   fListaCampos.Add(lCombo);
 
   pLeft := pLeft + lWidth + 12;
-  lCombo.TabOrder := lEdit.TabOrder + 1;
+  btnGravarLancamento.TabOrder := lCombo.TabOrder + 1;
   btnGravarLancamento.Visible := true;
   btnGravarLancamento.Top  := pTop;
   btnGravarLancamento.Left := pLeft;

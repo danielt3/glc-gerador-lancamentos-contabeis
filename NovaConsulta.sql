@@ -1,9 +1,12 @@
 SELECT
-  a.vinculador,
-  b.descricao
+  a.chave,
+  a.codigo_externo,
+  a.codigo,
+  a.descricao,
+  a.sintetica
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
+  plano_contas a
 WHERE
-  a.layout = 1
+  a.empresa = 2
+ORDER BY
+  a.codigo

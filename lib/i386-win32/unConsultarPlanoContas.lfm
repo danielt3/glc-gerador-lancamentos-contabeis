@@ -29,6 +29,9 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     OnDrawColumnCell = dbgConsultaDrawColumnCell
     OnDblClick = dbgConsultaDblClick
   end
+  inherited btnOK: TButton
+    OnClick = btnOKClick
+  end
   object edtConsultarPlanoDescricao: TEdit[5]
     Left = 240
     Height = 23

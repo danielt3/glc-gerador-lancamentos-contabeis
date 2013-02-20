@@ -12,6 +12,7 @@ type
 
   { TfrmConsultar }
   TonRegistroSelecionado = procedure(pRegistro: Integer) of object;
+  TonValidade = function: Boolean of object;
 
   TfrmConsultar = class(TForm)
     btnCancelar: TButton;
@@ -25,9 +26,11 @@ type
   private
     fEmpresaSelecionada: Integer;
     fonRegistroSelecionado: TonRegistroSelecionado;
+    fonValidade: TonValidade;
     { private declarations }
   public
     property onRegistroSelecionado: TonRegistroSelecionado read fonRegistroSelecionado write fonRegistroSelecionado;
+    property onValidade: TonValidade read fonValidade write fonValidade;
     property EmpresaSelecionada: Integer read fEmpresaSelecionada write fEmpresaSelecionada;
   end; 
 
@@ -47,28 +50,34 @@ end;
 
 procedure TfrmConsultar.btnOKClick(Sender: TObject);
 begin
-  if Assigned(fonRegistroSelecionado) then
+  if not Assigned(onValidade) or onValidade() then
   begin
-    if not dbgConsulta.DataSource.DataSet.IsEmpty then
-      fonRegistroSelecionado(dbgConsulta.DataSource.DataSet.FieldByName('chave').AsInteger)
-    else
-      fonRegistroSelecionado(0);
-  end;
+    if Assigned(fonRegistroSelecionado) then
+    begin
+      if not dbgConsulta.DataSource.DataSet.IsEmpty then
+        fonRegistroSelecionado(dbgConsulta.DataSource.DataSet.FieldByName('chave').AsInteger)
+      else
+        fonRegistroSelecionado(0);
+    end;
 
-  ModalResult := mrOK;
+    ModalResult := mrOK;
+  end;
 end;
 
 procedure TfrmConsultar.dbgConsultaDblClick(Sender: TObject);
 begin
-  if Assigned(fonRegistroSelecionado) then
+  if not Assigned(onValidade) or onValidade() then
   begin
-    if Assigned(dbgConsulta.DataSource) and Assigned(dbgConsulta.DataSource.DataSet) and not (dbgConsulta.DataSource.DataSet.IsEmpty) then
-      fonRegistroSelecionado(dbgConsulta.DataSource.DataSet.FieldByName('chave').AsInteger)
-    else
-      fonRegistroSelecionado(0);
-  end;
+    if Assigned(fonRegistroSelecionado) then
+    begin
+      if Assigned(dbgConsulta.DataSource) and Assigned(dbgConsulta.DataSource.DataSet) and not (dbgConsulta.DataSource.DataSet.IsEmpty) then
+        fonRegistroSelecionado(dbgConsulta.DataSource.DataSet.FieldByName('chave').AsInteger)
+      else
+        fonRegistroSelecionado(0);
+    end;
 
-  ModalResult := mrOK;
+    ModalResult := mrOK;
+  end;
 end;
 
 end.

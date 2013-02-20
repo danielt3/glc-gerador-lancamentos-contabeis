@@ -32,7 +32,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     fMascara: String;
-    { private declarations }
+    function ValidarPlano: Boolean;
   public
     procedure Consultar(PClassificacao: String = ''; pDescricao: String = '');
     property Mascara: String read fMascara write fMascara;
@@ -155,6 +155,22 @@ begin
   cmbPlanoContasTipo2.AddItem('Sintética', TObject('S'));
   cmbPlanoContasTipo2.AddItem('Analítica', TObject('A'));
   cmbPlanoContasTipo2.ItemIndex := 0;
+
+  onValidade := @ValidarPlano;
+end;
+
+function TfrmConsultarPlanoContas.ValidarPlano: Boolean;
+begin
+  result := true;
+
+  if not (DataModule1.getQuery(NomeTabela).IsEmpty) then
+  begin
+    if DataModule1.getQuery(NomeTabela).FieldByName('sintetica').AsString = 'S' then
+    begin
+      MensagemAlerta('Não é permitido usar um plano sintético.', 'Consulta de Planos');
+      result := false;
+    end;
+  end;
 end;
 
 end.

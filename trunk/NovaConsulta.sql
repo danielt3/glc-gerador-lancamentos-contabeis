@@ -1,12 +1,12 @@
 SELECT
-  a.chave,
-  a.codigo_externo,
-  a.codigo,
-  a.descricao,
-  a.sintetica
+  vinculador
 FROM
-  plano_contas a
+  vinculadores_layout
 WHERE
+<<<<<<< .mine
+  layout = 1
+=======
   a.empresa = 2
 ORDER BY
   a.codigo
+>>>>>>> .r57

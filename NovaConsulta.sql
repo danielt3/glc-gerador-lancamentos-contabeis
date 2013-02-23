@@ -1,6 +1,7 @@
 SELECT
-  nome
+  dado
 FROM
-  layout_campos
+  layout_campos_dados
 WHERE
-  layout = 10
+  layout = 9 AND
+  campo = 'Histórico'

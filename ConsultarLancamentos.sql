@@ -6,5 +6,5 @@ FROM
   LEFT JOIN vinculadores b ON (
     a.vinculador = b.chave)
 WHERE
-  a.empresa = 10
-  AND a.layout = 10
+  a.empresa = 9
+  AND a.layout = 9

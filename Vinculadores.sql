@@ -20,4 +20,4 @@ FROM
     c.empresa = a.empresa AND
     c.chave = a.creditar)
 where
-  a.empresa = 12
+  a.empresa = 2

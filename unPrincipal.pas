@@ -356,6 +356,7 @@ type
     procedure MontarTelaLancamento;
     procedure CriarCampoLancamento(pNomeCampo: String);
     procedure ConsultarLancamentos;
+    function  ExisteLancamentos: Boolean;
     procedure CarregarListaDadosCampoLancamento(var pCombo: TComboBox; pNomeCampo: String); overload;
     procedure CarregarListaVinculadorCampoLancamento(var pCombo: TComboBox);
     procedure NovoLancamento;
@@ -1498,25 +1499,31 @@ procedure TfrmPrincipal.ExcluirLayout;
 var
   lComandoSQL: String;
 begin
-  if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse Leiaute?', 'GLC')) then
+  if ExisteLancamentos then
+      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de excluí-lo é necessário primeiro apagar todos os lançamentos.', 'Excluir Leiaute')
+  else
   begin
-    lComandoSQL := 'DELETE FROM' + NewLine +
-                   '  layout_campos' + NewLine +
-                   'WHERE' + NewLine +
-                   '  layout = ' + IntToStr(fVinculadorAtual);
+    if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse Leiaute?', 'GLC')) then
+    begin
+      lComandoSQL := 'DELETE FROM' + NewLine +
+                     '  layout_campos' + NewLine +
+                     'WHERE' + NewLine +
+                     '  layout = ' + IntToStr(fLayoutAtual);
 
-    DataModule1.Executar(lComandoSQL);
+      DataModule1.Executar(lComandoSQL);
 
-    lComandoSQL := 'DELETE FROM' + NewLine +
-                   '  layouts' + NewLine +
-                   'WHERE' + NewLine +
-                   '  chave = ' + IntToStr(fVinculadorAtual);
+      lComandoSQL := 'DELETE FROM' + NewLine +
+                     '  layouts' + NewLine +
+                     'WHERE' + NewLine +
+                     '  chave = ' + IntToStr(fLayoutAtual);
 
-    DataModule1.Executar(lComandoSQL);
+      DataModule1.Executar(lComandoSQL);
 
-    CarregarVinculadores(fEmpresaAtual);
+      CarregarVinculadores(fEmpresaAtual);
+      CarregarLayouts(fEmpresaAtual);
 
-    MensagemSucesso('Leiaute excluido com sucesso!', 'GLC');
+      MensagemSucesso('Leiaute excluido com sucesso!', 'GLC');
+    end;
   end;
 end;
 
@@ -1531,14 +1538,19 @@ procedure TfrmPrincipal.EditarLayout;
 begin
   if not (DataModule1.qLayouts.IsEmpty) then
   begin
-    CarregarLayout;
-    fEstadoLayout := taEdicao;
+    if ExisteLancamentos then
+      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de alterá-lo é necessário primeiro apagar todos os lançamentos.', 'Editar Leiaute')
+    else
+    begin
+      CarregarLayout;
+      fEstadoLayout := taEdicao;
 
-    HabilitarLayout(true);
+      HabilitarLayout(true);
 
-    PageControl.ActivePage := pContador;
-    PageControl2.ActivePage := pLeiaute;
-    edtNomeLayout.SetFocus;
+      PageControl.ActivePage := pContador;
+      PageControl2.ActivePage := pLeiaute;
+      edtNomeLayout.SetFocus;
+    end;
   end;
 end;
 
@@ -1980,6 +1992,22 @@ begin
   DataModule1.qLancamentos.Open;
 
   dbgLancamento.DataSource := DataModule1.dsLancamentos;
+end;
+
+function TfrmPrincipal.ExisteLancamentos: Boolean;
+var
+  lComandoSQL: String;
+begin
+  result := false;
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  a.chave' + NewLine +
+                 'FROM' + NewLine +
+                 '  lancamentos a' + NewLine +
+                 'WHERE' + NewLine +
+                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                 '  AND a.layout = ' + IntToStr(fLayoutAtual);
+
+  result := DataModule1.Consultar(lComandoSQL) > 0;
 end;
 
 procedure TfrmPrincipal.CarregarListaDadosCampoLancamento(var pCombo: TComboBox; pNomeCampo: String);

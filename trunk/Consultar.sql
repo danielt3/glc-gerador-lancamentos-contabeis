@@ -1,1 +1,1 @@
-SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 10
+SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 9

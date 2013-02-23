@@ -1,10 +1,10 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 283
-  Height = 606
-  Top = 217
+  Left = 490
+  Height = 592
+  Top = 206
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
-  ClientHeight = 606
+  ClientHeight = 592
   ClientWidth = 1045
   FormStyle = fsMDIForm
   OnCreate = FormCreate
@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pClientes
     Align = alTop
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 3
+        TabIndex = 1
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'

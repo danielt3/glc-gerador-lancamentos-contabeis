@@ -366,6 +366,7 @@ type
     procedure CreateDateField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateVinculadorField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateComboField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure SetButtonField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
 
     procedure GravarLancamento;
     procedure GravarLancamentoInserir;
@@ -1820,7 +1821,7 @@ begin
     //DataModule1.qLancamentos.FieldDefs.Clear;
     fLeft := 16;
     fTop := 66;
-    fLength := 900;
+    fLength := 150;
 
     if not assigned(fListaCampos) then
     begin
@@ -1896,6 +1897,8 @@ begin
     CreateDecimalField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftDateTime) then
     CreateDateField(fLeft, fTop, fLength);
+
+  SetButtonField(fLeft, fTop, fLength);
 end;
 
 procedure TfrmPrincipal.ConsultarLancamentos;
@@ -2302,6 +2305,29 @@ begin
   btnGravarLancamento.Left := pLeft;
 end;
 
+procedure TfrmPrincipal.SetButtonField(var pLeft: Integer; var pTop: Integer;
+  pLength: Integer);
+var
+  lWidth: Integer;
+  lTop: Integer;
+  lLeft: Integer;
+begin
+  lWidth := 208;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    lTop := pTop + 48;
+    lLeft := 16;
+  end
+  else
+  begin
+    lTop := pTop;
+    lLeft := pLeft;
+  end;
+
+  btnGravarLancamento.Top  := lTop;
+  btnGravarLancamento.Left := lLeft;
+end;
+
 procedure TfrmPrincipal.GravarLancamento;
 begin
   if (fEstadoLancamento = taInclusao) then
@@ -2620,22 +2646,25 @@ end;
 procedure TfrmPrincipal.dbgLancamentoDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  {if odd(DataModule1.qLancamentos.RecNo) then
-    TDbGrid(Sender).Canvas.Brush.Color:= $00B9FFFF
+  if odd(TDbGrid(Sender).DataSource.DataSet.RecNo) then
+  begin
+    if gdSelected in State then
+      TDbGrid(Sender).Canvas.Brush.Color:= TColor($A0BCA0)
+    else
+      TDbGrid(Sender).Canvas.Brush.Color:= TColor($C0DCC0);
+  end
   else
-    TDbGrid(Sender).Canvas.Brush.Color:= clCream;
+  begin
+    if gdSelected in State then
+      TDbGrid(Sender).Canvas.Brush.Color:= TColor($EFEFEF)
+    else
+      TDbGrid(Sender).Canvas.Brush.Color:= TColor($FFFFFF);
+  end;
 
   TDbGrid(Sender).Canvas.font.Color:= clBlack;
 
-  if gdSelected in State then
-    with (Sender as TDBGrid).Canvas do
-    begin
-      Brush.Color := $004080FF;
-      FillRect(Rect);
-      Font.Style := [fsbold]
-    end;}
-
-  //TDbGrid(Sender).DefaultDrawDataCell(Rect, TDbGrid(Sender).columns[datacol].field, State);
+  (Sender as TDBGrid).Canvas.FillRect(Rect);
+  TDbGrid(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfrmPrincipal.DateValidator(Sender: TObject; var Key: char);

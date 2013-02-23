@@ -1,12 +1,6 @@
 SELECT
-  vinculador
+  nome
 FROM
-  vinculadores_layout
+  layout_campos
 WHERE
-<<<<<<< .mine
-  layout = 1
-=======
-  a.empresa = 2
-ORDER BY
-  a.codigo
->>>>>>> .r57
+  layout = 10

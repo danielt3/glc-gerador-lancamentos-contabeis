@@ -207,6 +207,8 @@ type
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
     procedure dbgLancamentoDblClick(Sender: TObject);
+    procedure dbgLancamentoDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure dbgLayoutsMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure dbgPlano1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -1477,6 +1479,8 @@ begin
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pLeiaute;
+  fLayoutAtual := 0;
+  CarregarListaDadosCampo('none');
   edtNomeLayout.SetFocus;
 end;
 
@@ -1566,6 +1570,7 @@ begin
   CarregarLayouts(fEmpresaAtual);
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lLayoutAtual), []);
   CarregarLayout;
+  CarregarLancamentoLayouts;
 
   HabilitarLayout(false);
 end;
@@ -1815,7 +1820,7 @@ begin
     //DataModule1.qLancamentos.FieldDefs.Clear;
     fLeft := 16;
     fTop := 66;
-    fLength := 1800;
+    fLength := 880;
 
     if not assigned(fListaCampos) then
     begin
@@ -2610,6 +2615,27 @@ end;
 procedure TfrmPrincipal.dbgLancamentoDblClick(Sender: TObject);
 begin
   EditarLancamento;
+end;
+
+procedure TfrmPrincipal.dbgLancamentoDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  {if odd(DataModule1.qLancamentos.RecNo) then
+    TDbGrid(Sender).Canvas.Brush.Color:= $00B9FFFF
+  else
+    TDbGrid(Sender).Canvas.Brush.Color:= clCream;
+
+  TDbGrid(Sender).Canvas.font.Color:= clBlack;
+
+  if gdSelected in State then
+    with (Sender as TDBGrid).Canvas do
+    begin
+      Brush.Color := $004080FF;
+      FillRect(Rect);
+      Font.Style := [fsbold]
+    end;}
+
+  //TDbGrid(Sender).DefaultDrawDataCell(Rect, TDbGrid(Sender).columns[datacol].field, State);
 end;
 
 procedure TfrmPrincipal.DateValidator(Sender: TObject; var Key: char);

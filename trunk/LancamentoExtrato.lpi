@@ -70,7 +70,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1874"/>
-        <CursorPos X="26" Y="1897"/>
+        <CursorPos X="23" Y="1893"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="5">
           <Item0 X="6" Y="2064" ID="3"/>
@@ -311,7 +311,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="813"/>
         <CursorPos X="35" Y="831"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>

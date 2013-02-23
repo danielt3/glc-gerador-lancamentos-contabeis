@@ -7,4 +7,4 @@ select
 from
   PLANO_CONTAS
 where
-  EMPRESA = 12
+  EMPRESA = 2

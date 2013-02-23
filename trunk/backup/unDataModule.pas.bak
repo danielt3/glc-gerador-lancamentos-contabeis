@@ -236,6 +236,9 @@ end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
 begin
+  if not FileExists(ExtractFilePath(ApplicationName) + 'DATABASE.FDB') then
+    CopyFile(ExtractFilePath(ApplicationName) + 'CLEAR_DATABASE.FDB', ExtractFilePath(ApplicationName) + 'DATABASE.FDB');
+
   CriarTabelaContas;
   CriarTabelaVinculadores;
   CriarTabelaVinculadoresLayouts;

@@ -22,6 +22,7 @@ type
     Arrow2: TArrow;
     Arrow3: TArrow;
     Arrow4: TArrow;
+    btnAdicionarDadosCampo: TButton;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
     btnExportarPlano: TButton;
@@ -38,7 +39,6 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
-    btnAdicionarDadosCampo: TButton;
     btnGravarLayout: TButton;
     btnCancelarLayout: TButton;
     btnEditarLayout: TButton;
@@ -62,18 +62,16 @@ type
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
     Conexao: TZConnection;
+    dbgDadosCampos: TDBGrid;
     dbgPlano1: TDBGrid;
     dbgLayouts: TDBGrid;
-    dbgDadosCampos: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
     edtClassificacaoCreditar: TEdit;
-    edtTipoCampo: TEdit;
     edtFormatoCampo: TEdit;
-    edtTamanhoCampo: TEdit;
     edtNomeDebitar: TEdit;
     edtNomeCreditar: TEdit;
     edtNomeLayout: TEdit;
@@ -95,11 +93,14 @@ type
     edtNomeEmpresa: TEdit;
     edtNomeVinculador: TEdit;
     edtHistorico: TEdit;
+    edtTamanhoCampo: TEdit;
+    edtTipoCampo: TEdit;
     GroupBox1: TGroupBox;
     GroupBox10: TGroupBox;
     GroupBox11: TGroupBox;
     GroupBox12: TGroupBox;
     gbTabelasUtilizadas: TGroupBox;
+    gdbOpcao: TGroupBox;
     GroupBox14: TGroupBox;
     GroupBox15: TGroupBox;
     gbInformacoes: TGroupBox;
@@ -116,7 +117,7 @@ type
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
     gbTabelasDisponiveis: TGroupBox;
-    GroupBox8: TGroupBox;
+    gdbCaracteristicas: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -1477,6 +1478,8 @@ begin
   edtNomeLayout.Enabled := Habilitar;
   gbTabelasDisponiveis.Enabled := Habilitar;
   gbTabelasUtilizadas.Enabled := Habilitar;
+  gdbCaracteristicas.Enabled := Habilitar;
+  gdbOpcao.Enabled := Habilitar;
   gbInformacoes.Enabled := Habilitar;
 end;
 

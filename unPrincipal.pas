@@ -720,6 +720,8 @@ begin
       end;
     end;
 
+    CarregarPlanoDeContas(fEmpresaAtual);
+
     result := true;
   except on e:exception do
     MensagemErro(e.Message, 'Importar Plano');
@@ -1805,6 +1807,11 @@ begin
     cmbLancamentoLayout.ItemIndex := 0;
     fLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[0], 0);
     cmbLancamentoLayoutChange(cmbLancamentoLayout);
+  end
+  else
+  begin
+    fLancamentoLayoutAtual := 0;
+    MontarTelaLancamento;
   end;
 end;
 
@@ -1815,6 +1822,10 @@ var
   lComandoSQL: String;
   i: Integer;
 begin
+  fLeft := 16;
+  fTop := 66;
+  fLength := 1050;
+
   lComandoSQL := 'SELECT' + NewLine +
                  '  nome' + NewLine +
                  'FROM' + NewLine +
@@ -1824,12 +1835,6 @@ begin
 
   if (DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0) then
   begin
-    //DataModule1.qLancamentos.Close;
-    //DataModule1.qLancamentos.FieldDefs.Clear;
-    fLeft := 16;
-    fTop := 66;
-    fLength := 1050;
-
     if not assigned(fListaCampos) then
     begin
       fListaCampos :=  TList.Create;
@@ -1863,6 +1868,35 @@ begin
 
     ConsultarLancamentos;
     NovoLancamento;
+  end
+  else
+  begin
+
+    if not assigned(fListaCampos) then
+    begin
+      fListaCampos :=  TList.Create;
+      fGarbageCollector.Add(fListaCampos);
+    end;
+
+    if not Assigned(fListaCamposNome) then
+    begin
+      fListaCamposNome := TStringList.Create;
+      fGarbageCollector.Add(fListaCamposNome);
+    end;
+
+    fListaCamposNome.Clear;
+
+    while fListaCampos.Count > 0 do
+    begin
+      TObject(fListaCampos.Items[0]).Free;
+      fListaCampos.Delete(0);
+    end;
+
+    dbgLancamento.Columns.Clear;
+
+    ConsultarLancamentos;
+
+    SetButtonField(fLeft, fTop, fLength);
   end;
 end;
 

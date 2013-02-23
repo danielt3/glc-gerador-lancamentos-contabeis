@@ -1,9 +1,6 @@
 SELECT
-  chave,
   nome
 FROM
-  layouts
+  layout_campos
 WHERE
-  empresa = 17
-ORDER BY
-  nome
+  layout = 0

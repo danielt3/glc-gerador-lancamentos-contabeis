@@ -1,8 +1,9 @@
-select
-  RDB$RELATION_NAME,
-  RDB$FIELD_NAME
-from
-  RDB$RELATION_FIELDS
-where
-  RDB$RELATION_NAME = 'LANCAMENTOS' AND
-  RDB$FIELD_NAME = 'VALOR'
+SELECT
+  chave,
+  nome
+FROM
+  layouts
+WHERE
+  empresa = 17
+ORDER BY
+  nome

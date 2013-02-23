@@ -438,12 +438,12 @@ begin
         result := GravarInserirEmpresa
       else
         result := GravarAlterarEmpresa;
-    end;
 
-    fEstadoEmpresa:= taNada;
-    edtCodigoEmpresa.Enabled := false;
-    edtNomeEmpresa.Enabled := false;
-    edtCNPJEmpresa.Enabled := false;
+      fEstadoEmpresa:= taNada;
+      edtCodigoEmpresa.Enabled := false;
+      edtNomeEmpresa.Enabled := false;
+      edtCNPJEmpresa.Enabled := false;
+    end;
   finally
   end;
 end;
@@ -1181,7 +1181,11 @@ begin
     CarregarLayoutsUtilizados;
   end
   else
+  begin
     LimparTelaVinculadores;
+    CarregarLayoutsDisponiveis;
+    CarregarLayoutsUtilizados;
+  end;
 end;
 
 function TfrmPrincipal.GravarVinculador: Boolean;
@@ -1412,7 +1416,10 @@ begin
       CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
   end
   else
+  begin
     LimparTelaLayouts;
+    CarregarListaDadosCampo('none');
+  end;
 end;
 
 procedure TfrmPrincipal.CarregarCamposLayout;
@@ -3025,8 +3032,8 @@ end;
 
 procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);
 begin
-  GravarEmpresa;
-  CarregarListaEmpresa;
+  if GravarEmpresa then
+    CarregarListaEmpresa;
 end;
 
 procedure TfrmPrincipal.btnGravarLancamentoClick(Sender: TObject);

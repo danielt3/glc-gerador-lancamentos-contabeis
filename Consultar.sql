@@ -1,1 +1,1 @@
-SELECT  chave,  codigo,  nome,  cnpj FROM  empresa ORDER BY  codigo
+SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 17

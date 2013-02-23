@@ -1821,7 +1821,7 @@ begin
     //DataModule1.qLancamentos.FieldDefs.Clear;
     fLeft := 16;
     fTop := 66;
-    fLength := 150;
+    fLength := 1050;
 
     if not assigned(fListaCampos) then
     begin

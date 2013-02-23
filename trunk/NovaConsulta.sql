@@ -1,7 +1,9 @@
 SELECT
-  dado
+  a.vinculador,
+  b.descricao
 FROM
-  layout_campos_dados
+  vinculadores_layout a
+  JOIN vinculadores b ON (
+    b.chave = a.vinculador)
 WHERE
-  layout = 9 AND
-  campo = 'Histórico'
+  a.layout = 1

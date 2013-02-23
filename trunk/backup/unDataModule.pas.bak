@@ -214,7 +214,7 @@ begin
   CampoExiste('LANCAMENTOS', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'DATA_LANC', 'DATE NOT NULL');
-  CampoExiste('LANCAMENTOS', 'DATA_EDIT', 'DATE NOT NULL');
+  CampoExiste('LANCAMENTOS', 'DATA_EDIT', 'DATE');
 
   CampoLancamentoFirst;
   while not CampoLancamentoEof do

@@ -1,9 +1,8 @@
-SELECT
-  a.vinculador,
-  b.descricao
-FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
-WHERE
-  a.layout = 1
+select
+  RDB$RELATION_NAME,
+  RDB$FIELD_NAME
+from
+  RDB$RELATION_FIELDS
+where
+  RDB$RELATION_NAME = 'LANCAMENTOS' AND
+  RDB$FIELD_NAME = 'VALOR'

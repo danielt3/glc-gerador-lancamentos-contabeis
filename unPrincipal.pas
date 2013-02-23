@@ -907,7 +907,7 @@ begin
 
     PageControl.ActivePage := pContador;
     PageControl2.ActivePage := pPlanoContas;
-    edtPlanoContasCodigo.SetFocus;
+    edtPlanoContasDescricao.SetFocus;
   end;
 end;
 

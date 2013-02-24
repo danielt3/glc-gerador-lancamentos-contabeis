@@ -1,10 +1,8 @@
-INSERT INTO layout_campos_dados (
+INSERT INTO vinculadores_layout (
 chave,
-layout,
-campo,
-dado)
+vinculador,
+layout)
 VALUES (
-15,
-0,
-'Pago Por',
-'NOTA FISCAL')
+9,
+2,
+15)

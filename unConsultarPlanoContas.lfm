@@ -26,11 +26,16 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
         Width = 377
         FieldName = 'descricao'
       end>
+    TabOrder = 5
     OnDrawColumnCell = dbgConsultaDrawColumnCell
     OnDblClick = dbgConsultaDblClick
   end
+  inherited btnCancelar: TButton
+    TabOrder = 6
+  end
   inherited btnOK: TButton
     OnClick = btnOKClick
+    TabOrder = 7
   end
   object edtConsultarPlanoDescricao: TEdit[5]
     Left = 240
@@ -39,7 +44,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Width = 216
     CharCase = ecUppercase
     OnChange = edtConsultarPlanoDescricaoChange
-    TabOrder = 4
+    TabOrder = 1
   end
   object Label28: TLabel[6]
     Left = 240
@@ -61,7 +66,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
       'Decrescente'
     )
     OnChange = ComboBox3Change
-    TabOrder = 5
+    TabOrder = 2
     Text = 'Crescente'
   end
   object Label29: TLabel[8]
@@ -84,7 +89,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
       'Decrescente'
     )
     OnChange = ComboBox4Change
-    TabOrder = 6
+    TabOrder = 3
     Text = 'Crescente'
   end
   object Label30: TLabel[10]
@@ -103,7 +108,7 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     ListFieldIndex = 0
     LookupCache = False
     OnChange = cmbPlanoContasTipo2Change
-    TabOrder = 7
+    TabOrder = 4
   end
   object Label17: TLabel[12]
     Left = 381

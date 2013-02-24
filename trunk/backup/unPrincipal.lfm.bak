@@ -137,6 +137,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 128
               Width = 75
               Caption = 'Cancelar'
+              OnClick = btnGravarEmpresa1Click
               TabOrder = 6
             end
             object Button3: TButton

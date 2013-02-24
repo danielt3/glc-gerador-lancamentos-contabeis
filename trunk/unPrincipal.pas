@@ -1597,6 +1597,7 @@ begin
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lLayoutAtual), []);
   CarregarLayout;
   CarregarLancamentoLayouts;
+  CarregarVinculadores(fEmpresaAtual);
 
   HabilitarLayout(false);
 end;

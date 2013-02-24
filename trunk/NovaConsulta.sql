@@ -1,7 +1,14 @@
 SELECT
-  dado
+  a.chave,
+  a.codigo_externo,
+  a.codigo,
+  a.descricao,
+  a.sintetica
 FROM
-  layout_campos_dados
+  plano_contas a
 WHERE
-  layout = 4 AND
-  campo = 'Pago Por'
+  a.empresa = 2
+  AND a.codigo >= '1122'
+  AND a.descricao LIKE 'ADIA%'
+ORDER BY
+  a.codigo

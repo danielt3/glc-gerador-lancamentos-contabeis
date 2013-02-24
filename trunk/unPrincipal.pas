@@ -328,6 +328,7 @@ type
     procedure EditarVinculador;
     procedure ExcluirVinculador;
     procedure CancelarVinculador;
+    function  ValidarVinculador: Boolean;
     function  CarregarVinculador: Boolean;
     function GravarVinculador: Boolean;
     function GravarInserirVinculador: Boolean;
@@ -1164,6 +1165,19 @@ begin
   CarregarVinculador;
   fEstadoVinculador := taNada;
   HabilitarVinculadores(false);
+end;
+
+function TfrmPrincipal.ValidarVinculador: Boolean;
+begin
+  result := false;
+
+  if (chkLayoutsUtilizados.Items.Count < 1) then
+  begin
+    MensagemAlerta('Nâo é permitido gravar  vinculador sem leiaute definido.', 'Validar Vinculador');
+    chkLayoutsDisponiveis.SetFocus;
+  end
+  else
+    result := true;
 end;
 
 function TfrmPrincipal.CarregarVinculador: Boolean;
@@ -3144,7 +3158,8 @@ end;
 
 procedure TfrmPrincipal.btnGravarEmpresa2Click(Sender: TObject);
 begin
-  GravarVinculador;
+  if ValidarVinculador then
+    GravarVinculador;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa3Click(Sender: TObject);

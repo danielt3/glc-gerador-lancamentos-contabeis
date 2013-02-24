@@ -1,9 +1,12 @@
 SELECT
-  a.vinculador,
-  b.descricao
+  a.chave,
+  a.nome
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
+  layouts a
+  JOIN vinculadores_layout b ON (
+    b.layout = a.chave)
 WHERE
-  a.layout = 1
+  a.empresa = 2 AND
+  b.vinculador = 2
+ORDER BY
+  a.nome

@@ -833,13 +833,26 @@ begin
 end;
 
 procedure TfrmPrincipal.CarregarCombosPlano;
+var
+  lChave: String;
 begin
   DataModule1.qPlanoContas.First;
+  fListaDebito.Clear;
+  fListaCredito.Clear;
+  fListaDebito2.Clear;
+  fListaCredito2.Clear;
+  fListaDebito3.Clear;
+  fListaCredito3.Clear;
+  fListaDebito4.Clear;
+  fListaCredito4.Clear;
 
   while not DataModule1.qPlanoContas.Eof do
   begin
-    fListaDebito.Add(DataModule1.qPlanoContas.FieldByName('CHAVE').AsString);
-    fListaCredito.Add(DataModule1.qPlanoContas.FieldByName('chave').AsString);
+    lChave := DataModule1.qPlanoContas.FieldByName('CHAVE').AsString;
+    if (DataModule1.qPlanoContas.FieldByName('CHAVE').AsInteger = 2692) then
+      Application.ProcessMessages;
+    fListaDebito.Add(lChave);
+    fListaCredito.Add(lChave);
     fListaDebito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
     fListaCredito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
     fListaDebito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
@@ -1023,14 +1036,17 @@ begin
 end;
 
 procedure TfrmPrincipal.ConsultarVinculadorDebito(pRegistro: Integer);
+var
+  Teste: String;
 begin
-  edtCodigoDebitar.Text := fListaDebito.Strings[fListaDebito.IndexOf(IntToStr(pRegistro))];
+  edtCodigoDebitar.Text := fListaDebito2.Strings[fListaDebito.IndexOf(IntToStr(pRegistro))];
+  Teste := edtCodigoDebitar.Text;
   edtCodigoDebitarExit(edtCodigoDebitar);
 end;
 
 procedure TfrmPrincipal.ConsultarVinculadorCredito(pRegistro: Integer);
 begin
-  edtCodigoCreditar.Text := fListaCredito.Strings[fListaCredito.IndexOf(IntToStr(pRegistro))];
+  edtCodigoCreditar.Text := fListaCredito2.Strings[fListaCredito.IndexOf(IntToStr(pRegistro))];
   edtCodigoCreditarExit(edtCodigoCreditar);
 end;
 
@@ -1188,12 +1204,34 @@ begin
 
     edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('chave').AsString;
     edtNomeVinculador.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
-    edtCodigoDebitar.Text := fListaDebito2.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
-    edtClassificacaoDebitar.Text := fListaDebito3.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
-    edtNomeDebitar.Text := fListaDebito4.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
-    edtCodigoCreditar.Text := fListaCredito2.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
-    edtClassificacaoCreditar.Text := fListaCredito3.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
-    edtNomeCreditar.Text := fListaCredito4.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+
+    if (fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString) > -1) then
+    begin
+      edtCodigoDebitar.Text := fListaDebito2.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+      edtClassificacaoDebitar.Text := fListaDebito3.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+      edtNomeDebitar.Text := fListaDebito4.Strings[fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString)];
+    end
+    else
+    begin
+      edtCodigoDebitar.Text := '';
+      edtClassificacaoDebitar.Text := '';
+      edtNomeDebitar.Text := '';
+    end;
+
+
+    if (fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString) > -1) then
+    begin
+      edtCodigoCreditar.Text := fListaCredito2.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+      edtClassificacaoCreditar.Text := fListaCredito3.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+      edtNomeCreditar.Text := fListaCredito4.Strings[fListaCredito.IndexOf(DataModule1.qVinculadores.FieldByName('id_creditar').AsString)];
+    end
+    else
+    begin
+      edtCodigoCreditar.Text := '';
+      edtClassificacaoCreditar.Text := '';
+      edtNomeCreditar.Text := '';
+    end;
+
     edtHistorico.Text := DataModule1.qVinculadores.FieldByName('historico').AsString;
 
     CarregarLayoutsDisponiveis;

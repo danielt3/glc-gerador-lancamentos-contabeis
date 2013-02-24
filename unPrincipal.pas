@@ -183,6 +183,7 @@ type
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnEditarLayoutClick(Sender: TObject);
+    procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
@@ -3130,6 +3131,14 @@ end;
 procedure TfrmPrincipal.btnEditarLayoutClick(Sender: TObject);
 begin
   EditarLayout;
+end;
+
+procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);
+begin
+  edtCodigoEmpresa.Enabled := false;
+  edtNomeEmpresa.Enabled := false;
+  edtCNPJEmpresa.Enabled := false;
+  CarregarListaEmpresa;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa2Click(Sender: TObject);

@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'

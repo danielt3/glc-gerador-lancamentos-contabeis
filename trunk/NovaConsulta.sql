@@ -1,12 +1,12 @@
 SELECT
   a.chave,
-  a.nome
+  a.codigo_externo,
+  a.codigo,
+  a.descricao,
+  a.sintetica
 FROM
-  layouts a
-  JOIN vinculadores_layout b ON (
-    b.layout = a.chave)
+  plano_contas a
 WHERE
-  a.empresa = 13 AND
-  b.vinculador = 6
+  a.empresa = 2
 ORDER BY
-  a.nome
+  a.codigo

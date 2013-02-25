@@ -16,6 +16,12 @@ inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
     Columns = <    
       item
         PickList.Strings = (        )
+        Title.Caption = 'Código'
+        Width = 52
+        FieldName = 'codigo_externo'
+      end    
+      item
+        PickList.Strings = (        )
         Title.Caption = 'Classificação'
         Width = 144
         FieldName = 'codigo'

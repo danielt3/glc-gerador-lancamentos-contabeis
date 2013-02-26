@@ -321,14 +321,14 @@ begin
   AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,###', 9, false);
   AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,###', 9, false);
   AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false);
-  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false);
-  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, true);
+  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, true);
+  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false);
   AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false);
   AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, true);
   AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, false);
   AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, false);
-  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, true);
-  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, true);
+  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false);
+  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false);
   AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,###', 9, false);
   //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
 end;

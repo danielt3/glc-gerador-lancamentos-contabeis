@@ -83,6 +83,7 @@ type
     function  CampoLancamentoNome: String;
     function  CampoLancamentoType: TFieldType;
     function  CampoLancamentoTipo: String;
+    function  CampoLancamentoFormato: String;
     function  CampoLancamentoTamanho: Integer;
     function  CampoLancamentoDados: Boolean; overload;
     function  CampoLancamentoDisPlayFormat: String;
@@ -429,6 +430,11 @@ end;
 function TDataModule1.CampoLancamentoTipo: String;
 begin
   result := CampoLancamentoValor('tipo');
+end;
+
+function TDataModule1.CampoLancamentoFormato: String;
+begin
+  result := CampoLancamentoValor('formato');
 end;
 
 function TDataModule1.CampoLancamentoTamanho: Integer;

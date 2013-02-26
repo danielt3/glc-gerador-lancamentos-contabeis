@@ -1,6 +1,7 @@
 SELECT
-  chave
+  a.chave
 FROM
-  VINCULADORES
+  lancamentos a
 WHERE
-  chave = 7
+  a.empresa = 13
+  AND a.layout = 14

@@ -183,11 +183,13 @@ type
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnEditarLayoutClick(Sender: TObject);
+    procedure btnExportarPlano1Click(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnGravarLancamentoClick(Sender: TObject);
+    procedure btnImportarPlano1Click(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
@@ -371,12 +373,15 @@ type
     procedure CreateVinculadorField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateComboField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure SetButtonField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
-
     procedure GravarLancamento;
     procedure GravarLancamentoInserir;
     procedure GravarLancamentoAlterar;
     function getValue(pNomeCampo: String): String;
     procedure setValue(pNomeCampo: String); Overload;
+    //Integração
+    function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    procedure QuebrarString(var pLista: TStringList; pString: String);
   public
     { public declarations }
   end; 
@@ -1804,8 +1809,8 @@ procedure TfrmPrincipal.MostrarDadosCampo(pDescricao: String; HabilitarInsercao:
 begin
   if (DataModule1.CampoLancamentoLocateDescricao(pDescricao) > -1) then
   begin
-    edtTipoCampo.Text := DataModule1.CampoLancamentoDescricao;
-    edtFormatoCampo.Text := DataModule1.CampoLancamentoTipo;
+    edtTipoCampo.Text := DataModule1.CampoLancamentoTipo;
+    edtFormatoCampo.Text := DataModule1.CampoLancamentoFormato;
     edtTamanhoCampo.Text := IntToStr(DataModule1.CampoLancamentoTamanho);
     if DataModule1.CampoLancamentoDados then
       btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados
@@ -2561,6 +2566,190 @@ begin
   end;
 end;
 
+function TfrmPrincipal.ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+const
+  lNomeConsulta = 'Integracao';
+var
+  i: Integer;
+  lArquivo: TStringList;
+  lLinha: String;
+  pComandoSQL: String;
+begin
+  result := false;
+  lArquivo := TStringList.Create;
+
+  try
+    try
+      //Verificar se o arquivo já existe
+      if FileExists(pNomeArquivo) then
+        lArquivo.LoadFromFile(pNomeArquivo);
+
+      //Montar SQL
+      pComandoSQL := 'SELECT' + NewLine +
+                     '  *' + NewLine +
+                     'FROM' + NewLine +
+                     '  ' + pNomeTabela + NewLine +
+                     'WHERE' + NewLine;
+
+      if (LowerCase(pNomeTabela) = 'empresa') then
+        pComandoSQL := pComandoSQL + '  chave = ' + IntToStr(Empresa)
+      else
+        pComandoSQL := pComandoSQL + '  empresa = ' + IntToStr(Empresa);
+
+      //Carregar lista de fields
+      lLinha := '';
+      if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
+      begin
+        for i := 0  to DataModule1.getQuery(lNomeConsulta).Fields.Count - 1 do
+        begin
+          //if (LowerCase(pNomeTabela) = 'empresa') or (LowerCase(DataModule1.getQuery(lNomeConsulta).Fields[i].FieldName) <> 'chave') then
+            lLinha := lLinha + Trim(LowerCase(DataModule1.getQuery(lNomeConsulta).Fields[i].FieldName)) + '|';
+        end;
+      end;
+
+      if not Vazio(lLinha) then
+      begin
+        lArquivo.Add('01|' + pNomeTabela);
+        lLinha := '02|' + lLinha;
+        lArquivo.Add(lLinha);
+      end;
+
+      //Montar valores
+      DataModule1.getQuery(lNomeConsulta).First;
+
+      while not (DataModule1.getQuery(lNomeConsulta).EOF) do
+      begin
+        lLinha := '';
+
+        for i := 0  to DataModule1.getQuery(lNomeConsulta).Fields.Count - 1 do
+        begin
+          //if (LowerCase(pNomeTabela) = 'empresa') or (LowerCase(DataModule1.getQuery(lNomeConsulta).Fields[i].FieldName) <> 'chave') then
+            lLinha := lLinha + Trim(DataModule1.getQuery(lNomeConsulta).FieldByName(DataModule1.getQuery(lNomeConsulta).Fields[i].FieldName).AsString) + '|';
+        end;
+
+        if not Vazio(lLinha) then
+        begin
+          lLinha := '03|' + lLinha;
+          lArquivo.Add(lLinha);
+        end;
+
+        DataModule1.getQuery(lNomeConsulta).Next;
+      end;
+
+      lArquivo.SaveToFile(pNomeArquivo);
+      result := true;
+    except on e:exception do
+      MensagemErro(e.Message, 'Exportar Tabela');
+    end;
+  finally
+  end;
+end;
+
+function TfrmPrincipal.ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+var
+  lComandoSQL: String;
+  lComandoSQLParte: String;
+  lNomeTabela: String;
+  lArquivo: TStringList;
+  lLinha: TStringList;
+  lTexto: String;
+  i: Integer;
+  y: Integer;
+  lCampo: String;
+  lVirgula: String;
+begin
+  result := false;
+
+  if FileExists(pNomeArquivo) then
+  begin
+    lArquivo := TStringList.Create;
+    lLinha := TStringList.Create;
+    lLinha.Delimiter := '|';
+
+    try
+      try
+        lArquivo.LoadFromFile(pNomeArquivo);
+
+        for i := 0 to lArquivo.Count - 1 do
+        begin
+          lCampo := Copy(lArquivo.Strings[i], 1, 2);
+
+          if (lCampo = '01') then
+            lNomeTabela := Trim(Copy(lArquivo.Strings[i], 4, Length(lArquivo.Strings[i]) - 3))
+          else if (lCampo = '02') then
+          begin
+            lComandoSQLParte := 'INSERT INTO ' + lNomeTabela + ' (';
+            QuebrarString(lLinha, lArquivo.Strings[i]);
+            //lLinha.DelimitedText := lArquivo.Strings[i];
+            lVirgula := '';
+
+            for y := 0 to lLinha.Count - 1 do
+            begin
+              if (lLinha.Strings[y] <> '02') then
+              begin
+                lComandoSQLParte := lComandoSQLParte + lVirgula + NewLine + '  ' + lLinha.Strings[y];
+                lVirgula := ',';
+              end;
+            end;
+
+            lComandoSQLParte := lComandoSQLParte + ')' + NewLine +
+                                                   'VALUES (';
+          end
+          else if (lCampo = '03') then
+          begin
+            lTexto := lArquivo.Strings[i];
+
+            QuebrarString(lLinha, lTexto);
+            //lLinha.Delimiter := '|';
+            //lLinha.DelimitedText := lTexto;
+
+            lVirgula := '';
+            lComandoSQL := lComandoSQLParte;
+
+            for y := 0 to lLinha.Count - 1 do
+            begin
+              if (lLinha.Strings[y] <> '03') then
+              begin
+                if (Vazio(Trim(lLinha.Strings[y]))) then
+                  lComandoSQL := lComandoSQL + lVirgula + NewLine + '  null'
+                else
+                  lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(Trim(lLinha.Strings[y]));
+                lVirgula := ',';
+              end;
+            end;
+
+            lComandoSQL := lComandoSQL + ')';
+
+            DataModule1.Executar(lComandoSQL);
+          end;
+        end;
+      except on e:exception do
+        MensagemErro(e.Message, 'Importar Tabelas');
+      end;
+    finally
+      FreeAndNil(lArquivo);
+      FreeAndNil(lLinha);
+    end;
+  end;
+end;
+
+procedure TfrmPrincipal.QuebrarString(var pLista: TStringList; pString: String);
+var
+  lString: String;
+  lParte: String;
+begin
+  lString := Trim(pString);
+  pLista.Clear;
+
+  while (Pos('|', lString) > 0) do
+  begin
+    lParte := Copy(lString, 1, Pos('|', lString) - 1);
+    lString := Copy(lString, Pos('|', lString) + 1, Length(lString));
+
+    pLista.Add(lParte);
+  end;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   fGarbageCollector := TGarbageCollector.Create;
@@ -2923,13 +3112,74 @@ var
   IsDecimal: Boolean;
   IsNumber: Boolean;
   IsBackspace: Boolean;
+  lInteiro: String;
+  lInteiro2: String;
+  lDecimal: String;
+  lTam: Integer;
+  i: Integer;
 begin
   IsDecimal := (Key = DecimalSeparator) and (Pos(DecimalSeparator, TEdit(Sender).Text) <= 0);
   IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   IsBackspace := Key = #8;
 
-  if not IsDecimal and not IsNumber and not IsBackspace then
-    key := #0;
+  //if not IsDecimal and not IsNumber and not IsBackspace then
+  //  key := #0;
+
+  if not IsBackspace then
+  begin
+    if IsDecimal then
+    begin
+      TEdit(Sender).Text := TEdit(Sender).Text + Key;
+      key := #0;
+    end
+    else if IsNumber then
+    begin
+      if (pos(DecimalSeparator, TEdit(Sender).Text) > 0) then
+      begin
+        lInteiro := TEdit(Sender).Text;
+        lInteiro := Copy(lInteiro, 1, pos(DecimalSeparator, lInteiro) - 1);
+        lInteiro := ApenasNumeros(lInteiro);
+        lInteiro := lInteiro;
+        lDecimal := TEdit(Sender).Text;
+        lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, Length(lDecimal));
+        lDecimal := lDecimal + Key;
+
+        lInteiro2 := '';
+        lTam := Length(lInteiro);
+        for i := lTam downto 1 do
+        begin
+          if ((lTam - i) mod 3 = 0) then
+            lInteiro2 := lInteiro[i] + '.' + lInteiro2
+          else
+            lInteiro2 := lInteiro[i] + lInteiro2
+        end;
+
+        TEdit(Sender).Text := lInteiro2 + DecimalSeparator + lDecimal;
+        key := #0;
+      end
+      else
+      begin
+        lInteiro := ApenasNumeros(TEdit(Sender).Text) + Key;
+
+        lInteiro2 := '';
+        lTam := Length(lInteiro);
+        for i := lTam downto 1 do
+        begin
+          if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
+            lInteiro2 := lInteiro[i] + '.' + lInteiro2
+          else
+            lInteiro2 := lInteiro[i] + lInteiro2
+        end;
+
+        TEdit(Sender).Text := lInteiro2;
+        key := #0;
+      end
+    end
+    else
+      key := #0;
+  end;
+
+  TEdit(Sender).SelStart := Length(TEdit(Sender).Text);
 end;
 
 procedure TfrmPrincipal.Edit2KeyPress(Sender: TObject; var Key: char);
@@ -3160,6 +3410,12 @@ begin
   GravarLancamento;
 end;
 
+procedure TfrmPrincipal.btnImportarPlano1Click(Sender: TObject);
+begin
+  if ImportarTabelas(edtImportarPlano1.Text, nil) then
+    MensagemSucesso('Dados importados com sucesso de ' + edtImportarPlano1.Text, 'Importar dados');
+end;
+
 procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);
 begin
   if FileExists(edtImportarPlano.Text) then
@@ -3184,6 +3440,23 @@ end;
 procedure TfrmPrincipal.btnEditarLayoutClick(Sender: TObject);
 begin
   EditarLayout;
+end;
+
+procedure TfrmPrincipal.btnExportarPlano1Click(Sender: TObject);
+var
+  lSucesso: Boolean;
+begin
+  if FileExists(edtExportarPlano1.Text) then
+    DeleteFile(edtExportarPlano1.Text);
+
+  lSucesso := true;
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', edtExportarPlano1.Text, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', edtExportarPlano1.Text, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', edtExportarPlano1.Text, nil);
+  //lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text, nil);
+
+  if (lSucesso) then
+    MensagemSucesso('Dados exportados com sucesso em ' + edtExportarPlano1.Text, 'Exportar dados');
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);

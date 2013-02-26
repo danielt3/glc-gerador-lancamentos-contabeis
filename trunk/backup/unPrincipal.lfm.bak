@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 0
+        TabIndex = 3
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -1293,6 +1293,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 32
           Width = 85
           Caption = 'Exportar'
+          OnClick = btnExportarPlano1Click
           TabOrder = 0
         end
         object edtExportarPlano1: TEdit
@@ -1301,6 +1302,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 32
           Width = 267
           TabOrder = 1
+          Text = 'C:\A\teste.txt'
         end
         object Button5: TButton
           Left = 734
@@ -1316,7 +1318,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 29
           Width = 85
           Caption = 'Importar'
-          OnClick = btnImportarPlanoClick
+          OnClick = btnImportarPlano1Click
           TabOrder = 3
         end
         object Button6: TButton
@@ -1334,6 +1336,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 32
           Width = 267
           TabOrder = 5
+          Text = 'C:\A\teste.txt'
         end
         object Label7: TLabel
           Left = 14
@@ -1419,8 +1422,8 @@ object frmPrincipal: TfrmPrincipal
     end
   end
   object popLayout: TPopupMenu
-    left = 488
-    top = 72
+    left = 440
+    top = 56
     object MenuItem4: TMenuItem
       Caption = 'Excluir Leiaute'
       OnClick = MenuItem4Click

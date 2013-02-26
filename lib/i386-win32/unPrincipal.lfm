@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 490
+  Left = 241
   Height = 592
-  Top = 206
+  Top = 198
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 592
@@ -22,11 +22,11 @@ object frmPrincipal: TfrmPrincipal
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
-      ClientHeight = 503
+      ClientHeight = 505
       ClientWidth = 1037
       object PageControl2: TPageControl
         Left = 0
-        Height = 503
+        Height = 505
         Top = 0
         Width = 1037
         ActivePage = pLeiaute
@@ -35,7 +35,7 @@ object frmPrincipal: TfrmPrincipal
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
-          ClientHeight = 475
+          ClientHeight = 479
           ClientWidth = 1029
           object GroupBox6: TGroupBox
             Left = 8
@@ -49,7 +49,7 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 0
             object edtCodigoEmpresa: TEdit
               Left = 89
-              Height = 23
+              Height = 21
               Top = 8
               Width = 56
               Enabled = False
@@ -58,16 +58,16 @@ object frmPrincipal: TfrmPrincipal
             end
             object Label1: TLabel
               Left = 9
-              Height = 16
+              Height = 14
               Top = 13
-              Width = 46
+              Width = 42
               Caption = 'Código:.'
               ParentColor = False
               PopupMenu = popEmpresa
             end
             object edtNomeEmpresa: TEdit
               Left = 89
-              Height = 23
+              Height = 21
               Top = 40
               Width = 296
               CharCase = ecUppercase
@@ -77,16 +77,16 @@ object frmPrincipal: TfrmPrincipal
             end
             object Label3: TLabel
               Left = 9
-              Height = 16
+              Height = 14
               Top = 47
-              Width = 58
+              Width = 55
               Caption = 'Descrição:.'
               ParentColor = False
               PopupMenu = popEmpresa
             end
             object edtCNPJEmpresa: TEdit
               Left = 89
-              Height = 23
+              Height = 21
               Top = 73
               Width = 144
               Enabled = False
@@ -97,9 +97,9 @@ object frmPrincipal: TfrmPrincipal
             end
             object Label6: TLabel
               Left = 11
-              Height = 16
+              Height = 14
               Top = 80
-              Width = 35
+              Width = 34
               Caption = 'CNPJ:.'
               ParentColor = False
               PopupMenu = popEmpresa
@@ -205,9 +205,9 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 1
               object Label18: TLabel
                 Left = 70
-                Height = 16
+                Height = 14
                 Top = 32
-                Width = 267
+                Width = 248
                 Caption = 'Mostrar a lista de fornecedores a serm cadastrados'
                 ParentColor = False
               end
@@ -223,9 +223,9 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 2
               object Label19: TLabel
                 Left = 70
-                Height = 16
+                Height = 14
                 Top = 32
-                Width = 267
+                Width = 248
                 Caption = 'Mostrar a lista de fornecedores a serm cadastrados'
                 ParentColor = False
               end
@@ -358,10 +358,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox3: TComboBox
               Left = 14
-              Height = 23
+              Height = 21
               Top = 80
               Width = 100
-              ItemHeight = 15
+              ItemHeight = 13
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -373,10 +373,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox4: TComboBox
               Left = 158
-              Height = 23
+              Height = 21
               Top = 80
               Width = 100
-              ItemHeight = 15
+              ItemHeight = 13
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -396,7 +396,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo2: TDBLookupComboBox
               Left = 486
-              Height = 23
+              Height = 21
               Top = 24
               Width = 124
               ListFieldIndex = 0
@@ -510,7 +510,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo: TDBLookupComboBox
               Left = 78
-              Height = 23
+              Height = 21
               Top = 41
               Width = 124
               Enabled = False
@@ -1362,18 +1362,18 @@ object frmPrincipal: TfrmPrincipal
   end
   object Label2: TLabel
     Left = 16
-    Height = 16
+    Height = 14
     Top = 543
-    Width = 46
+    Width = 42
     Caption = 'Empresa'
     ParentColor = False
   end
   object cmbEmpresa: TComboBox
     Left = 63
-    Height = 23
+    Height = 21
     Top = 536
     Width = 289
-    ItemHeight = 15
+    ItemHeight = 13
     OnChange = cmbEmpresaChange
     Style = csDropDownList
     TabOrder = 1

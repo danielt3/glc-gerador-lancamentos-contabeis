@@ -319,8 +319,8 @@ end;
 
 procedure TDataModule1.MontarCamposLancamento;
 begin
-  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,###', 9, false);
-  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,###', 9, false);
+  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,##', 8, false);
+  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,##', 8, false);
   AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false);
   AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, true);
   AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false);
@@ -330,7 +330,7 @@ begin
   AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, false);
   AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false);
   AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false);
-  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,###', 9, false);
+  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,##', 8, false);
   //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
 end;
 

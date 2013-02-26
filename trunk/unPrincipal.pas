@@ -251,6 +251,7 @@ type
     procedure GravarInserirCampo(pNomeCampo: String);
     procedure DateValidator(Sender: TObject; var Key: char);
     procedure DecimalValidator(Sender: TObject; var Key: char);
+    procedure DecimalExit(Sender: TObject);
     procedure ComboValidator(Sender: TObject; var Key: char);
     procedure MenuItem5Click(Sender: TObject);
   private
@@ -291,6 +292,8 @@ type
     fLeft: Integer;
     fTop: Integer;
     fLength: Integer;
+    fCampoEntrada: TEdit;
+    fCampoSaida: TEdit;
 
     //Empresa
     procedure NovaEmpresa;
@@ -1922,6 +1925,8 @@ begin
     end;
 
     fListaCamposNome.Clear;
+    fCampoEntrada := nil;
+    fCampoSaida := nil;
 
     while fListaCampos.Count > 0 do
     begin
@@ -2295,7 +2300,13 @@ begin
   lEdit.Visible := true;
   lEdit.Text := '';
   lEdit.OnKeyPress := @DecimalValidator;
+  lEdit.OnExit := @DecimalExit;
   fListaCampos.Add(lEdit);
+
+  if (DataModule1.CampoLancamentoNome = 'entrada') then
+    fCampoEntrada := lEdit
+  else if (DataModule1.CampoLancamentoNome = 'saida') then
+    fCampoSaida := lEdit;
 
   pLeft := pLeft + lWidth + 10;
 
@@ -3112,6 +3123,7 @@ var
   IsDecimal: Boolean;
   IsNumber: Boolean;
   IsBackspace: Boolean;
+  IsInvalid: Boolean;
   lInteiro: String;
   lInteiro2: String;
   lDecimal: String;
@@ -3122,10 +3134,26 @@ begin
   IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   IsBackspace := Key = #8;
 
+  if (fCampoEntrada <> nil) and (fCampoSaida <> nil) then
+  begin
+    if (TEdit(Sender).Name = fCampoEntrada.Name) then
+      isInvalid := not Vazio(ApenasNumeros(fCampoSaida.Text))
+    else if (TEdit(Sender).Name = fCampoSaida.Name) then
+      isInvalid := not Vazio(ApenasNumeros(fCampoEntrada.Text))
+    else
+      isInvalid := false;
+  end
+  else
+    IsInvalid := false;
   //if not IsDecimal and not IsNumber and not IsBackspace then
   //  key := #0;
 
-  if not IsBackspace then
+  if IsInvalid then
+  begin
+    TEdit(Sender).Text := '';
+    key := #0;
+  end
+  else if not IsBackspace then
   begin
     if IsDecimal then
     begin
@@ -3141,8 +3169,9 @@ begin
         lInteiro := ApenasNumeros(lInteiro);
         lInteiro := lInteiro;
         lDecimal := TEdit(Sender).Text;
-        lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, Length(lDecimal));
-        lDecimal := lDecimal + Key;
+        lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, 2);
+        if (Length(lDecimal) < 2) then
+          lDecimal := lDecimal + Key;
 
         lInteiro2 := '';
         lTam := Length(lInteiro);
@@ -3180,6 +3209,56 @@ begin
   end;
 
   TEdit(Sender).SelStart := Length(TEdit(Sender).Text);
+end;
+
+procedure TfrmPrincipal.DecimalExit(Sender: TObject);
+var
+  lInteiro: String;
+  lInteiro2: String;
+  lDecimal: String;
+  lTam: Integer;
+  i: Integer;
+begin
+  if (pos(DecimalSeparator, TEdit(Sender).Text) > 0) then
+  begin
+    lInteiro := TEdit(Sender).Text;
+    lInteiro := Copy(lInteiro, 1, pos(DecimalSeparator, lInteiro) - 1);
+    lInteiro := ApenasNumeros(lInteiro);
+    lInteiro := lInteiro;
+    lDecimal := TEdit(Sender).Text;
+    lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, 2);
+
+    while (Length(lDecimal) < 2) do
+      lDecimal := lDecimal + '0';
+
+    lInteiro2 := '';
+    lTam := Length(lInteiro);
+    for i := lTam downto 1 do
+    begin
+      if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
+        lInteiro2 := lInteiro[i] + '.' + lInteiro2
+      else
+        lInteiro2 := lInteiro[i] + lInteiro2
+    end;
+
+    TEdit(Sender).Text := lInteiro2 + DecimalSeparator + lDecimal;
+  end
+  else if not Vazio(ApenasNumeros(TEdit(Sender).Text)) then
+  begin
+    lInteiro := ApenasNumeros(TEdit(Sender).Text);
+
+    lInteiro2 := '';
+    lTam := Length(lInteiro);
+    for i := lTam downto 1 do
+    begin
+      if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
+        lInteiro2 := lInteiro[i] + '.' + lInteiro2
+      else
+        lInteiro2 := lInteiro[i] + lInteiro2
+    end;
+
+    TEdit(Sender).Text := lInteiro2 + ',00';
+  end
 end;
 
 procedure TfrmPrincipal.Edit2KeyPress(Sender: TObject; var Key: char);

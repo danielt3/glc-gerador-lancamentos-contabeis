@@ -32,6 +32,7 @@ uses
       Formato: String;
       Tamanho: Integer;
       TemDados: Boolean;
+      Obrigatorio: Boolean;
     end;
     TCamposLancamento = array of TCampoLancamento;
 const

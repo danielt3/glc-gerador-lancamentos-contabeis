@@ -241,19 +241,21 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure memAnotacoesExit(Sender: TObject);
-    procedure EmpresaProxima(Sender: TObject);
-    procedure EmpresaAnterior(Sender: TObject);
     procedure cmbLookupKeyPress(Sender: TObject; var Key: char);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
+
+    procedure EmpresaProxima(Sender: TObject);
+    procedure EmpresaAnterior(Sender: TObject);
     procedure GravarInserirCampo(pNomeCampo: String);
     procedure DateValidator(Sender: TObject; var Key: char);
     procedure DecimalValidator(Sender: TObject; var Key: char);
     procedure DecimalExit(Sender: TObject);
     procedure ComboValidator(Sender: TObject; var Key: char);
-    procedure MenuItem5Click(Sender: TObject);
+    procedure CheckboxDrawItem(Control: TWinControl; Index: Integer; ARect: TRect; State: TOwnerDrawState);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -1494,9 +1496,7 @@ var
   lCampo: String;
 begin
   DataModule1.CarregarCamposDisponiveis(chkCamposDisponiveis);
-
-  while (chkCamposUtilizados.Items.Count > 0) do
-    chkCamposUtilizados.Items.Delete(0);
+  chkCamposUtilizados.Items.Clear;
 
   lComandoSQL := 'SELECT' + NewLine +
                  '  chave,' + NewLine +
@@ -1530,7 +1530,7 @@ begin
   edtNomeLayout.Text := '';
 
   DataModule1.CarregarCamposDisponiveis(chkCamposDisponiveis);
-  chkCamposUtilizados.Items.Clear;
+  DataModule1.CarregarCamposUtilizados(chkCamposUtilizados);
 end;
 
 procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
@@ -1626,7 +1626,7 @@ begin
 
   for i := 0 to pLista.Items.Count - 1 do
   begin
-    if pLista.Checked[i] then
+    if pLista.Selected[i] then
     begin
       result := i;
       break;
@@ -2940,6 +2940,32 @@ begin
     Key := #0;
 end;
 
+procedure TfrmPrincipal.CheckboxDrawItem(Control: TWinControl; Index: Integer; ARect: TRect; State: TOwnerDrawState);
+begin
+  if Index in [1,2] then
+  begin
+     Dec(ARect.Left,13);
+     (Control as TCheckListBox).Canvas.FillRect(ARect);       { clear the rectangle }
+     (Control as TCheckListBox).Canvas.TextOut(ARect.Left+13, ARect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
+  end else
+  begin
+     (Control as TCheckListBox).Canvas.FillRect(ARect);       { clear the rectangle }
+     (Control as TCheckListBox).Canvas.TextOut(ARect.Left, ARect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
+  end;
+  {
+  if Index in [1,2] then
+  begin
+     Dec(Rect.Left,13);
+     CheckListBox1.Canvas.FillRect(Rect);       { clear the rectangle }
+     CheckListBox1.Canvas.TextOut(Rect.Left+13, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
+  end else
+  begin
+     CheckListBox1.Canvas.FillRect(Rect);       { clear the rectangle }
+     CheckListBox1.Canvas.TextOut(Rect.Left, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
+  end;
+  }
+end;
+
 procedure TfrmPrincipal.MenuItem5Click(Sender: TObject);
 begin
   if not DataModule1.qLancamentos.IsEmpty and MensagemConfirmacao('Deseja realmente excluir esse lançamento?', 'Lançamentos') then
@@ -3170,8 +3196,8 @@ begin
         lInteiro := lInteiro;
         lDecimal := TEdit(Sender).Text;
         lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, 2);
-        if (Length(lDecimal) < 2)
-        lDecimal := lDecimal + Key;
+        if (Length(lDecimal) < 2) then
+          lDecimal := lDecimal + Key;
 
         lInteiro2 := '';
         lTam := Length(lInteiro);
@@ -3570,56 +3596,76 @@ end;
 procedure TfrmPrincipal.Arrow1Click(Sender: TObject);
 var
   i: Integer;
+  lSelected: boolean;
 begin
   while TemCampoSelecionado(chkCamposDisponiveis) > -1 do
   begin
     i := TemCampoSelecionado(chkCamposDisponiveis);
+    lSelected := chkCamposDisponiveis.Selected[i + 1];
 
     chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
     chkCamposDisponiveis.Items.Delete(i);
+    chkCamposDisponiveis.Selected[i] := lSelected;
   end;
 end;
 
 procedure TfrmPrincipal.Arrow2Click(Sender: TObject);
 var
   i: Integer;
+  lSelected: boolean;
 begin
   while TemCampoSelecionado(chkCamposUtilizados) > -1 do
   begin
-    i := TemCampoSelecionado(chkCamposUtilizados);
+    if not (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) or not DataModule1.CampoLancamentoObrigatorio then
+    begin
+      i := TemCampoSelecionado(chkCamposUtilizados);
+      lSelected := chkCamposUtilizados.Selected[i + 1];
 
-    chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
-    chkCamposUtilizados.Items.Delete(i);
+      chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
+      chkCamposUtilizados.Items.Delete(i);
+      chkCamposUtilizados.Selected[i] := lSelected;
+    end
+    else
+    begin
+      i := TemCampoSelecionado(chkCamposUtilizados);
+      chkCamposUtilizados.Selected[i] := false;
+    end;
   end;
 end;
 
 procedure TfrmPrincipal.Arrow3Click(Sender: TObject);
 var
   i: Integer;
+  lSelected: boolean;
 begin
   while TemCampoSelecionado(chkLayoutsUtilizados) > -1 do
   begin
     i := TemCampoSelecionado(chkLayoutsUtilizados);
+    lSelected := chkLayoutsUtilizados.Selected[i + 1];
 
     chkLayoutsDisponiveis.Items.Add(chkLayoutsUtilizados.Items.Strings[i]);
     chkLayoutsUtilizados.Items.Delete(i);
     fLayoutsDisponiveis.Add(fLayoutsUtilizados.Strings[i]);
     fLayoutsUtilizados.Delete(i);
+    chkLayoutsUtilizados.Selected[i] := lSelected;
   end;
 end;
 
 procedure TfrmPrincipal.Arrow4Click(Sender: TObject);
 var
   i: Integer;
+  lSelected: boolean;
 begin
   while TemCampoSelecionado(chkLayoutsDisponiveis) > -1 do
   begin
     i := TemCampoSelecionado(chkLayoutsDisponiveis);
+    lSelected := chkLayoutsDisponiveis.Selected[i + 1];
 
     chkLayoutsUtilizados.Items.Add(chkLayoutsDisponiveis.Items.Strings[i]);
     chkLayoutsDisponiveis.Items.Delete(i);
     fLayoutsUtilizados.Add(fLayoutsDisponiveis.Strings[i]);
     fLayoutsDisponiveis.Delete(i);
+    chkLayoutsDisponiveis.Selected[i] := lSelected;
   end;
 end;
 

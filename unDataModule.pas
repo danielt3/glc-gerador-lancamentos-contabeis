@@ -61,7 +61,7 @@ type
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
 
     procedure MontarCamposLancamento;
-    procedure AddCampoLancamento(Nome, Descricao, Tipo, Formato: String; Tamanho: Integer; TemDados: Boolean = false);
+    procedure AddCampoLancamento(Nome, Descricao, Tipo, Formato: String; Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean = false);
 
     function  getDataSetType(Nome: String): TFieldType;
   public
@@ -86,10 +86,12 @@ type
     function  CampoLancamentoFormato: String;
     function  CampoLancamentoTamanho: Integer;
     function  CampoLancamentoDados: Boolean; overload;
+    function  CampoLancamentoObrigatorio: Boolean; overload;
     function  CampoLancamentoDisPlayFormat: String;
     function  CampoLancamentoDescricao(NomeCampo: String): String; overload;
     function  CampoLancamentoDescricao: String; overload;
     procedure CarregarCamposDisponiveis(var pLista: TCheckListBox);
+    procedure CarregarCamposUtilizados(var pLista: TCheckListBox);
 
     procedure GravarListaCampos(pTabela: TZQuery; pNomeArquivo: String);
 
@@ -319,22 +321,22 @@ end;
 
 procedure TDataModule1.MontarCamposLancamento;
 begin
-  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,##', 8, false);
-  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,##', 8, false);
-  AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false);
-  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, true);
-  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false);
-  AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false);
-  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, true);
-  AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, false);
-  AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, false);
-  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false);
-  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false);
-  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,##', 8, false);
+  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,##', 8, false, false);
+  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,##', 8, false, false);
+  AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false, false);
+  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false, true);
+  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false, false);
+  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, false, true);
+  AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, true, false);
+  AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, true, false);
+  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,##', 8, true, false);
   //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
 end;
 
-procedure TDataModule1.AddCampoLancamento(Nome, Descricao, Tipo, Formato: String;Tamanho: Integer; TemDados: Boolean);
+procedure TDataModule1.AddCampoLancamento(Nome, Descricao, Tipo, Formato: String;Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean);
 var
   i: Integer;
 begin
@@ -347,6 +349,7 @@ begin
   fCamposLancamento[i].Formato := Formato;
   fCamposLancamento[i].Tamanho := Tamanho;
   fCamposLancamento[i].TemDados := TemDados;
+  fCamposLancamento[i].Obrigatorio := Obrigatorio;
 end;
 
 procedure TDataModule1.CampoLancamentoFirst;
@@ -412,6 +415,8 @@ begin
       result := fCamposLancamento[fCampoLancamentoAtual].Formato
     else if (LowerCase(Atributo) = 'tamanho') then
       result := IntToStr(fCamposLancamento[fCampoLancamentoAtual].Tamanho)
+    else if (LowerCase(Atributo) = 'obrigatorio') then
+      result := iif(fCamposLancamento[fCampoLancamentoAtual].Obrigatorio, 'S', 'N')
     else if (LowerCase(Atributo) = 'temdados') then
       result := iif(fCamposLancamento[fCampoLancamentoAtual].TemDados, 'S', 'N');
   end;
@@ -450,6 +455,11 @@ begin
   result := CampoLancamentoValor('temdados') = 'S';
 end;
 
+function TDataModule1.CampoLancamentoObrigatorio: Boolean;
+begin
+  result := CampoLancamentoValor('obrigatorio') = 'S';
+end;
+
 function TDataModule1.CampoLancamentoDisPlayFormat: String;
 begin
   if (CampoLancamentoTipo = 'Decimal') then
@@ -478,7 +488,23 @@ begin
   pLista.Items.Clear;
 
   for i := Low(fCamposLancamento) to High(fCamposLancamento) do
-    pLista.Items.Add(fCamposLancamento[i].Descricao);
+  begin
+    if not fCamposLancamento[i].Obrigatorio then
+      pLista.Items.Add(fCamposLancamento[i].Descricao);
+  end;
+end;
+
+procedure TDataModule1.CarregarCamposUtilizados(var pLista: TCheckListBox);
+var
+  i: Integer;
+begin
+  pLista.Items.Clear;
+
+  for i := Low(fCamposLancamento) to High(fCamposLancamento) do
+  begin
+    if fCamposLancamento[i].Obrigatorio then
+      pLista.Items.Add(fCamposLancamento[i].Descricao);
+  end;
 end;
 
 function TDataModule1.getDataSetType(Nome: String): TFieldType;

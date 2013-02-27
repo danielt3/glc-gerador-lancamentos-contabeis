@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pClientes
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -694,6 +694,8 @@ object frmPrincipal: TfrmPrincipal
                   Width = 184
                   Enabled = False
                   ItemHeight = 0
+                  MultiSelect = True
+                  Style = lbOwnerDrawFixed
                   TabOrder = 0
                 end
               end
@@ -722,6 +724,8 @@ object frmPrincipal: TfrmPrincipal
                   Width = 180
                   Enabled = False
                   ItemHeight = 0
+                  MultiSelect = True
+                  Style = lbOwnerDrawFixed
                   TabOrder = 0
                 end
               end
@@ -833,8 +837,10 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               ItemHeight = 0
+              MultiSelect = True
               OnClick = chkCamposDisponiveisClick
               PopupMenu = popLayout
+              Style = lbOwnerDrawFixed
               TabOrder = 0
             end
           end
@@ -855,8 +861,10 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               ItemHeight = 0
+              MultiSelect = True
               OnClick = chkCamposUtilizadosClick
               PopupMenu = popLayout
+              Style = lbOwnerDrawFixed
               TabOrder = 0
             end
           end

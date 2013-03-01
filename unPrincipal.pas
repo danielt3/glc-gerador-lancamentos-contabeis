@@ -339,6 +339,7 @@ type
     procedure CancelarVinculador;
     function  ValidarVinculador: Boolean;
     function  CarregarVinculador: Boolean;
+    function ProximoCodigoVinculador: String;
     function GravarVinculador: Boolean;
     function GravarInserirVinculador: Boolean;
     function GravarAlterarVinculador: Boolean;
@@ -1172,7 +1173,7 @@ begin
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pVinculador;
-  edtCodigoVinculador.Text := '0';
+  edtCodigoVinculador.Text := ProximoCodigoVinculador;
   edtNomeVinculador.SetFocus;
 end;
 
@@ -1236,7 +1237,7 @@ begin
   begin
     fVinculadorAtual := DataModule1.qVinculadores.FieldByName('chave').AsInteger;
 
-    edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('chave').AsString;
+    edtCodigoVinculador.Text := DataModule1.qVinculadores.FieldByName('codigo').AsString;
     edtNomeVinculador.Text := DataModule1.qVinculadores.FieldByName('descricao').AsString;
 
     if (fListaDebito.IndexOf(DataModule1.qVinculadores.FieldByName('id_debitar').AsString) > -1) then
@@ -1277,6 +1278,21 @@ begin
     CarregarLayoutsDisponiveis;
     CarregarLayoutsUtilizados;
   end;
+end;
+
+function TfrmPrincipal.ProximoCodigoVinculador: String;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  MAX(codigo) as codigo' + NewLine +
+                 'FROM' + NewLine +
+                 '  vinculadores' + NewLine +
+                 'WHERE' + NewLine +
+                 '  empresa = ' + IntToStr(fEmpresaAtual);
+
+  if DataModule1.NovaConsulta('NovoVinculador', lComandoSQL) > 0 then
+   result := IntToStr(DataModule1.getQuery('NovoVinculador').FieldByName('codigo').AsInteger + 1);
 end;
 
 function TfrmPrincipal.GravarVinculador: Boolean;
@@ -1327,6 +1343,7 @@ begin
       lCredito := '0';
 
     fVinculadorAtual := DataModule1.GerarChave('GEN_VINCULADORES', true);
+    //fVinculadorAtual := StrToInt(edtCodigoVinculador.Text);
     lComando := 'INSERT INTO vinculadores (' + NewLine +
                 'chave,' + NewLine +
                 'empresa,' + NewLine +
@@ -1338,7 +1355,7 @@ begin
                 'VALUES (' + NewLine +
                 '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                 '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
-                '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
+                '' + edtCodigoVinculador.Text + ',' + NewLine +
                 '' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
                 '' + lDebito + ',' + NewLine +
                 '' + lCredito + ',' + NewLine +

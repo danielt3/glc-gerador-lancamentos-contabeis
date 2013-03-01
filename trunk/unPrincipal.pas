@@ -637,7 +637,7 @@ begin
                 'ORDER BY' +
                 '  codigo';
 
-    if (DataModule1.Consultar(lComando) > 1) then
+    if (DataModule1.Consultar(lComando) > 0) then
     begin
       DataModule1.qConsulta.First;
       while not DataModule1.qConsulta.EOF do
@@ -858,17 +858,20 @@ begin
 
   while not DataModule1.qPlanoContas.Eof do
   begin
-    lChave := DataModule1.qPlanoContas.FieldByName('CHAVE').AsString;
-    if (DataModule1.qPlanoContas.FieldByName('CHAVE').AsInteger = 2692) then
-      Application.ProcessMessages;
-    fListaDebito.Add(lChave);
-    fListaCredito.Add(lChave);
-    fListaDebito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
-    fListaCredito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
-    fListaDebito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
-    fListaCredito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
-    fListaDebito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
-    fListaCredito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+    if (DataModule1.qPlanoContas.FieldByName('sintetica').AsString <> 'S') then
+    begin
+      lChave := DataModule1.qPlanoContas.FieldByName('CHAVE').AsString;
+      if (DataModule1.qPlanoContas.FieldByName('CHAVE').AsInteger = 2692) then
+        Application.ProcessMessages;
+      fListaDebito.Add(lChave);
+      fListaCredito.Add(lChave);
+      fListaDebito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+      fListaCredito2.Add(DataModule1.qPlanoContas.FieldByName('codigo').AsString);
+      fListaDebito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
+      fListaCredito3.Add(MascararTexto(DataModule1.qPlanoContas.FieldByName('classificacao').AsString, edtMascaraPlanoContas.Text));
+      fListaDebito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+      fListaCredito4.Add(DataModule1.qPlanoContas.FieldByName('descricao').AsString);
+    end;
 
     DataModule1.qPlanoContas.Next;
   end;
@@ -1261,6 +1264,7 @@ var
   lVinculadorAtual: Integer;
 begin
   result := false;
+
   if (fEstadoVinculador = taInclusao) then
   begin
     result := GravarInserirVinculador;
@@ -1272,7 +1276,9 @@ begin
     result := GravarAlterarVinculador;
   end;
 
-  GravarLayoutsUtilizados;
+  if (result) then
+    GravarLayoutsUtilizados;
+
   CarregarVinculadores(fEmpresaAtual);
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lVinculadorAtual), []);
   CarregarVinculador;
@@ -1283,10 +1289,22 @@ end;
 function TfrmPrincipal.GravarInserirVinculador: Boolean;
 var
   lComando: String;
+  lCredito: String;
+  lDebito: String;
 begin
   result := false;
 
   try
+    if (fListaDebito2.IndexOf(edtCodigoDebitar.Text) > -1) then
+      lDebito := fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)]
+    else
+      lDebito := '0';
+
+    if (fListaCredito2.IndexOf(edtCodigoCreditar.Text) > -1) then
+      lCredito := fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)]
+    else
+      lCredito := '0';
+
     fVinculadorAtual := DataModule1.GerarChave('GEN_VINCULADORES', true);
     lComando := 'INSERT INTO vinculadores (' + NewLine +
                 'chave,' + NewLine +
@@ -1301,8 +1319,8 @@ begin
                 '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                 '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                 '' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
-                '' + fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)] + ',' + NewLine +
-                '' + fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)] + ',' + NewLine +
+                '' + lDebito + ',' + NewLine +
+                '' + lCredito + ',' + NewLine +
                 '' + QuotedStr(edtHistorico.Text) + ')';
 
     result := DataModule1.Executar(lComando);
@@ -1314,16 +1332,28 @@ end;
 function TfrmPrincipal.GravarAlterarVinculador: Boolean;
 var
   lComando: String;
+  lCredito: String;
+  lDebito: String;
 begin
   result := false;
 
   try
+    if (fListaDebito2.IndexOf(edtCodigoDebitar.Text) > -1) then
+      lDebito := fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)]
+    else
+      lDebito := '0';
+
+    if (fListaCredito2.IndexOf(edtCodigoCreditar.Text) > -1) then
+      lCredito := fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)]
+    else
+      lCredito := '0';
+
     lComando := 'UPDATE' + NewLine +
                 '  vinculadores' + NewLine +
                 'SET ' + NewLine +
                 '  descricao = ' + QuotedStr(Trim(edtNomeVinculador.Text)) + ',' + NewLine +
-                '  debitar = ' + fListaDebito.Strings[fListaDebito2.IndexOf(edtCodigoDebitar.Text)] + ',' + NewLine +
-                '  creditar = ' + fListaCredito.Strings[fListaCredito2.IndexOf(edtCodigoCreditar.Text)] + ',' + NewLine +
+                '  debitar = ' + lDebito + ',' + NewLine +
+                '  creditar = ' + lCredito + ',' + NewLine +
                 '  historico = ' + QuotedStr(edtHistorico.Text) + NewLine +
                 'WHERE' + NewLine +
                 '  chave = ' + IntToStr(fVinculadorAtual);
@@ -1430,10 +1460,12 @@ begin
       lCampoAtual := DataModule1.GerarChave('GEN_VINCULADORES_LAYOUT');
       lComando := 'INSERT INTO vinculadores_layout (' + NewLine +
                   'chave,' + NewLine +
+                  'empresa,' + NewLine +
                   'vinculador,' + NewLine +
                   'layout)' + NewLine +
                   'VALUES (' + NewLine +
                   '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                  '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                   '' + IntToStr(fVinculadorAtual) + ',' + NewLine +
                   '' + fLayoutsUtilizados.Strings[i] + ')';
 
@@ -1701,10 +1733,12 @@ begin
         lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
         lComando := 'INSERT INTO layout_campos (' + NewLine +
                     'chave,' + NewLine +
+                    'empresa,' + NewLine +
                     'layout,' + NewLine +
                     'nome)' + NewLine +
                     'VALUES (' + NewLine +
                     '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                    '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                     '' + IntToStr(fLayoutAtual) + ',' + NewLine +
                     '' + QuotedStr(DataModule1.CampoLancamentoNome) + ')';
 
@@ -1791,11 +1825,13 @@ begin
     lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS_DADOS');
     lComando := 'INSERT INTO layout_campos_dados (' + NewLine +
                 'chave,' + NewLine +
+                'empresa,' + NewLine +
                 'layout,' + NewLine +
                 'campo,' + NewLine +
                 'dado)' + NewLine +
                 'VALUES (' + NewLine +
                 '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                 '' + IntToStr(fLayoutAtual) + ',' + NewLine +
                 '' + QuotedStr(Copy(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex], 1, 20)) + ',' + NewLine +
                 '' + QuotedStr(Copy(pNomeCampo, 1, 100)) + ')';
@@ -2676,6 +2712,7 @@ begin
     lArquivo := TStringList.Create;
     lLinha := TStringList.Create;
     lLinha.Delimiter := '|';
+    Cursor := crHourGlass;
 
     try
       try
@@ -2732,12 +2769,16 @@ begin
             lComandoSQL := lComandoSQL + ')';
 
             DataModule1.Executar(lComandoSQL);
+            Application.ProcessMessages;
           end;
         end;
+
+        MensagemSucesso('Tabelas importadas com sucesso!', 'Importação de tabelas');
       except on e:exception do
         MensagemErro(e.Message, 'Importar Tabelas');
       end;
     finally
+      Cursor := crDefault;
       FreeAndNil(lArquivo);
       FreeAndNil(lLinha);
     end;
@@ -3391,13 +3432,14 @@ end;
 
 procedure TfrmPrincipal.edtCodigoCreditarExit(Sender: TObject);
 begin
-  if not Vazio(edtCodigoCreditar.Text) then
+  if not Vazio(edtCodigoCreditar.Text) and (fListaCredito2.IndexOf(ApenasNumeros(edtCodigoCreditar.Text)) > -1) then
   begin
     edtClassificacaoCreditar.Text := fListaCredito3.Strings[fListaCredito2.IndexOf(ApenasNumeros(edtCodigoCreditar.Text))];
     edtNomeCreditar.Text := fListaCredito4.Strings[fListaCredito2.IndexOf(ApenasNumeros(edtCodigoCreditar.Text))];
   end
   else
   begin
+    edtCodigoCreditar.Text := '';
     edtClassificacaoCreditar.Text := '';
     edtNomeCreditar.Text := '';
   end;
@@ -3438,13 +3480,14 @@ end;
 
 procedure TfrmPrincipal.edtCodigoDebitarExit(Sender: TObject);
 begin
-  if not Vazio(edtCodigoDebitar.Text) then
+  if not Vazio(edtCodigoDebitar.Text) and (fListaDebito2.IndexOf(ApenasNumeros(edtCodigoDebitar.Text)) > -1) then
   begin
     edtClassificacaoDebitar.Text := fListaDebito3.Strings[fListaDebito2.IndexOf(ApenasNumeros(edtCodigoDebitar.Text))];
     edtNomeDebitar.Text := fListaDebito4.Strings[fListaDebito2.IndexOf(ApenasNumeros(edtCodigoDebitar.Text))];
   end
   else
   begin
+    edtCodigoDebitar.Text := '';
     edtClassificacaoDebitar.Text := '';
     edtNomeDebitar.Text := '';
   end;

@@ -1,4 +1,10 @@
-UPDATE layouts SET
-  nome = 'TESTE 1'
-WHERE
-  chave = 15
+INSERT INTO vinculadores_layout (
+chave,
+empresa,
+vinculador,
+layout)
+VALUES (
+13,
+2,
+2,
+1)

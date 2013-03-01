@@ -58,7 +58,8 @@ type
     procedure CriarTabelaLancamentos;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
-    procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
+    procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String; SQLDefault: String = '');
+    procedure DeletarCampo(lNomeTabela, lNomeCampo: String);
 
     procedure MontarCamposLancamento;
     procedure AddCampoLancamento(Nome, Descricao, Tipo, Formato: String; Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean = false);
@@ -176,6 +177,7 @@ begin
   CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CODIGO', 'VARCHAR(10) NOT NULL');
   //CampoExiste('VINCULADORES', 'DATA', 'DATE');
+  DeletarCampo('VINCULADORES', 'DATA');
   CampoExiste('VINCULADORES', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
   CampoExiste('VINCULADORES', 'DEBITAR', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CREDITAR', 'INT NOT NULL');
@@ -185,6 +187,7 @@ end;
 procedure TDataModule1.CriarTabelaVinculadoresLayouts;
 begin
   TabelaExiste('VINCULADORES_LAYOUT');
+  CampoExiste('VINCULADORES_LAYOUT', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM VINCULADORES WHERE VINCULADORES.CHAVE = VINCULADORES_LAYOUT.LAYOUT');
   CampoExiste('VINCULADORES_LAYOUT', 'VINCULADOR', 'INT NOT NULL');
   CampoExiste('VINCULADORES_LAYOUT', 'LAYOUT', 'INT NOT NULL');
 end;
@@ -199,6 +202,7 @@ end;
 procedure TDataModule1.CriarTabelaLayoutsCampos;
 begin
   TabelaExiste('LAYOUT_CAMPOS');
+  CampoExiste('LAYOUT_CAMPOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUTS WHERE LAYOUTS.CHAVE = LAYOUT_CAMPOS.LAYOUT');
   CampoExiste('LAYOUT_CAMPOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LAYOUT_CAMPOS', 'NOME', 'VARCHAR(20) NOT NULL');
 end;
@@ -206,6 +210,7 @@ end;
 procedure TDataModule1.CriarListaDadosCampo;
 begin
   TabelaExiste('LAYOUT_CAMPOS_DADOS');
+  CampoExiste('LAYOUT_CAMPOS_DADOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUT_CAMPOS WHERE LAYOUT_CAMPOS.LAYOUT = LAYOUT_CAMPOS_DADOS.LAYOUT AND LAYOUT_CAMPOS.NOME = LAYOUT_CAMPOS_DADOS.CAMPO');
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'CAMPO', 'VARCHAR(20) NOT NULL');
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'DADO', 'VARCHAR(100) NOT NULL');
@@ -294,7 +299,8 @@ begin
   end;
 end;
 
-procedure TDataModule1.CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
+procedure TDataModule1.CampoExiste(lNomeTabela, lNomeCampo, lTipo: String;
+  SQLDefault: String);
 var
   lCamposExistentes: TZQuery;
   lComandoSQL: String;
@@ -315,6 +321,40 @@ begin
     lComandoSQL := 'ALTER TABLE' + NewLine +
                    '  ' + Trim(lNomeTabela) + NewLine +
                    'ADD ' + Trim(lNomeCampo) + ' ' + Trim(lTipo);
+    Executar(lComandoSQL);
+
+    if not Vazio(SQLDefault) then
+    begin
+      lComandoSQL := 'UPDATE' + NewLine +
+                     '  ' + Trim(lNomeTabela) + NewLine +
+                     'SET ' + Trim(lNomeCampo) + ' = (' + Trim(SQLDefault) + ')';
+
+      Executar(lComandoSQL);
+    end;
+  end;
+end;
+
+procedure TDataModule1.DeletarCampo(lNomeTabela, lNomeCampo: String);
+var
+  lCamposExistentes: TZQuery;
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'select' + NewLine +
+                 '  RDB$RELATION_NAME,' + NewLine +
+                 '  RDB$FIELD_NAME' + NewLine +
+                 'from' + NewLine +
+                 '  RDB$RELATION_FIELDS' + NewLine +
+                 'where' + NewLine +
+                 '  RDB$RELATION_NAME = ' + QuotedStr(Trim(lNomeTabela)) + ' AND' + NewLine +
+                 '  RDB$FIELD_NAME = ' + QuotedStr(Trim(lNomeCampo));
+
+  lCamposExistentes := NovaConsulta(lComandoSQL);
+
+  if not lCamposExistentes.IsEmpty then
+  begin
+    lComandoSQL := 'ALTER TABLE' + NewLine +
+                   '  ' + Trim(lNomeTabela) + NewLine +
+                   'DROP ' + Trim(lNomeCampo);
     Executar(lComandoSQL);
   end;
 end;

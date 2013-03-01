@@ -1,7 +1,6 @@
 SELECT
-  dado
+  nome
 FROM
-  layout_campos_dados
+  layout_campos
 WHERE
-  layout = 0 AND
-  campo = 'none'
+  layout = 0

@@ -1,6 +1,7 @@
 SELECT
-  MAX(codigo) as codigo
+  dado
 FROM
-  vinculadores
+  layout_campos_dados
 WHERE
-  empresa = 2
+  layout = 0 AND
+  campo = 'none'

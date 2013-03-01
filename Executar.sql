@@ -1,10 +1,10 @@
-INSERT INTO vinculadores_layout (
+INSERT INTO layout_campos (
 chave,
 empresa,
-vinculador,
-layout)
+layout,
+nome)
 VALUES (
-14,
+132,
 2,
-7,
-1)
+16,
+'entrada')

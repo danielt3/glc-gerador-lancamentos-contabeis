@@ -230,6 +230,7 @@ type
     procedure edtCodigoDebitarExit(Sender: TObject);
     procedure edtCodigoDebitarKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure edtCodigoDebitarKeyPress(Sender: TObject; var Key: char);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -327,6 +328,7 @@ type
     function ProximoCodigoPlanoConta: String;
     procedure ConsultarVinculadorDebito(pRegistro: Integer);
     procedure ConsultarVinculadorCredito(pRegistro: Integer);
+    function BuscarPlanoNaLista(pListaPlano: TStringList; Codigo: String): Integer;
     //Vinculadores
     function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
     procedure LimparTelaVinculadores;
@@ -340,7 +342,7 @@ type
     function GravarVinculador: Boolean;
     function GravarInserirVinculador: Boolean;
     function GravarAlterarVinculador: Boolean;
-    function CarregarLayoutsDisponiveis: Boolean;
+    function CarregarLayoutsDisponiveis(Todos: Boolean = false): Boolean;
     function CarregarLayoutsUtilizados: Boolean;
     function GravarLayoutsUtilizados: Boolean;
     //Layouts
@@ -468,17 +470,17 @@ begin
 
   if Vazio(edtCodigoEmpresa.Text) then
   begin
-    MensagemAlerta('Por favor informar o código da empresa', 'Validar Empresa');
+    MensagemAlerta('Por favor informar o código da empresa', 'Erro');
     edtCodigoEmpresa.SetFocus;
   end
   else if Vazio(edtNomeEmpresa.Text) then
   begin
-    MensagemAlerta('Por favor informar o nome da empresa', 'Validar Empresa');
+    MensagemAlerta('Por favor informar o nome da empresa', 'Erro');
     edtNomeEmpresa.SetFocus;
   end
   else if Vazio(edtCNPJEmpresa.Text) then
   begin
-    MensagemAlerta('Por favor informar o CNPJ da empresa', 'Validar Empresa');
+    MensagemAlerta('Por favor informar o CNPJ da empresa', 'Erro');
     edtCNPJEmpresa.SetFocus;
   end
   else
@@ -1063,6 +1065,22 @@ begin
   edtCodigoCreditarExit(edtCodigoCreditar);
 end;
 
+function TfrmPrincipal.BuscarPlanoNaLista(pListaPlano: TStringList; Codigo: String): Integer;
+var
+  i: Integer;
+begin
+  result := -1;
+
+  for i := 0 to pListaPlano.Count - 1 do
+  begin
+    if (Pos(Codigo, pListaPlano.Strings[i]) > 0) then
+    begin
+      result := i;
+      break;
+    end;
+  end;
+end;
+
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
@@ -1202,7 +1220,7 @@ begin
 
   if (chkLayoutsUtilizados.Items.Count < 1) then
   begin
-    MensagemAlerta('Nâo é permitido gravar  vinculador sem leiaute definido.', 'Validar Vinculador');
+    MensagemAlerta('Nâo é permitido gravar  vinculador sem leiaute definido.', 'Erro');
     chkLayoutsDisponiveis.SetFocus;
   end
   else
@@ -1364,7 +1382,7 @@ begin
   end;
 end;
 
-function TfrmPrincipal.CarregarLayoutsDisponiveis: Boolean;
+function TfrmPrincipal.CarregarLayoutsDisponiveis(Todos: Boolean): Boolean;
 const
   lTabela = 'Vinculadores';
 var
@@ -1382,11 +1400,16 @@ begin
                  '  LEFT JOIN vinculadores_layout b ON (' + NewLine +
                  '    b.layout = a.chave AND' + NewLine +
                  '    b.vinculador = ' + IntToStr(fVinculadorAtual) + ')' + NewLine +
-                 'WHERE' + NewLine +
-                 '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
-                 '  b.chave IS NULL' + NewLine +
-                 'ORDER BY' + NewLine +
-                 '  a.nome';
+                 'WHERE' + NewLine;
+
+  if (Todos) then
+    lComandoSQL := lComandoSQL + '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine
+  else
+    lComandoSQL := lComandoSQL + '  a.empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                                 '  b.chave IS NULL' + NewLine;
+
+  lComandoSQL := lComandoSQL + 'ORDER BY' + NewLine +
+                               '  a.nome';
 
   if DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0 then
   begin
@@ -1596,7 +1619,7 @@ var
   lComandoSQL: String;
 begin
   if ExisteLancamentos then
-      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de excluí-lo é necessário primeiro apagar todos os lançamentos.', 'Excluir Leiaute')
+      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de excluí-lo é necessário primeiro apagar todos os lançamentos.', 'Erro')
   else
   begin
     if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse Leiaute?', 'GLC')) then
@@ -1635,7 +1658,7 @@ begin
   if not (DataModule1.qLayouts.IsEmpty) then
   begin
     if ExisteLancamentos then
-      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de alterá-lo é necessário primeiro apagar todos os lançamentos.', 'Editar Leiaute')
+      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de alterá-lo é necessário primeiro apagar todos os lançamentos.', 'Erro')
     else
     begin
       CarregarLayout;
@@ -3439,6 +3462,7 @@ begin
   end
   else
   begin
+    edtCodigoCreditar.Text := '';
     edtClassificacaoCreditar.Text := '';
     edtNomeCreditar.Text := '';
   end;
@@ -3473,7 +3497,7 @@ end;
 procedure TfrmPrincipal.edtCodigoCreditarKeyPress(Sender: TObject; var Key: char
   );
 begin
-  if (Key <> #8) and (fListaCredito2.IndexOf(edtCodigoCreditar.Text + Key) <= -1) then
+  if (Key <> #8) and (BuscarPlanoNaLista(fListaCredito, edtCodigoCreditar.Text + Key) <= -1) then
     Key := #0;
 end;
 
@@ -3486,6 +3510,7 @@ begin
   end
   else
   begin
+    edtCodigoDebitar.Text := '';
     edtClassificacaoDebitar.Text := '';
     edtNomeDebitar.Text := '';
   end;
@@ -3514,6 +3539,13 @@ begin
       FreeAndNil(lConsultarPlano)
     end;
   end;
+end;
+
+procedure TfrmPrincipal.edtCodigoDebitarKeyPress(Sender: TObject; var Key: char
+  );
+begin
+  if (Key <> #8) and (BuscarPlanoNaLista(fListaDebito, edtCodigoDebitar.Text + Key) <= -1) then
+    Key := #0;
 end;
 
 procedure TfrmPrincipal.edtMascaraPlanoContasChange(Sender: TObject);

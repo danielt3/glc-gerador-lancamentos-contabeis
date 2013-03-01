@@ -738,6 +738,7 @@ object frmPrincipal: TfrmPrincipal
               Enabled = False
               OnExit = edtCodigoDebitarExit
               OnKeyDown = edtCodigoDebitarKeyDown
+              OnKeyPress = edtCodigoDebitarKeyPress
               TabOrder = 2
             end
             object edtCodigoCreditar: TEdit

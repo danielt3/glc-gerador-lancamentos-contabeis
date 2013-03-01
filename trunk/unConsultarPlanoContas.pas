@@ -167,7 +167,7 @@ begin
   begin
     if DataModule1.getQuery(NomeTabela).FieldByName('sintetica').AsString = 'S' then
     begin
-      MensagemAlerta('Não é permitido usar um plano sintético.', 'Consulta de Planos');
+      MensagemAlerta('Não é permitido usar um plano sintético.', 'Erro');
       result := false;
     end;
   end;

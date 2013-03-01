@@ -1,6 +1,1 @@
-SELECT
-  chave
-FROM
-  VINCULADORES
-WHERE
-  chave = 7
+SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 2

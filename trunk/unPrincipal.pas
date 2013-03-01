@@ -358,12 +358,15 @@ type
     procedure EditarLayout;
     function  TemCampoSelecionado(pLista: TCheckListBox): Integer;
     function GravarLayout: Boolean;
+    function ValidarLayout: Boolean;
     function GravarInserirLayout: Boolean;
     function GravarInserirLayoutCampos: Boolean;
     function GravarAlterarLayout: Boolean;
     function GravarAlterarLayoutCampos: Boolean;
     procedure MostrarDadosCampo(pDescricao: String; HabilitarInsercao: Boolean);
     procedure CarregarListaDadosCampo(pNomeCampo: String);
+    function  PodeAdicionarCampo(i: Integer): Boolean;
+    function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -1715,26 +1718,60 @@ var
   lLayoutAtual: Integer;
 begin
   result := false;
-  if (fEstadoLayout = taInclusao) then
+
+  if (ValidarLayout) then
   begin
-    result := GravarInserirLayout;
-    GravarInserirLayoutCampos;
-    lLayoutAtual := fLayoutAtual;
-  end
-  else if (fEstadoLayout = taEdicao) then
-  begin
-    lLayoutAtual := fLayoutAtual;
-    GravarAlterarLayoutCampos;
-    result := GravarAlterarLayout;
+    if (fEstadoLayout = taInclusao) then
+    begin
+      result := GravarInserirLayout;
+      GravarInserirLayoutCampos;
+      lLayoutAtual := fLayoutAtual;
+    end
+    else if (fEstadoLayout = taEdicao) then
+    begin
+      lLayoutAtual := fLayoutAtual;
+      GravarAlterarLayoutCampos;
+      result := GravarAlterarLayout;
+    end;
+
+    CarregarLayouts(fEmpresaAtual);
+    DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lLayoutAtual), []);
+    CarregarLayout;
+    CarregarLancamentoLayouts;
+    CarregarVinculadores(fEmpresaAtual);
+
+    HabilitarLayout(false);
   end;
+end;
 
-  CarregarLayouts(fEmpresaAtual);
-  DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lLayoutAtual), []);
-  CarregarLayout;
-  CarregarLancamentoLayouts;
-  CarregarVinculadores(fEmpresaAtual);
+function TfrmPrincipal.ValidarLayout: Boolean;
+begin
+  result := true;
 
-  HabilitarLayout(false);
+  if not (CampoSendoUtilizado('Valor')) and not (CampoSendoUtilizado('Entrada')) and not (CampoSendoUtilizado('Saída')) then
+  begin
+    MensagemAlerta('Para gravar um leiaute, é necessário informar a tabela "Valor" ou as tabelas "Entrada" e "Saída".', 'Erro');
+    result := false;
+    exit;
+  end
+  else if (CampoSendoUtilizado('Entrada')) and not (CampoSendoUtilizado('Saída')) then
+  begin
+    MensagemAlerta('Ao informar a tabela "Entrada" para o leiaute, é necessário informar também a tabela "Saída".', 'Erro');
+    result := false;
+    exit;
+  end
+  else if (CampoSendoUtilizado('Saída')) and not (CampoSendoUtilizado('Entrada')) then
+  begin
+    MensagemAlerta('Ao informar a tabela "Saída" para o leiaute, é necessário informar também a tabela "Entrada".', 'Erro');
+    result := false;
+    exit;
+  end
+  else if not (CampoSendoUtilizado('Data')) then
+  begin
+    MensagemAlerta('A tabela "Data" é obrigatória.', 'Erro');
+    result := false;
+    exit;
+  end;
 end;
 
 function TfrmPrincipal.GravarInserirLayout: Boolean;
@@ -1927,6 +1964,36 @@ begin
 
   DataModule1.NovaConsulta(lTabela, lComandoSQL);
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
+end;
+
+function TfrmPrincipal.PodeAdicionarCampo(i: Integer): Boolean;
+begin
+  if (chkCamposDisponiveis.Items.Strings[i] = 'Entrada') and (CampoSendoUtilizado('Valor')) then
+    result := false
+  else if (chkCamposDisponiveis.Items.Strings[i] = 'Saída') and (CampoSendoUtilizado('Valor')) then
+    result := false
+  else if (chkCamposDisponiveis.Items.Strings[i] = 'Valor') and (CampoSendoUtilizado('Entrada') or CampoSendoUtilizado('Saída')) then
+    result := false
+  else
+    result := true;
+end;
+
+function TfrmPrincipal.CampoSendoUtilizado(pNomeCampo: String): Boolean;
+var
+  i: Integer;
+  lTeste: String;
+begin
+  result := false;
+
+  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
+  begin
+    lTeste := chkCamposUtilizados.Items.Strings[i];
+    if (lTeste = pNomeCampo) then
+    begin
+      result := true;
+      break;
+    end;
+  end;
 end;
 
 procedure TfrmPrincipal.CarregarLancamentoLayouts;
@@ -3696,8 +3763,12 @@ begin
     i := TemCampoSelecionado(chkCamposDisponiveis);
     lSelected := chkCamposDisponiveis.Selected[i + 1];
 
-    chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
-    chkCamposDisponiveis.Items.Delete(i);
+    if PodeAdicionarCampo(i) then
+    begin
+      chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
+      chkCamposDisponiveis.Items.Delete(i);
+    end;
+
     chkCamposDisponiveis.Selected[i] := lSelected;
   end;
 end;

@@ -58,7 +58,8 @@ type
     procedure CriarTabelaLancamentos;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
-    procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
+    procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String; SQLDefault: String = '');
+    procedure DeletarCampo(lNomeTabela, lNomeCampo: String);
 
     procedure MontarCamposLancamento;
     procedure AddCampoLancamento(Nome, Descricao, Tipo, Formato: String; Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean = false);
@@ -86,6 +87,7 @@ type
     function  CampoLancamentoFormato: String;
     function  CampoLancamentoTamanho: Integer;
     function  CampoLancamentoDados: Boolean; overload;
+    function  CampoLancamentoObrigatorio: Boolean; overload;
     function  CampoLancamentoDisPlayFormat: String;
     function  CampoLancamentoDescricao(NomeCampo: String): String; overload;
     function  CampoLancamentoDescricao: String; overload;
@@ -175,6 +177,7 @@ begin
   CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CODIGO', 'VARCHAR(10) NOT NULL');
   //CampoExiste('VINCULADORES', 'DATA', 'DATE');
+  DeletarCampo('VINCULADORES', 'DATA');
   CampoExiste('VINCULADORES', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
   CampoExiste('VINCULADORES', 'DEBITAR', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CREDITAR', 'INT NOT NULL');
@@ -184,6 +187,7 @@ end;
 procedure TDataModule1.CriarTabelaVinculadoresLayouts;
 begin
   TabelaExiste('VINCULADORES_LAYOUT');
+  CampoExiste('VINCULADORES_LAYOUT', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM VINCULADORES WHERE VINCULADORES.CHAVE = VINCULADORES_LAYOUT.LAYOUT');
   CampoExiste('VINCULADORES_LAYOUT', 'VINCULADOR', 'INT NOT NULL');
   CampoExiste('VINCULADORES_LAYOUT', 'LAYOUT', 'INT NOT NULL');
 end;
@@ -293,7 +297,8 @@ begin
   end;
 end;
 
-procedure TDataModule1.CampoExiste(lNomeTabela, lNomeCampo, lTipo: String);
+procedure TDataModule1.CampoExiste(lNomeTabela, lNomeCampo, lTipo: String;
+  SQLDefault: String);
 var
   lCamposExistentes: TZQuery;
   lComandoSQL: String;
@@ -314,6 +319,40 @@ begin
     lComandoSQL := 'ALTER TABLE' + NewLine +
                    '  ' + Trim(lNomeTabela) + NewLine +
                    'ADD ' + Trim(lNomeCampo) + ' ' + Trim(lTipo);
+    Executar(lComandoSQL);
+
+    if not Vazio(SQLDefault) then
+    begin
+      lComandoSQL := 'UPDATE' + NewLine +
+                     '  ' + Trim(lNomeTabela) + NewLine +
+                     'SET ' + Trim(lNomeCampo) + ' = (' + Trim(SQLDefault) + ')';
+
+      Executar(lComandoSQL);
+    end;
+  end;
+end;
+
+procedure TDataModule1.DeletarCampo(lNomeTabela, lNomeCampo: String);
+var
+  lCamposExistentes: TZQuery;
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'select' + NewLine +
+                 '  RDB$RELATION_NAME,' + NewLine +
+                 '  RDB$FIELD_NAME' + NewLine +
+                 'from' + NewLine +
+                 '  RDB$RELATION_FIELDS' + NewLine +
+                 'where' + NewLine +
+                 '  RDB$RELATION_NAME = ' + QuotedStr(Trim(lNomeTabela)) + ' AND' + NewLine +
+                 '  RDB$FIELD_NAME = ' + QuotedStr(Trim(lNomeCampo));
+
+  lCamposExistentes := NovaConsulta(lComandoSQL);
+
+  if not lCamposExistentes.IsEmpty then
+  begin
+    lComandoSQL := 'ALTER TABLE' + NewLine +
+                   '  ' + Trim(lNomeTabela) + NewLine +
+                   'DROP ' + Trim(lNomeCampo);
     Executar(lComandoSQL);
   end;
 end;
@@ -414,6 +453,8 @@ begin
       result := fCamposLancamento[fCampoLancamentoAtual].Formato
     else if (LowerCase(Atributo) = 'tamanho') then
       result := IntToStr(fCamposLancamento[fCampoLancamentoAtual].Tamanho)
+    else if (LowerCase(Atributo) = 'obrigatorio') then
+      result := iif(fCamposLancamento[fCampoLancamentoAtual].Obrigatorio, 'S', 'N')
     else if (LowerCase(Atributo) = 'temdados') then
       result := iif(fCamposLancamento[fCampoLancamentoAtual].TemDados, 'S', 'N');
   end;
@@ -450,6 +491,11 @@ end;
 function TDataModule1.CampoLancamentoDados: Boolean;
 begin
   result := CampoLancamentoValor('temdados') = 'S';
+end;
+
+function TDataModule1.CampoLancamentoObrigatorio: Boolean;
+begin
+  result := CampoLancamentoValor('obrigatorio') = 'S';
 end;
 
 function TDataModule1.CampoLancamentoDisPlayFormat: String;

@@ -1,7 +1,12 @@
 SELECT
-  dado
+  a.chave,
+  a.nome
 FROM
-  layout_campos_dados
+  layouts a
+  JOIN vinculadores_layout b ON (
+    b.layout = a.chave)
 WHERE
-  layout = 15 AND
-  campo = 'Data'
+  a.empresa = 2 AND
+  b.vinculador = 2
+ORDER BY
+  a.nome

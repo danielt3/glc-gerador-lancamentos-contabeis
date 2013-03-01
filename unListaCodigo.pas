@@ -76,7 +76,7 @@ end;
 
 function TListaCodigo.Value(Index: Integer): Integer;
 begin
-  if Index < Length(fListaCodigo) then
+  if (Index > -1) and (Index < Length(fListaCodigo)) then
     result := fListaCodigo[Index]
   else
     result := 0;

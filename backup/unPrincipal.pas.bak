@@ -1331,6 +1331,7 @@ begin
   CarregarVinculadores(fEmpresaAtual);
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lVinculadorAtual), []);
   CarregarVinculador;
+  MontarTelaLancamento;;
 
   HabilitarVinculadores(false);
 end;

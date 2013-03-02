@@ -33,7 +33,6 @@ type
     btnGravarEmpresa2: TButton;
     btnGravarEmpresa3: TButton;
     btnImportarPlano: TButton;
-    btnImportarPlano1: TButton;
     btnNovaEmpresa: TButton;
     btnNovaEmpresa1: TButton;
     Button1: TButton;
@@ -49,7 +48,6 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
-    Button6: TButton;
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
@@ -90,7 +88,6 @@ type
     edtExportarPlano: TEdit;
     edtExportarPlano1: TEdit;
     edtImportarPlano: TEdit;
-    edtImportarPlano1: TEdit;
     edtNomeEmpresa: TEdit;
     edtNomeVinculador: TEdit;
     edtHistorico: TEdit;
@@ -148,7 +145,6 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
@@ -191,7 +187,6 @@ type
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnGravarLancamentoClick(Sender: TObject);
-    procedure btnImportarPlano1Click(Sender: TObject);
     procedure btnImportarPlanoClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
@@ -392,9 +387,12 @@ type
     function getValue(pNomeCampo: String): String;
     procedure setValue(pNomeCampo: String); Overload;
     //Integração
+    function  ExportarDominio(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     procedure QuebrarString(var pLista: TStringList; pString: String);
+    function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
+    function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
   public
     { public declarations }
   end; 
@@ -2755,6 +2753,134 @@ begin
   end;
 end;
 
+function TfrmPrincipal.ExportarDominio(Empresa: Integer; pNomeArquivo: String;
+  pBarraProgresso: TProgressBar): Boolean;
+const
+  lNomeConsulta = 'Integracao';
+var
+  i: Integer;
+  iSequencial: Integer;
+  lArquivo: TStringList;
+  lLinha: String;
+  pComandoSQL: String;
+  lCodigoEmpresa: String;
+begin
+  result := false;
+  lArquivo := TStringList.Create;
+
+  try
+    try
+      pComandoSQL := 'SELECT' + NewLine +
+                     '  codigo,' + NewLine +
+                     '  nome,' + NewLine +
+                     '  cnpj,' + NewLine +
+                     '  (SELECT MIN(data_lanc) FROM lancamentos WHERE empresa = ' + IntToStr(fEmpresaAtual) + ') AS data_inicial,' + NewLine +
+                     '  (SELECT MAX(data_lanc) FROM lancamentos WHERE empresa = ' + IntToStr(fEmpresaAtual) + ') AS data_final' + NewLine +
+                     'FROM' + NewLine +
+                     '  empresa' + NewLine +
+                     'WHERE' + NewLine +
+                     '  chave = ' + IntToStr(fEmpresaAtual) + NewLine;
+
+      if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
+      begin
+        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 7, '0');
+
+        lLinha := '01' +
+                  lCodigoEmpresa +
+                  AlignLeft(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('cnpj').AsString), 14, '0') +
+                  FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_inicial').AsDateTime) +
+                  FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_final').AsDateTime) +
+                  'N' +
+                  '05' +
+                  '00000' +
+                  '0' +
+                  '17';
+
+        lArquivo.Add(lLinha);
+
+        pComandoSQL := 'SELECT' + NewLine +
+                       '  a.chave,' + NewLine +
+                       '  b.debitar AS chave_debitar,' + NewLine +
+                       '  c.codigo_externo AS debitar,' + NewLine +
+                       '  c.descricao AS no_debitar,' + NewLine +
+                       '  b.creditar AS chave_creditar,' + NewLine +
+                       '  d.codigo_externo AS creditar,' + NewLine +
+                       '  d.descricao AS no_creditar,' + NewLine +
+                       '  CASE' + NewLine +
+                       '    WHEN COALESCE(a.valor, 0) > 0 THEN a.valor' + NewLine +
+                       '    WHEN COALESCE(a.entrada, 0) > 0 THEN a.entrada' + NewLine +
+                       '    WHEN COALESCE(a.saida, 0) > 0 THEN a.saida' + NewLine +
+                       '    ELSE 0' + NewLine +
+                       '  END as valor,' + NewLine +
+                       '  CASE' + NewLine +
+                       '    WHEN NOT a.historico IS NULL THEN a.historico' + NewLine +
+                       '    WHEN NOT a.pago_por IS NULL THEN ''Pago por '' || a.pago_por' + NewLine +
+                       '    WHEN NOT a.fornecedor IS NULL THEN ''Pago a '' || a.fornecedor' + NewLine +
+                       '    WHEN NOT a.cliente IS NULL THEN ''Pago por '' || a.cliente' + NewLine +
+                       '    ELSE ''''' + NewLine +
+                       '  END as historico' + NewLine +
+                       'FROM' + NewLine +
+                       '  lancamentos a' + NewLine +
+                       '  JOIN vinculadores b ON (' + NewLine +
+                       '    b.chave = a.vinculador)' + NewLine +
+                       '  JOIN plano_contas c ON (' + NewLine +
+                       '    c.chave = b.debitar)' + NewLine +
+                       '  JOIN plano_contas d ON (' + NewLine +
+                       '    d.chave = b.creditar)' + NewLine +
+                       'WHERE' + NewLine +
+                       '  a.empresa = ' + IntToStr(fEmpresaAtual) + NewLine;
+
+        DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL);
+
+        iSequencial := 0;
+        DataModule1.getQuery(lNomeConsulta).First;
+        while not DataModule1.getQuery(lNomeConsulta).EOF do
+        begin
+          iSequencial := iSequencial + 1;
+
+          {lLinha := '03' +
+                    AlignRight(IntToStr(iSequencial), 7, '0') +
+                    AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('debitar').AsString), 7, '0') +
+                    AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('creditar').AsString), 7, '0') +
+                    AlignRight(FormatFloat('##############0.00', DataModule1.getQuery(lNomeConsulta).FieldByName('valor').AsFloat), 15, '0') +
+                    AlignRight(IntToStr(iSequencial), 7, '0') +
+                    AlignLeft(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('historico').AsString), 512, ' ') +
+                    lCodigoEmpresa +
+                    AlignLeft('', 100, ' ');}
+
+          lLinha := '03' +
+                    AlignRight(IntToStr(iSequencial), 7, '0') +
+                    AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('debitar').AsString), 7, '0') +
+                    AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('creditar').AsString), 7, '0') +
+                    AlignRight(FormatFloat('##############0.00', DataModule1.getQuery(lNomeConsulta).FieldByName('valor').AsFloat), 15, '0');
+
+          lLinha := lLinha +
+                    AlignRight(IntToStr(iSequencial), 7, '0');
+          lLinha := lLinha +
+                    AlignLeft(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('historico').AsString), 512, ' ');
+          lLinha := lLinha +
+                    lCodigoEmpresa +
+                    AlignLeft('', 100, ' ');
+
+          lArquivo.Add(lLinha);
+          DataModule1.getQuery(lNomeConsulta).Next;
+        end;
+
+        lLinha := '99' +
+                  AlignRight('9', 98, '9') +
+
+        lArquivo.Add(lLinha);
+        lArquivo.SaveToFile(pNomeArquivo);
+        result := true;
+      end;
+    except on e:exception do
+      MensagemErro(e.Message, 'Erro');
+    end;
+  finally
+    lArquivo.Free;
+  end;
+end;
+
 function TfrmPrincipal.ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
 const
   lNomeConsulta = 'Integracao';
@@ -2828,9 +2954,10 @@ begin
       lArquivo.SaveToFile(pNomeArquivo);
       result := true;
     except on e:exception do
-      MensagemErro(e.Message, 'Exportar Tabela');
+      MensagemErro(e.Message, 'Erro');
     end;
   finally
+    lArquivo.Free;
   end;
 end;
 
@@ -2941,6 +3068,42 @@ begin
     lString := Copy(lString, Pos('|', lString) + 1, Length(lString));
 
     pLista.Add(lParte);
+  end;
+end;
+
+function TfrmPrincipal.AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char): String;
+var
+  i: Integer;
+  Caracteres: Integer;
+begin
+  if (Length(Texto) > Tamanho) then
+    result := Copy(Texto, 1, Tamanho)
+  else
+  begin
+    result := Trim(Texto);
+    Caracteres := Tamanho - Length(Texto);
+
+    for i := 1 to Caracteres do
+      result := result + Caractere;
+  end;
+end;
+
+function TfrmPrincipal.AlignRight(Texto: String; Tamanho: Integer; Caractere: Char): String;
+var
+  i: Integer;
+  Caracteres: Integer;
+begin
+  if (Length(Texto) > Tamanho) then
+    result := Copy(Texto, 1, Tamanho)
+  else
+  begin
+    result := '';
+    Caracteres := Tamanho - Length(Texto);
+
+    for i := 1 to Caracteres do
+      result := result + Caractere;
+
+    result := result + Trim(Texto);
   end;
 end;
 
@@ -3707,12 +3870,6 @@ begin
   GravarLancamento;
 end;
 
-procedure TfrmPrincipal.btnImportarPlano1Click(Sender: TObject);
-begin
-  if ImportarTabelas(edtImportarPlano1.Text, nil) then
-    MensagemSucesso('Dados importados com sucesso de ' + edtImportarPlano1.Text, 'Importar dados');
-end;
-
 procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);
 begin
   if FileExists(edtImportarPlano.Text) then
@@ -3743,7 +3900,7 @@ procedure TfrmPrincipal.btnExportarPlano1Click(Sender: TObject);
 var
   lSucesso: Boolean;
 begin
-  if FileExists(edtExportarPlano1.Text) then
+  {if FileExists(edtExportarPlano1.Text) then
     DeleteFile(edtExportarPlano1.Text);
 
   lSucesso := true;
@@ -3753,6 +3910,9 @@ begin
   //lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text, nil);
 
   if (lSucesso) then
+    MensagemSucesso('Dados exportados com sucesso em ' + edtExportarPlano1.Text, 'Exportar dados');}
+
+  if ExportarDominio(fEmpresaAtual, edtExportarPlano1.Text, nil) then
     MensagemSucesso('Dados exportados com sucesso em ' + edtExportarPlano1.Text, 'Exportar dados');
 end;
 

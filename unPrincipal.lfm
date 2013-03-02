@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 490
+  Left = 246
   Height = 592
-  Top = 206
+  Top = 148
   Width = 1045
   Caption = 'GLC - Gerador de Lançamentos Contábeis 1.0'
   ClientHeight = 592
@@ -358,10 +358,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox3: TComboBox
               Left = 14
-              Height = 23
+              Height = 21
               Top = 80
               Width = 100
-              ItemHeight = 15
+              ItemHeight = 13
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -373,10 +373,10 @@ object frmPrincipal: TfrmPrincipal
             end
             object ComboBox4: TComboBox
               Left = 158
-              Height = 23
+              Height = 21
               Top = 80
               Width = 100
-              ItemHeight = 15
+              ItemHeight = 13
               ItemIndex = 0
               Items.Strings = (
                 'Crescente'
@@ -396,7 +396,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo2: TDBLookupComboBox
               Left = 486
-              Height = 23
+              Height = 21
               Top = 24
               Width = 124
               ListFieldIndex = 0
@@ -510,7 +510,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object cmbPlanoContasTipo: TDBLookupComboBox
               Left = 78
-              Height = 23
+              Height = 21
               Top = 41
               Width = 124
               Enabled = False
@@ -1201,7 +1201,7 @@ object frmPrincipal: TfrmPrincipal
     end
     object pIntegracao: TTabSheet
       Caption = 'Integração'
-      ClientHeight = 503
+      ClientHeight = 505
       ClientWidth = 1037
       object GroupBox1: TGroupBox
         Left = 12
@@ -1214,30 +1214,30 @@ object frmPrincipal: TfrmPrincipal
         TabOrder = 0
         object edtImportarPlano: TEdit
           Left = 14
-          Height = 23
+          Height = 21
           Top = 32
           Width = 267
           TabOrder = 0
         end
         object Label4: TLabel
           Left = 14
-          Height = 16
+          Height = 14
           Top = 8
-          Width = 49
+          Width = 46
           Caption = 'Arquivo:.'
           ParentColor = False
         end
         object Label5: TLabel
           Left = 454
-          Height = 16
+          Height = 14
           Top = 8
-          Width = 49
+          Width = 46
           Caption = 'Arquivo:.'
           ParentColor = False
         end
         object edtExportarPlano: TEdit
           Left = 454
-          Height = 23
+          Height = 21
           Top = 32
           Width = 267
           TabOrder = 1
@@ -1297,7 +1297,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object edtExportarPlano1: TEdit
           Left = 14
-          Height = 23
+          Height = 21
           Top = 38
           Width = 267
           TabOrder = 1
@@ -1313,9 +1313,9 @@ object frmPrincipal: TfrmPrincipal
         end
         object Label8: TLabel
           Left = 14
-          Height = 16
+          Height = 14
           Top = 14
-          Width = 49
+          Width = 46
           Caption = 'Arquivo:.'
           ParentColor = False
         end
@@ -1327,18 +1327,18 @@ object frmPrincipal: TfrmPrincipal
   end
   object Label2: TLabel
     Left = 16
-    Height = 16
+    Height = 14
     Top = 543
-    Width = 46
+    Width = 42
     Caption = 'Empresa'
     ParentColor = False
   end
   object cmbEmpresa: TComboBox
     Left = 63
-    Height = 23
+    Height = 21
     Top = 536
     Width = 289
-    ItemHeight = 15
+    ItemHeight = 13
     OnChange = cmbEmpresaChange
     Style = csDropDownList
     TabOrder = 1

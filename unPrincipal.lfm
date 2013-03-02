@@ -1289,7 +1289,7 @@ object frmPrincipal: TfrmPrincipal
         object btnExportarPlano1: TButton
           Left = 326
           Height = 22
-          Top = 38
+          Top = 37
           Width = 85
           Caption = 'Exportar'
           OnClick = btnExportarPlano1Click

@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pIntegracao
     Align = alTop
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -1287,68 +1287,34 @@ object frmPrincipal: TfrmPrincipal
         ClientWidth = 868
         TabOrder = 1
         object btnExportarPlano1: TButton
-          Left = 766
+          Left = 326
           Height = 22
-          Top = 32
+          Top = 37
           Width = 85
           Caption = 'Exportar'
           OnClick = btnExportarPlano1Click
           TabOrder = 0
         end
         object edtExportarPlano1: TEdit
-          Left = 454
+          Left = 14
           Height = 23
-          Top = 32
+          Top = 38
           Width = 267
           TabOrder = 1
           Text = 'C:\A\teste.txt'
         end
         object Button5: TButton
-          Left = 734
+          Left = 294
           Height = 21
-          Top = 32
+          Top = 38
           Width = 25
           Caption = '...'
           TabOrder = 2
         end
-        object btnImportarPlano1: TButton
-          Left = 318
-          Height = 24
-          Top = 29
-          Width = 85
-          Caption = 'Importar'
-          OnClick = btnImportarPlano1Click
-          TabOrder = 3
-        end
-        object Button6: TButton
-          Left = 286
-          Height = 21
-          Top = 32
-          Width = 25
-          Caption = '...'
-          OnClick = Button2Click
-          TabOrder = 4
-        end
-        object edtImportarPlano1: TEdit
-          Left = 14
-          Height = 23
-          Top = 32
-          Width = 267
-          TabOrder = 5
-          Text = 'C:\A\teste.txt'
-        end
-        object Label7: TLabel
-          Left = 14
-          Height = 16
-          Top = 8
-          Width = 49
-          Caption = 'Arquivo:.'
-          ParentColor = False
-        end
         object Label8: TLabel
-          Left = 454
+          Left = 14
           Height = 16
-          Top = 8
+          Top = 14
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False

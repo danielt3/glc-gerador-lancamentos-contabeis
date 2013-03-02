@@ -243,6 +243,8 @@ begin
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
+var
+  lComandoSQL: String;
 begin
   if not FileExists(ExtractFilePath(ApplicationName) + 'DATABASE.FDB') then
     CopyFile(ExtractFilePath(ApplicationName) + 'CLEAR_DATABASE.FDB', ExtractFilePath(ApplicationName) + 'DATABASE.FDB');
@@ -254,6 +256,9 @@ begin
   CriarTabelaLayoutsCampos;
   CriarListaDadosCampo;
   CriarTabelaLancamentos;
+
+  lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
+  Executar(lComandoSQL);
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

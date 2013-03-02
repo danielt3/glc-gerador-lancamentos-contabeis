@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pClientes
     Align = alTop
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pVinculador
+        ActivePage = pEmpresa
         Align = alClient
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -520,6 +520,284 @@ object frmPrincipal: TfrmPrincipal
             end
           end
         end
+        object pLeiaute: TTabSheet
+          Caption = 'Leiaute'
+          ClientHeight = 475
+          ClientWidth = 1029
+          object gbTabelasDisponiveis: TGroupBox
+            Left = 8
+            Height = 193
+            Top = 64
+            Width = 296
+            Caption = 'Tabelas Disponíveis'
+            ClientHeight = 175
+            ClientWidth = 292
+            Enabled = False
+            PopupMenu = popVinculador
+            TabOrder = 0
+            object chkCamposDisponiveis: TCheckListBox
+              Left = 14
+              Height = 152
+              Top = 4
+              Width = 264
+              ItemHeight = 0
+              MultiSelect = True
+              OnClick = chkCamposDisponiveisClick
+              PopupMenu = popLayout
+              Style = lbOwnerDrawFixed
+              TabOrder = 0
+            end
+          end
+          object gbTabelasUtilizadas: TGroupBox
+            Left = 424
+            Height = 193
+            Top = 64
+            Width = 296
+            Caption = 'Tabelas Utlizadas'
+            ClientHeight = 175
+            ClientWidth = 292
+            Enabled = False
+            PopupMenu = popLayout
+            TabOrder = 1
+            object chkCamposUtilizados: TCheckListBox
+              Left = 14
+              Height = 152
+              Top = 4
+              Width = 264
+              ItemHeight = 0
+              MultiSelect = True
+              OnClick = chkCamposUtilizadosClick
+              PopupMenu = popLayout
+              Style = lbOwnerDrawFixed
+              TabOrder = 0
+            end
+          end
+          object Arrow1: TArrow
+            Left = 352
+            Height = 26
+            Top = 104
+            Width = 41
+            ArrowType = atRight
+            OnClick = Arrow1Click
+            PopupMenu = popVinculador
+          end
+          object Arrow2: TArrow
+            Left = 352
+            Height = 26
+            Top = 208
+            Width = 41
+            OnClick = Arrow2Click
+            PopupMenu = popVinculador
+          end
+          object GroupBox14: TGroupBox
+            Left = 760
+            Height = 372
+            Top = 64
+            Width = 258
+            Caption = 'Leiaute'
+            ClientHeight = 354
+            ClientWidth = 254
+            TabOrder = 4
+            object dbgLayouts: TDBGrid
+              Left = 6
+              Height = 332
+              Top = 14
+              Width = 240
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'Nome'
+                  Width = 205
+                  FieldName = 'nome'
+                end>
+              PopupMenu = popLayout
+              ReadOnly = True
+              TabOrder = 0
+              OnMouseUp = dbgLayoutsMouseUp
+            end
+          end
+          object gbInformacoes: TGroupBox
+            Left = 8
+            Height = 174
+            Top = 261
+            Width = 714
+            Caption = 'Informações'
+            ClientHeight = 156
+            ClientWidth = 710
+            Enabled = False
+            PopupMenu = popPlanoContas
+            TabOrder = 5
+            object gdbCaracteristicas: TGroupBox
+              Left = 6
+              Height = 146
+              Top = 2
+              Width = 289
+              Caption = 'Características'
+              ClientHeight = 128
+              ClientWidth = 285
+              TabOrder = 0
+              object Label13: TLabel
+                Left = 14
+                Height = 16
+                Top = 24
+                Width = 31
+                Caption = 'Tipo:.'
+                ParentColor = False
+              end
+              object Label15: TLabel
+                Left = 14
+                Height = 16
+                Top = 56
+                Width = 52
+                Caption = 'Formato:.'
+                ParentColor = False
+              end
+              object Label31: TLabel
+                Left = 14
+                Height = 16
+                Top = 86
+                Width = 62
+                Caption = 'Tam. Máx.:.'
+                ParentColor = False
+              end
+              object edtTipoCampo: TEdit
+                Left = 94
+                Height = 23
+                Top = 17
+                Width = 100
+                Enabled = False
+                PopupMenu = popLayout
+                TabOrder = 0
+              end
+              object edtFormatoCampo: TEdit
+                Left = 94
+                Height = 23
+                Top = 48
+                Width = 100
+                Enabled = False
+                PopupMenu = popLayout
+                TabOrder = 1
+              end
+              object edtTamanhoCampo: TEdit
+                Left = 94
+                Height = 23
+                Top = 79
+                Width = 100
+                Enabled = False
+                PopupMenu = popLayout
+                TabOrder = 2
+              end
+            end
+            object gdbOpcao: TGroupBox
+              Left = 414
+              Height = 146
+              Top = 3
+              Width = 288
+              Caption = 'Opção'
+              ClientHeight = 128
+              ClientWidth = 284
+              TabOrder = 1
+              object btnAdicionarDadosCampo: TButton
+                Left = 6
+                Height = 25
+                Top = 2
+                Width = 32
+                Caption = '+'
+                Enabled = False
+                OnClick = btnAdicionarDadosCampoClick
+                PopupMenu = popVinculador
+                TabOrder = 0
+              end
+              object dbgDadosCampos: TDBGrid
+                Left = 46
+                Height = 119
+                Top = 2
+                Width = 229
+                Color = clWindow
+                Columns = <>
+                FixedCols = 0
+                Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                ReadOnly = True
+                TabOrder = 1
+              end
+              object btnExcluirDadosCampo: TButton
+                Left = 6
+                Height = 25
+                Top = 40
+                Width = 32
+                Caption = '-'
+                Enabled = False
+                OnClick = btnExcluirDadosCampoClick
+                PopupMenu = popVinculador
+                TabOrder = 2
+              end
+            end
+          end
+          object gbNomeLayout: TGroupBox
+            Left = 8
+            Height = 51
+            Top = 8
+            Width = 969
+            Caption = 'Leiaute:.'
+            ClientHeight = 33
+            ClientWidth = 965
+            PopupMenu = popLayout
+            TabOrder = 6
+            object Label23: TLabel
+              Left = 8
+              Height = 16
+              Top = 6
+              Width = 40
+              Caption = 'Nome:.'
+              ParentColor = False
+            end
+            object edtNomeLayout: TEdit
+              Left = 54
+              Height = 23
+              Top = 3
+              Width = 392
+              CharCase = ecUppercase
+              Enabled = False
+              TabOrder = 0
+            end
+          end
+          object btnGravarLayout: TButton
+            Left = 288
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Gravar'
+            OnClick = btnGravarLayoutClick
+            TabOrder = 7
+          end
+          object btnCancelarLayout: TButton
+            Left = 200
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Cancelar'
+            OnClick = btnCancelarLayoutClick
+            TabOrder = 8
+          end
+          object btnEditarLayout: TButton
+            Left = 112
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Editar'
+            OnClick = btnEditarLayoutClick
+            TabOrder = 9
+          end
+          object btnNovoLayout: TButton
+            Left = 24
+            Height = 25
+            Top = 440
+            Width = 75
+            Caption = 'Novo'
+            OnClick = btnNovoLayoutClick
+            TabOrder = 10
+          end
+        end
         object pVinculador: TTabSheet
           Caption = 'Vinculador'
           ClientHeight = 475
@@ -815,284 +1093,6 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 0
               OnMouseUp = dbgPlano1MouseUp
             end
-          end
-        end
-        object pLeiaute: TTabSheet
-          Caption = 'Leiaute'
-          ClientHeight = 475
-          ClientWidth = 1029
-          object gbTabelasDisponiveis: TGroupBox
-            Left = 8
-            Height = 193
-            Top = 64
-            Width = 296
-            Caption = 'Tabelas Disponíveis'
-            ClientHeight = 175
-            ClientWidth = 292
-            Enabled = False
-            PopupMenu = popVinculador
-            TabOrder = 0
-            object chkCamposDisponiveis: TCheckListBox
-              Left = 14
-              Height = 152
-              Top = 4
-              Width = 264
-              ItemHeight = 0
-              MultiSelect = True
-              OnClick = chkCamposDisponiveisClick
-              PopupMenu = popLayout
-              Style = lbOwnerDrawFixed
-              TabOrder = 0
-            end
-          end
-          object gbTabelasUtilizadas: TGroupBox
-            Left = 424
-            Height = 193
-            Top = 64
-            Width = 296
-            Caption = 'Tabelas Utlizadas'
-            ClientHeight = 175
-            ClientWidth = 292
-            Enabled = False
-            PopupMenu = popLayout
-            TabOrder = 1
-            object chkCamposUtilizados: TCheckListBox
-              Left = 14
-              Height = 152
-              Top = 4
-              Width = 264
-              ItemHeight = 0
-              MultiSelect = True
-              OnClick = chkCamposUtilizadosClick
-              PopupMenu = popLayout
-              Style = lbOwnerDrawFixed
-              TabOrder = 0
-            end
-          end
-          object Arrow1: TArrow
-            Left = 352
-            Height = 26
-            Top = 104
-            Width = 41
-            ArrowType = atRight
-            OnClick = Arrow1Click
-            PopupMenu = popVinculador
-          end
-          object Arrow2: TArrow
-            Left = 352
-            Height = 26
-            Top = 208
-            Width = 41
-            OnClick = Arrow2Click
-            PopupMenu = popVinculador
-          end
-          object GroupBox14: TGroupBox
-            Left = 760
-            Height = 372
-            Top = 64
-            Width = 258
-            Caption = 'Leiaute'
-            ClientHeight = 354
-            ClientWidth = 254
-            TabOrder = 4
-            object dbgLayouts: TDBGrid
-              Left = 6
-              Height = 332
-              Top = 14
-              Width = 240
-              Color = clWindow
-              Columns = <              
-                item
-                  Title.Caption = 'Nome'
-                  Width = 205
-                  FieldName = 'nome'
-                end>
-              PopupMenu = popLayout
-              ReadOnly = True
-              TabOrder = 0
-              OnMouseUp = dbgLayoutsMouseUp
-            end
-          end
-          object gbInformacoes: TGroupBox
-            Left = 8
-            Height = 174
-            Top = 261
-            Width = 714
-            Caption = 'Informações'
-            ClientHeight = 156
-            ClientWidth = 710
-            Enabled = False
-            PopupMenu = popPlanoContas
-            TabOrder = 5
-            object gdbCaracteristicas: TGroupBox
-              Left = 6
-              Height = 146
-              Top = 2
-              Width = 289
-              Caption = 'Características'
-              ClientHeight = 128
-              ClientWidth = 285
-              TabOrder = 0
-              object Label13: TLabel
-                Left = 14
-                Height = 16
-                Top = 24
-                Width = 31
-                Caption = 'Tipo:.'
-                ParentColor = False
-              end
-              object Label15: TLabel
-                Left = 14
-                Height = 16
-                Top = 56
-                Width = 52
-                Caption = 'Formato:.'
-                ParentColor = False
-              end
-              object Label31: TLabel
-                Left = 14
-                Height = 16
-                Top = 86
-                Width = 62
-                Caption = 'Tam. Máx.:.'
-                ParentColor = False
-              end
-              object edtTipoCampo: TEdit
-                Left = 94
-                Height = 23
-                Top = 17
-                Width = 100
-                Enabled = False
-                PopupMenu = popLayout
-                TabOrder = 0
-              end
-              object edtFormatoCampo: TEdit
-                Left = 94
-                Height = 23
-                Top = 48
-                Width = 100
-                Enabled = False
-                PopupMenu = popLayout
-                TabOrder = 1
-              end
-              object edtTamanhoCampo: TEdit
-                Left = 94
-                Height = 23
-                Top = 79
-                Width = 100
-                Enabled = False
-                PopupMenu = popLayout
-                TabOrder = 2
-              end
-            end
-            object gdbOpcao: TGroupBox
-              Left = 414
-              Height = 146
-              Top = 3
-              Width = 288
-              Caption = 'Opção'
-              ClientHeight = 128
-              ClientWidth = 284
-              TabOrder = 1
-              object btnAdicionarDadosCampo: TButton
-                Left = 6
-                Height = 25
-                Top = 2
-                Width = 32
-                Caption = '+'
-                Enabled = False
-                OnClick = btnAdicionarDadosCampoClick
-                PopupMenu = popVinculador
-                TabOrder = 0
-              end
-              object dbgDadosCampos: TDBGrid
-                Left = 46
-                Height = 119
-                Top = 2
-                Width = 229
-                Color = clWindow
-                Columns = <>
-                FixedCols = 0
-                Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
-                ReadOnly = True
-                TabOrder = 1
-              end
-              object btnExcluirDadosCampo: TButton
-                Left = 6
-                Height = 25
-                Top = 40
-                Width = 32
-                Caption = '-'
-                Enabled = False
-                OnClick = btnExcluirDadosCampoClick
-                PopupMenu = popVinculador
-                TabOrder = 2
-              end
-            end
-          end
-          object gbNomeLayout: TGroupBox
-            Left = 8
-            Height = 51
-            Top = 8
-            Width = 969
-            Caption = 'Leiaute:.'
-            ClientHeight = 33
-            ClientWidth = 965
-            PopupMenu = popLayout
-            TabOrder = 6
-            object Label23: TLabel
-              Left = 8
-              Height = 16
-              Top = 6
-              Width = 40
-              Caption = 'Nome:.'
-              ParentColor = False
-            end
-            object edtNomeLayout: TEdit
-              Left = 54
-              Height = 23
-              Top = 3
-              Width = 392
-              CharCase = ecUppercase
-              Enabled = False
-              TabOrder = 0
-            end
-          end
-          object btnGravarLayout: TButton
-            Left = 288
-            Height = 25
-            Top = 440
-            Width = 75
-            Caption = 'Gravar'
-            OnClick = btnGravarLayoutClick
-            TabOrder = 7
-          end
-          object btnCancelarLayout: TButton
-            Left = 200
-            Height = 25
-            Top = 440
-            Width = 75
-            Caption = 'Cancelar'
-            OnClick = btnCancelarLayoutClick
-            TabOrder = 8
-          end
-          object btnEditarLayout: TButton
-            Left = 112
-            Height = 25
-            Top = 440
-            Width = 75
-            Caption = 'Editar'
-            OnClick = btnEditarLayoutClick
-            TabOrder = 9
-          end
-          object btnNovoLayout: TButton
-            Left = 24
-            Height = 25
-            Top = 440
-            Width = 75
-            Caption = 'Novo'
-            OnClick = btnNovoLayoutClick
-            TabOrder = 10
           end
         end
       end

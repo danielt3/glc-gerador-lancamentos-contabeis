@@ -311,6 +311,7 @@ type
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
+    procedure HabilitarAbasAdicionais(Habilitar: Boolean);
     function  CarregarTelaPlanoDeContas: Boolean;
     procedure PrepararComboTipoPlanoContas;
     procedure CarregarCombosPlano;
@@ -560,6 +561,7 @@ begin
       edtNomeEmpresa.Text := DataModule1.qConsulta.FieldByName('nome').AsString;
       edtCNPJEmpresa.Text := FormatarCPFCNPJ(DataModule1.qConsulta.FieldByName('cnpj').AsString);
       fEmpresaAtual:= Empresa;
+      fLancamentoLayoutAtual := 0;
 
       CarregarPlanoDeContas(fEmpresaAtual);
       CarregarVinculadores(fEmpresaAtual);
@@ -812,6 +814,13 @@ begin
   result := not DataModule1.qPlanoContas.IsEmpty;
   dbgPlano.DataSource := DataModule1.dsPlanoContas;
   CarregarTelaPlanoDeContas;
+  HabilitarAbasAdicionais(not DataModule1.qPlanoContas.IsEmpty);
+end;
+
+procedure TfrmPrincipal.HabilitarAbasAdicionais(Habilitar: Boolean);
+begin
+  pLeiaute.TabVisible := Habilitar;
+  pVinculador.TabVisible := Habilitar;
 end;
 
 function TfrmPrincipal.CarregarTelaPlanoDeContas: Boolean;
@@ -2074,6 +2083,7 @@ begin
                  '  layout_campos' + NewLine +
                  'WHERE' + NewLine +
                  '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
                  '  AND nome = ' + QuotedStr('data') + NewLine +
                  'UNION' + NewLine +
                  'SELECT' + NewLine +
@@ -2084,6 +2094,7 @@ begin
                  '  layout_campos' + NewLine +
                  'WHERE' + NewLine +
                  '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
                  '  AND nome <> ' + QuotedStr('data') + NewLine +
                  '  AND nome <> ' + QuotedStr('vinculador') + NewLine +
                  'UNION' + NewLine +
@@ -2095,11 +2106,14 @@ begin
                  '  layout_campos' + NewLine +
                  'WHERE' + NewLine +
                  '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
                  '  AND nome = ' + QuotedStr('vinculador') + NewLine +
                  'ORDER BY 1, 2';
 
   if (DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0) then
   begin
+    pClientes.TabVisible := not DataModule1.qPlanoContas.IsEmpty;
+
     if not assigned(fListaCampos) then
     begin
       fListaCampos :=  TList.Create;
@@ -2138,7 +2152,6 @@ begin
   end
   else
   begin
-
     if not assigned(fListaCampos) then
     begin
       fListaCampos :=  TList.Create;
@@ -2164,6 +2177,7 @@ begin
     ConsultarLancamentos;
 
     SetButtonField(fLeft, fTop, fLength);
+    pClientes.TabVisible := false;
   end;
 end;
 

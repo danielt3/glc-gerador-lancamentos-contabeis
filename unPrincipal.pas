@@ -23,6 +23,7 @@ type
     Arrow3: TArrow;
     Arrow4: TArrow;
     btnAdicionarDadosCampo: TButton;
+    btnExcluirDadosCampo: TButton;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
     btnExportarPlano: TButton;
@@ -32,7 +33,6 @@ type
     btnGravarEmpresa2: TButton;
     btnGravarEmpresa3: TButton;
     btnImportarPlano: TButton;
-    btnImportarPlano1: TButton;
     btnNovaEmpresa: TButton;
     btnNovaEmpresa1: TButton;
     Button1: TButton;
@@ -48,7 +48,6 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
-    Button6: TButton;
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
@@ -89,7 +88,6 @@ type
     edtExportarPlano: TEdit;
     edtExportarPlano1: TEdit;
     edtImportarPlano: TEdit;
-    edtImportarPlano1: TEdit;
     edtNomeEmpresa: TEdit;
     edtNomeVinculador: TEdit;
     edtHistorico: TEdit;
@@ -147,7 +145,6 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
@@ -179,6 +176,7 @@ type
     procedure Arrow2Click(Sender: TObject);
     procedure Arrow3Click(Sender: TObject);
     procedure Arrow4Click(Sender: TObject);
+    procedure btnExcluirDadosCampoClick(Sender: TObject);
     procedure btnCancelarLayoutClick(Sender: TObject);
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
@@ -1932,9 +1930,15 @@ begin
     edtFormatoCampo.Text := DataModule1.CampoLancamentoFormato;
     edtTamanhoCampo.Text := IntToStr(DataModule1.CampoLancamentoTamanho);
     if DataModule1.CampoLancamentoDados then
-      btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados
+    begin
+      btnAdicionarDadosCampo.Enabled := DataModule1.CampoLancamentoDados;
+      btnExcluirDadosCampo.Enabled := DataModule1.CampoLancamentoDados;
+    end
     else
+    begin
       btnAdicionarDadosCampo.Enabled := false;
+      btnExcluirDadosCampo.Enabled := false;
+    end;
   end
   else
   begin
@@ -1942,6 +1946,7 @@ begin
     edtFormatoCampo.Text := '';
     edtTamanhoCampo.Text := '';
     btnAdicionarDadosCampo.Enabled := false;
+    btnExcluirDadosCampo.Enabled := false;
   end;
 end;
 
@@ -2050,11 +2055,36 @@ begin
   fLength := 1050;
 
   lComandoSQL := 'SELECT' + NewLine +
+                 '  (1) as indice,' + NewLine +
+                 '  chave,' + NewLine +
                  '  nome' + NewLine +
                  'FROM' + NewLine +
                  '  layout_campos' + NewLine +
                  'WHERE' + NewLine +
-                 '  layout = ' + IntToStr(fLancamentoLayoutAtual);
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND nome = ' + QuotedStr('data') + NewLine +
+                 'UNION' + NewLine +
+                 'SELECT' + NewLine +
+                 '  (2) as indice,' + NewLine +
+                 '  chave,' + NewLine +
+                 '  nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND nome <> ' + QuotedStr('data') + NewLine +
+                 '  AND nome <> ' + QuotedStr('vinculador') + NewLine +
+                 'UNION' + NewLine +
+                 'SELECT' + NewLine +
+                 '  (3) as indice,' + NewLine +
+                 '  chave,' + NewLine +
+                 '  nome' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos' + NewLine +
+                 'WHERE' + NewLine +
+                 '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                 '  AND nome = ' + QuotedStr('vinculador') + NewLine +
+                 'ORDER BY 1, 2';
 
   if (DataModule1.NovaConsulta(lTabela, lComandoSQL) > 0) then
   begin
@@ -2253,13 +2283,11 @@ end;
 
 procedure TfrmPrincipal.CarregarListaVinculadorCampoLancamento(var pCombo: TComboBox);
 const
-  lTabela = 'DadosCampos';
+  lTabela2 = 'DadosCampos2';
 var
   lComandoSQL: String;
   teste: Integer;
 begin
-  dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
-
   if not Assigned(fVinculadoresLayout) then
   begin
     fVinculadoresLayout := TStringList.Create;
@@ -2276,15 +2304,15 @@ begin
                  'WHERE' + NewLine +
                  '  a.layout = ' + IntToStr(fLancamentoLayoutAtual);
 
-  DataModule1.NovaConsulta(lTabela, lComandoSQL);
+  DataModule1.NovaConsulta(lTabela2, lComandoSQL);
 
-  DataModule1.getQuery(lTabela).First;
-  while not DataModule1.getQuery(lTabela).EOF do
+  DataModule1.getQuery(lTabela2).First;
+  while not DataModule1.getQuery(lTabela2).EOF do
   begin
-    fVinculadoresLayout.Add(DataModule1.getQuery(lTabela).FieldByName('vinculador').AsString);
-    pCombo.Items.Add(DataModule1.getQuery(lTabela).FieldByName('descricao').AsString);
+    fVinculadoresLayout.Add(DataModule1.getQuery(lTabela2).FieldByName('vinculador').AsString);
+    pCombo.Items.Add(DataModule1.getQuery(lTabela2).FieldByName('descricao').AsString);
 
-    DataModule1.getQuery(lTabela).Next;
+    DataModule1.getQuery(lTabela2).Next;
   end;
 end;
 
@@ -3830,6 +3858,33 @@ begin
     fLayoutsUtilizados.Add(fLayoutsDisponiveis.Strings[i]);
     fLayoutsDisponiveis.Delete(i);
     chkLayoutsDisponiveis.Selected[i] := lSelected;
+  end;
+end;
+
+procedure TfrmPrincipal.btnExcluirDadosCampoClick(Sender: TObject);
+const
+  lTabela = 'DadosCampos';
+var
+  lComando: String;
+  i: Integer;
+  lCampoAtual: Integer;
+begin
+  try
+    if (chkCamposUtilizados.Items.Count > 0) and (chkCamposUtilizados.ItemIndex > -1) and Assigned(DataModule1.getQuery(lTabela)) and not (DataModule1.getQuery(lTabela).IsEmpty) then
+    begin
+      lComando := 'DELETE FROM' + NewLine +
+                  '  layout_campos_dados' + NewLine +
+                  'WHERE' + NewLine +
+                   '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
+                   '  campo = ' + QuotedStr(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]) + ' AND' + NewLine +
+                   '  dado = ' + QuotedStr(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
+
+      DataModule1.Executar(lComando);
+
+      CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Inserir Dados Campos Layout.');
   end;
 end;
 

@@ -1008,7 +1008,7 @@ object frmPrincipal: TfrmPrincipal
               object dbgDadosCampos: TDBGrid
                 Left = 46
                 Height = 119
-                Top = 1
+                Top = 2
                 Width = 229
                 Color = clWindow
                 Columns = <>
@@ -1016,6 +1016,17 @@ object frmPrincipal: TfrmPrincipal
                 Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
                 ReadOnly = True
                 TabOrder = 1
+              end
+              object btnExcluirDadosCampo: TButton
+                Left = 6
+                Height = 25
+                Top = 40
+                Width = 32
+                Caption = '-'
+                Enabled = False
+                OnClick = btnExcluirDadosCampoClick
+                PopupMenu = popVinculador
+                TabOrder = 2
               end
             end
           end

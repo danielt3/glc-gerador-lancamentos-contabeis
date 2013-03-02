@@ -1,6 +1,9 @@
 SELECT
-  nome
+  a.vinculador,
+  b.descricao
 FROM
-  layout_campos
+  vinculadores_layout a
+  JOIN vinculadores b ON (
+    b.chave = a.vinculador)
 WHERE
-  layout = 0
+  a.layout = 16

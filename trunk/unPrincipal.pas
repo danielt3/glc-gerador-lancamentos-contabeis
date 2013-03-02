@@ -384,6 +384,7 @@ type
     procedure GravarLancamento;
     procedure GravarLancamentoInserir;
     procedure GravarLancamentoAlterar;
+    function  ValidarLancamento: Boolean;
     function getValue(pNomeCampo: String): String;
     procedure setValue(pNomeCampo: String); Overload;
     //Integração
@@ -825,6 +826,14 @@ begin
     else
       cmbPlanoContasTipo.ItemIndex := 1;
     edtPlanoContasDescricao.Text := DataModule1.qPlanoContas.FieldByName('descricao').AsString;
+  end
+  else
+  begin
+    fPlanoAtual := 0;
+    edtPlanoContasCodigo.Text := '';
+    edtPlanoContasClassificacao.Text := '';
+    cmbPlanoContasTipo.ItemIndex := 0;
+    edtPlanoContasDescricao.Text := '';
   end;
 end;
 
@@ -1288,7 +1297,7 @@ var
   lComandoSQL: String;
 begin
   lComandoSQL := 'SELECT' + NewLine +
-                 '  MAX(codigo) as codigo' + NewLine +
+                 '  COALESCE(MAX(codigo), 0) as codigo' + NewLine +
                  'FROM' + NewLine +
                  '  vinculadores' + NewLine +
                  'WHERE' + NewLine +
@@ -1322,6 +1331,7 @@ begin
   CarregarVinculadores(fEmpresaAtual);
   DataModule1.qVinculadores.Locate('CHAVE', IntToStr(lVinculadorAtual), []);
   CarregarVinculador;
+  MontarTelaLancamento;;
 
   HabilitarVinculadores(false);
 end;
@@ -2648,13 +2658,16 @@ end;
 
 procedure TfrmPrincipal.GravarLancamento;
 begin
-  if (fEstadoLancamento = taInclusao) then
-    GravarLancamentoInserir
-  else if (fEstadoLancamento = taEdicao) then
-    GravarLancamentoAlterar;
+  if ValidarLancamento then
+  begin
+    if (fEstadoLancamento = taInclusao) then
+      GravarLancamentoInserir
+    else if (fEstadoLancamento = taEdicao) then
+      GravarLancamentoAlterar;
 
-  ConsultarLancamentos;
-  NovoLancamento;
+    ConsultarLancamentos;
+    NovoLancamento;
+  end;
 end;
 
 procedure TfrmPrincipal.GravarLancamentoInserir;
@@ -2701,6 +2714,17 @@ begin
                                '  chave = ' + IntToStr(fLancamentoAtual);
 
   DataModule1.Executar(lComandoSQL);
+end;
+
+function TfrmPrincipal.ValidarLancamento: Boolean;
+begin
+  result := true;
+
+  if Assigned(FindComponent('edtLanc_vinculador')) and (TComboBox(FindComponent('edtLanc_vinculador')).ItemIndex < 0) then
+  begin
+    MensagemAlerta('É obrigatório informar um vinculador.', 'Erro');
+    result := false;
+  end;
 end;
 
 function TfrmPrincipal.getValue(pNomeCampo: String): String;

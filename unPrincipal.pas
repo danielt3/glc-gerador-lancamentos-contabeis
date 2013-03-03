@@ -1891,10 +1891,12 @@ begin
         lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
         lComando := 'INSERT INTO layout_campos (' + NewLine +
                     'chave,' + NewLine +
+                    'empresa,' + NewLine +
                     'layout,' + NewLine +
                     'nome)' + NewLine +
                     'VALUES (' + NewLine +
                     '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                    '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                     '' + IntToStr(fLayoutAtual) + ',' + NewLine +
                     '' + QuotedStr(DataModule1.CampoLancamentoNome) + ')';
 

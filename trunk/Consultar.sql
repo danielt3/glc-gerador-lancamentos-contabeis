@@ -1,1 +1,6 @@
-SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 15
+SELECT
+  chave
+FROM
+  VINCULADORES
+WHERE
+  chave = 10

@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pIntegracao
     Align = alTop
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 2
+        TabIndex = 3
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -526,18 +526,18 @@ object frmPrincipal: TfrmPrincipal
           ClientWidth = 1029
           object gbTabelasDisponiveis: TGroupBox
             Left = 8
-            Height = 193
+            Height = 152
             Top = 64
             Width = 296
             Caption = 'Tabelas Disponíveis'
-            ClientHeight = 175
+            ClientHeight = 134
             ClientWidth = 292
             Enabled = False
             PopupMenu = popVinculador
             TabOrder = 0
             object chkCamposDisponiveis: TCheckListBox
               Left = 14
-              Height = 152
+              Height = 120
               Top = 4
               Width = 264
               ItemHeight = 0
@@ -550,18 +550,18 @@ object frmPrincipal: TfrmPrincipal
           end
           object gbTabelasUtilizadas: TGroupBox
             Left = 424
-            Height = 193
+            Height = 153
             Top = 64
             Width = 296
             Caption = 'Tabelas Utlizadas'
-            ClientHeight = 175
+            ClientHeight = 135
             ClientWidth = 292
             Enabled = False
             PopupMenu = popLayout
             TabOrder = 1
             object chkCamposUtilizados: TCheckListBox
               Left = 14
-              Height = 152
+              Height = 120
               Top = 4
               Width = 264
               ItemHeight = 0
@@ -584,23 +584,23 @@ object frmPrincipal: TfrmPrincipal
           object Arrow2: TArrow
             Left = 352
             Height = 26
-            Top = 208
+            Top = 152
             Width = 41
             OnClick = Arrow2Click
             PopupMenu = popVinculador
           end
           object GroupBox14: TGroupBox
             Left = 760
-            Height = 372
+            Height = 251
             Top = 64
             Width = 258
             Caption = 'Leiaute'
-            ClientHeight = 354
+            ClientHeight = 233
             ClientWidth = 254
             TabOrder = 4
             object dbgLayouts: TDBGrid
               Left = 6
-              Height = 332
+              Height = 210
               Top = 14
               Width = 240
               Color = clWindow
@@ -618,70 +618,70 @@ object frmPrincipal: TfrmPrincipal
           end
           object gbInformacoes: TGroupBox
             Left = 8
-            Height = 174
-            Top = 261
+            Height = 103
+            Top = 216
             Width = 714
             Caption = 'Informações'
-            ClientHeight = 156
+            ClientHeight = 85
             ClientWidth = 710
             Enabled = False
             PopupMenu = popPlanoContas
             TabOrder = 5
             object gdbCaracteristicas: TGroupBox
               Left = 6
-              Height = 146
-              Top = 2
-              Width = 289
+              Height = 59
+              Top = 14
+              Width = 472
               Caption = 'Características'
-              ClientHeight = 128
-              ClientWidth = 285
+              ClientHeight = 41
+              ClientWidth = 468
               TabOrder = 0
               object Label13: TLabel
-                Left = 14
+                Left = 6
                 Height = 16
-                Top = 24
+                Top = 9
                 Width = 31
                 Caption = 'Tipo:.'
                 ParentColor = False
               end
               object Label15: TLabel
-                Left = 14
+                Left = 150
                 Height = 16
-                Top = 56
+                Top = 9
                 Width = 52
                 Caption = 'Formato:.'
                 ParentColor = False
               end
               object Label31: TLabel
-                Left = 14
+                Left = 318
                 Height = 16
-                Top = 86
-                Width = 62
-                Caption = 'Tam. Máx.:.'
+                Top = 9
+                Width = 34
+                Caption = 'Tam.:.'
                 ParentColor = False
               end
               object edtTipoCampo: TEdit
-                Left = 94
+                Left = 38
                 Height = 23
-                Top = 17
+                Top = 3
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
                 TabOrder = 0
               end
               object edtFormatoCampo: TEdit
-                Left = 94
+                Left = 206
                 Height = 23
-                Top = 48
+                Top = 3
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
                 TabOrder = 1
               end
               object edtTamanhoCampo: TEdit
-                Left = 94
+                Left = 358
                 Height = 23
-                Top = 79
+                Top = 3
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
@@ -689,13 +689,13 @@ object frmPrincipal: TfrmPrincipal
               end
             end
             object gdbOpcao: TGroupBox
-              Left = 414
-              Height = 146
-              Top = 3
-              Width = 288
+              Left = 486
+              Height = 88
+              Top = -5
+              Width = 216
               Caption = 'Opção'
-              ClientHeight = 128
-              ClientWidth = 284
+              ClientHeight = 70
+              ClientWidth = 212
               TabOrder = 1
               object btnAdicionarDadosCampo: TButton
                 Left = 6
@@ -710,9 +710,9 @@ object frmPrincipal: TfrmPrincipal
               end
               object dbgDadosCampos: TDBGrid
                 Left = 46
-                Height = 119
+                Height = 63
                 Top = 2
-                Width = 229
+                Width = 160
                 Color = clWindow
                 Columns = <>
                 FixedCols = 0
@@ -723,7 +723,7 @@ object frmPrincipal: TfrmPrincipal
               object btnExcluirDadosCampo: TButton
                 Left = 6
                 Height = 25
-                Top = 40
+                Top = 32
                 Width = 32
                 Caption = '-'
                 Enabled = False
@@ -737,10 +737,10 @@ object frmPrincipal: TfrmPrincipal
             Left = 8
             Height = 51
             Top = 8
-            Width = 969
+            Width = 1008
             Caption = 'Leiaute:.'
             ClientHeight = 33
-            ClientWidth = 965
+            ClientWidth = 1004
             PopupMenu = popLayout
             TabOrder = 6
             object Label23: TLabel
@@ -796,6 +796,58 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Novo'
             OnClick = btnNovoLayoutClick
             TabOrder = 10
+          end
+          object GroupBox8: TGroupBox
+            Left = 8
+            Height = 121
+            Top = 320
+            Width = 712
+            Caption = 'Configuração de Históricos'
+            ClientHeight = 103
+            ClientWidth = 708
+            TabOrder = 11
+            object ComboBox2: TComboBox
+              Left = 54
+              Height = 23
+              Top = 5
+              Width = 134
+              ItemHeight = 15
+              TabOrder = 0
+              Text = 'ComboBox2'
+            end
+            object Label7: TLabel
+              Left = 8
+              Height = 16
+              Top = 8
+              Width = 41
+              Caption = 'Tabelas'
+              ParentColor = False
+            end
+            object Memo1: TMemo
+              Left = 8
+              Height = 58
+              Top = 33
+              Width = 694
+              TabOrder = 1
+            end
+            object Edit2: TEdit
+              Left = 198
+              Height = 23
+              Top = 5
+              Width = 160
+              TabOrder = 2
+            end
+            object btnAdicionarDadosCampo1: TButton
+              Left = 366
+              Height = 25
+              Top = 5
+              Width = 32
+              Caption = '+'
+              Enabled = False
+              OnClick = btnAdicionarDadosCampoClick
+              PopupMenu = popVinculador
+              TabOrder = 3
+            end
           end
         end
         object pVinculador: TTabSheet
@@ -951,7 +1003,7 @@ object frmPrincipal: TfrmPrincipal
               object Arrow3: TArrow
                 Left = 313
                 Height = 30
-                Top = 104
+                Top = 88
                 Width = 41
                 OnClick = Arrow3Click
               end
@@ -1009,7 +1061,7 @@ object frmPrincipal: TfrmPrincipal
               end
             end
             object edtCodigoDebitar: TEdit
-              Left = 76
+              Left = 73
               Height = 23
               Top = 88
               Width = 56
@@ -1020,7 +1072,7 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 2
             end
             object edtCodigoCreditar: TEdit
-              Left = 78
+              Left = 73
               Height = 23
               Top = 129
               Width = 56
@@ -1208,7 +1260,7 @@ object frmPrincipal: TfrmPrincipal
         Height = 105
         Top = 18
         Width = 872
-        Caption = 'Plano de Contas'
+        Caption = 'Exportar'
         ClientHeight = 87
         ClientWidth = 868
         TabOrder = 0
@@ -1279,11 +1331,11 @@ object frmPrincipal: TfrmPrincipal
       end
       object GroupBox2: TGroupBox
         Left = 12
-        Height = 105
+        Height = 158
         Top = 162
         Width = 872
         Caption = 'Lançamentos'
-        ClientHeight = 87
+        ClientHeight = 140
         ClientWidth = 868
         TabOrder = 1
         object btnExportarPlano1: TButton
@@ -1318,6 +1370,15 @@ object frmPrincipal: TfrmPrincipal
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False
+        end
+        object ComboBox1: TComboBox
+          Left = 518
+          Height = 23
+          Top = 30
+          Width = 100
+          ItemHeight = 15
+          TabOrder = 3
+          Text = 'ComboBox1'
         end
       end
     end
@@ -1359,8 +1420,8 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 816
-    top = 424
+    left = 848
+    top = 208
   end
   object popEmpresa: TPopupMenu
     left = 160

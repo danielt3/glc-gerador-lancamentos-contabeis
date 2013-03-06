@@ -243,6 +243,8 @@ begin
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
+var
+  lComandoSQL: String;
 begin
   if not FileExists(ExtractFilePath(ApplicationName) + 'DATABASE.FDB') then
     CopyFile(ExtractFilePath(ApplicationName) + 'CLEAR_DATABASE.FDB', ExtractFilePath(ApplicationName) + 'DATABASE.FDB');
@@ -254,6 +256,9 @@ begin
   CriarTabelaLayoutsCampos;
   CriarListaDadosCampo;
   CriarTabelaLancamentos;
+
+  lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
+  Executar(lComandoSQL);
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);
@@ -366,7 +371,7 @@ begin
   AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false, false);
   AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false, true);
   AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false, false);
-  AddCampoLancamento('nova_fiscal', 'Nota Fiscal', 'Numeral', '##########', 10, false, false);
+  AddCampoLancamento('numero', 'Número do Doc.', 'Numeral', '##########', 10, false, false);
   AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, false, true);
   AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, true, false);
   AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, true, false);

@@ -23,6 +23,7 @@ type
     Arrow3: TArrow;
     Arrow4: TArrow;
     btnAdicionarDadosCampo: TButton;
+    btnAdicionarDadosCampo1: TButton;
     btnExcluirDadosCampo: TButton;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
@@ -57,6 +58,8 @@ type
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
+    ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -66,6 +69,7 @@ type
     dbgLayouts: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
+    Edit2: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
@@ -116,6 +120,7 @@ type
     GroupBox7: TGroupBox;
     gbTabelasDisponiveis: TGroupBox;
     gdbCaracteristicas: TGroupBox;
+    GroupBox8: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -145,9 +150,11 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
+    Memo1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -1891,10 +1898,12 @@ begin
         lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS');
         lComando := 'INSERT INTO layout_campos (' + NewLine +
                     'chave,' + NewLine +
+                    'empresa,' + NewLine +
                     'layout,' + NewLine +
                     'nome)' + NewLine +
                     'VALUES (' + NewLine +
                     '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                    '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                     '' + IntToStr(fLayoutAtual) + ',' + NewLine +
                     '' + QuotedStr(DataModule1.CampoLancamentoNome) + ')';
 

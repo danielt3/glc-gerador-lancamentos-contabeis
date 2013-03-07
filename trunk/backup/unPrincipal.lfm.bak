@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pIntegracao
     Align = alTop
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -1257,108 +1257,122 @@ object frmPrincipal: TfrmPrincipal
       ClientWidth = 1037
       object GroupBox1: TGroupBox
         Left = 12
-        Height = 105
+        Height = 190
         Top = 18
-        Width = 872
-        Caption = 'Plano de Contas'
-        ClientHeight = 87
-        ClientWidth = 868
+        Width = 1008
+        Caption = 'Importar'
+        ClientHeight = 172
+        ClientWidth = 1004
         TabOrder = 0
-        object edtImportarPlano: TEdit
+        object edtImportar: TEdit
           Left = 14
           Height = 23
-          Top = 32
-          Width = 267
+          Top = 132
+          Width = 389
           TabOrder = 0
+          Text = 'C:\A\teste.txt'
         end
         object Label4: TLabel
           Left = 14
           Height = 16
-          Top = 8
+          Top = 111
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False
-        end
-        object Label5: TLabel
-          Left = 454
-          Height = 16
-          Top = 8
-          Width = 49
-          Caption = 'Arquivo:.'
-          ParentColor = False
-        end
-        object edtExportarPlano: TEdit
-          Left = 454
-          Height = 23
-          Top = 32
-          Width = 267
-          TabOrder = 1
-        end
-        object Button4: TButton
-          Left = 734
-          Height = 21
-          Top = 32
-          Width = 25
-          Caption = '...'
-          TabOrder = 2
         end
         object Button2: TButton
-          Left = 286
+          Left = 413
           Height = 21
-          Top = 32
+          Top = 132
           Width = 25
           Caption = '...'
           OnClick = Button2Click
-          TabOrder = 3
+          TabOrder = 1
         end
-        object btnImportarPlano: TButton
-          Left = 318
+        object btnImportar: TButton
+          Left = 445
           Height = 24
-          Top = 29
+          Top = 130
           Width = 85
           Caption = 'Importar'
-          OnClick = btnImportarPlanoClick
-          TabOrder = 5
+          OnClick = btnImportarClick
+          TabOrder = 2
         end
-        object btnExportarPlano: TButton
-          Left = 766
-          Height = 22
-          Top = 32
-          Width = 85
-          Caption = 'Exportar'
+        object cmbTipoImportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 25
+          Width = 100
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'TXT'
+            'EXCEL'
+          )
+          TabOrder = 3
+          Text = 'TXT'
+        end
+        object Label5: TLabel
+          Left = 14
+          Height = 16
+          Top = 3
+          Width = 31
+          Caption = 'Tipo:.'
+          ParentColor = False
+        end
+        object cmbConjuntoImportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 78
+          Width = 389
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'Plano de Contas'
+            'Empresas'
+          )
           TabOrder = 4
+          Text = 'Plano de Contas'
+        end
+        object Label32: TLabel
+          Left = 14
+          Height = 16
+          Top = 56
+          Width = 109
+          Caption = 'Conjunto de Dados:.'
+          ParentColor = False
         end
       end
       object GroupBox2: TGroupBox
         Left = 12
-        Height = 158
-        Top = 162
+        Height = 256
+        Top = 216
         Width = 872
-        Caption = 'Lançamentos'
-        ClientHeight = 140
+        Caption = 'Exportar'
+        ClientHeight = 238
         ClientWidth = 868
         TabOrder = 1
-        object btnExportarPlano1: TButton
-          Left = 326
+        object btnExportar: TButton
+          Left = 429
           Height = 22
-          Top = 37
+          Top = 136
           Width = 85
           Caption = 'Exportar'
-          OnClick = btnExportarPlano1Click
+          OnClick = btnExportarClick
           TabOrder = 0
         end
-        object edtExportarPlano1: TEdit
+        object edtExportar: TEdit
           Left = 14
           Height = 23
-          Top = 38
-          Width = 267
+          Top = 136
+          Width = 373
           TabOrder = 1
           Text = 'C:\A\teste.txt'
         end
         object Button5: TButton
-          Left = 294
+          Left = 397
           Height = 21
-          Top = 38
+          Top = 136
           Width = 25
           Caption = '...'
           TabOrder = 2
@@ -1366,19 +1380,54 @@ object frmPrincipal: TfrmPrincipal
         object Label8: TLabel
           Left = 14
           Height = 16
-          Top = 14
+          Top = 112
           Width = 49
           Caption = 'Arquivo:.'
           ParentColor = False
         end
-        object ComboBox1: TComboBox
-          Left = 518
+        object cmbConjuntoExportacao: TComboBox
+          Left = 14
           Height = 23
-          Top = 30
+          Top = 78
+          Width = 389
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'Lançamentos'
+            'Empresas'
+          )
+          TabOrder = 3
+          Text = 'Lançamentos'
+        end
+        object Label33: TLabel
+          Left = 14
+          Height = 16
+          Top = 56
+          Width = 109
+          Caption = 'Conjunto de Dados:.'
+          ParentColor = False
+        end
+        object cmbTipoExportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 25
           Width = 100
           ItemHeight = 15
-          TabOrder = 3
-          Text = 'ComboBox1'
+          ItemIndex = 0
+          Items.Strings = (
+            'TXT'
+            'EXCEL'
+          )
+          TabOrder = 4
+          Text = 'TXT'
+        end
+        object Label34: TLabel
+          Left = 14
+          Height = 16
+          Top = 3
+          Width = 31
+          Caption = 'Tipo:.'
+          ParentColor = False
         end
       end
     end
@@ -1420,44 +1469,44 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 848
-    top = 208
+    left = 864
+    top = 168
   end
   object popEmpresa: TPopupMenu
-    left = 160
-    top = 72
+    left = 616
+    top = 104
     object MenuItem1: TMenuItem
       Caption = 'Excluir Empresa'
       OnClick = MenuItem1Click
     end
   end
   object popPlanoContas: TPopupMenu
-    left = 256
-    top = 72
+    left = 704
+    top = 104
     object MenuItem2: TMenuItem
       Caption = 'Exclusão Conta'
       OnClick = MenuItem2Click
     end
   end
   object popVinculador: TPopupMenu
-    left = 376
-    top = 72
+    left = 800
+    top = 104
     object MenuItem3: TMenuItem
       Caption = 'Excluir Vinculador'
       OnClick = MenuItem3Click
     end
   end
   object popLayout: TPopupMenu
-    left = 440
-    top = 56
+    left = 888
+    top = 104
     object MenuItem4: TMenuItem
       Caption = 'Excluir Leiaute'
       OnClick = MenuItem4Click
     end
   end
   object popLancamentos: TPopupMenu
-    left = 600
-    top = 72
+    left = 968
+    top = 104
     object MenuItem5: TMenuItem
       Caption = 'Excluir Lancamento'
       OnClick = MenuItem5Click

@@ -3889,7 +3889,7 @@ end;
 
 procedure TfrmPrincipal.edtLoteKeyPress(Sender: TObject; var Key: char);
 begin
-  if (Key <> #8) and (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
+  if (Key <> #8) and not (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
     Key := #0;
 end;
 

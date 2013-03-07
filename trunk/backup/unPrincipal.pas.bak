@@ -65,6 +65,8 @@ type
     cmbConjuntoExportacao: TComboBox;
     cmbTipoExportacao: TComboBox;
     Conexao: TZConnection;
+    dhInicio: TDateEdit;
+    dhFim: TDateEdit;
     dbgDadosCampos: TDBGrid;
     dbgPlano1: TDBGrid;
     dbgLayouts: TDBGrid;
@@ -75,6 +77,7 @@ type
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
     edtClassificacaoCreditar: TEdit;
+    edtLote: TEdit;
     edtFormatoCampo: TEdit;
     edtNomeDebitar: TEdit;
     edtNomeCreditar: TEdit;
@@ -150,6 +153,9 @@ type
     Label32: TLabel;
     Label33: TLabel;
     Label34: TLabel;
+    Label35: TLabel;
+    Label36: TLabel;
+    Label37: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -238,6 +244,7 @@ type
     procedure edtCodigoDebitarKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure edtCodigoDebitarKeyPress(Sender: TObject; var Key: char);
+    procedure edtLoteKeyPress(Sender: TObject; var Key: char);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
     procedure edtPlanoContasClassificacao2KeyPress(Sender: TObject;
@@ -3877,6 +3884,12 @@ procedure TfrmPrincipal.edtCodigoDebitarKeyPress(Sender: TObject; var Key: char
   );
 begin
   if (Key <> #8) and (BuscarPlanoNaLista(fListaDebito, edtCodigoDebitar.Text + Key) <= -1) then
+    Key := #0;
+end;
+
+procedure TfrmPrincipal.edtLoteKeyPress(Sender: TObject; var Key: char);
+begin
+  if (Key <> #8) and (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
     Key := #0;
 end;
 

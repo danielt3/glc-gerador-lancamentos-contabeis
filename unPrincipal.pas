@@ -2844,14 +2844,25 @@ begin
 
         lLinha := '01' +
                   lCodigoEmpresa +
-                  AlignLeft(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('cnpj').AsString), 14, '0') +
-                  FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_inicial').AsDateTime) +
-                  FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_final').AsDateTime) +
+                  AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('cnpj').AsString), 14, '0') +
+                  //FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_inicial').AsDateTime) +
+                  //FormatDateTime('dd/mm/yyyy', DataModule1.getQuery(lNomeConsulta).FieldByName('data_final').AsDateTime) +
+                  FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
+                  FormatDateTime('dd/mm/yyyy', dhFim.Date) +
                   'N' +
                   '05' +
                   '00000' +
-                  '0' +
+                  '1' +
                   '17';
+
+        lArquivo.Add(lLinha);
+
+        lLinha := '02' +
+                  AlignRight(ApenasNumeros(edtLote.Text), 7, '0') +
+                  'X' +
+                  FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
+                  AlignLeft('GERENTE', 30, ' ') +
+                  AlignLeft('', 100, ' ');
 
         lArquivo.Add(lLinha);
 
@@ -2912,11 +2923,11 @@ begin
                     AlignRight(FormatFloat('##############0.00', DataModule1.getQuery(lNomeConsulta).FieldByName('valor').AsFloat), 15, '0');
 
           lLinha := lLinha +
-                    AlignRight(IntToStr(iSequencial), 7, '0');
+                    AlignRight('0', 7, '0');
           lLinha := lLinha +
-                    AlignLeft(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('historico').AsString), 512, ' ');
+                    AlignLeft(DataModule1.getQuery(lNomeConsulta).FieldByName('historico').AsString, 512, ' ');
           lLinha := lLinha +
-                    lCodigoEmpresa +
+                    AlignLeft('', 7, ' ') +
                     AlignLeft('', 100, ' ');
 
           lArquivo.Add(lLinha);
@@ -3165,6 +3176,8 @@ begin
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
+var
+  d, m, a: Word;
 begin
   fGarbageCollector := TGarbageCollector.Create;
 
@@ -3192,6 +3205,11 @@ begin
   fGarbageCollector.Add(fLayoutsDisponiveis);
   fGarbageCollector.Add(fLayoutsUtilizados);
   fGarbageCollector.Add(fLancamentoLayouts);
+
+  DecodeDate(Now, a, m, d);
+  dhInicio.Date := EncodeDate(a, m, 1);
+  dhFim.Date := Now;
+
   PrepararComboTipoPlanoContas;
 end;
 

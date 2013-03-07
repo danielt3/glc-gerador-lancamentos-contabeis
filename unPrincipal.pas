@@ -27,13 +27,12 @@ type
     btnExcluirDadosCampo: TButton;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
-    btnExportarPlano: TButton;
-    btnExportarPlano1: TButton;
+    btnExportar: TButton;
     btnGravarEmpresa: TButton;
     btnGravarEmpresa1: TButton;
     btnGravarEmpresa2: TButton;
     btnGravarEmpresa3: TButton;
-    btnImportarPlano: TButton;
+    btnImportar: TButton;
     btnNovaEmpresa: TButton;
     btnNovaEmpresa1: TButton;
     Button1: TButton;
@@ -47,7 +46,6 @@ type
     btnGravarLancamento: TButton;
     Button2: TButton;
     Button3: TButton;
-    Button4: TButton;
     Button5: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -58,11 +56,14 @@ type
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
-    ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
+    cmbTipoImportacao: TComboBox;
+    cmbConjuntoImportacao: TComboBox;
+    cmbConjuntoExportacao: TComboBox;
+    cmbTipoExportacao: TComboBox;
     Conexao: TZConnection;
     dbgDadosCampos: TDBGrid;
     dbgPlano1: TDBGrid;
@@ -89,9 +90,8 @@ type
     edtCNPJEmpresa: TEdit;
     edtCodigoEmpresa: TEdit;
     edtCodigoVinculador: TEdit;
-    edtExportarPlano: TEdit;
-    edtExportarPlano1: TEdit;
-    edtImportarPlano: TEdit;
+    edtExportar: TEdit;
+    edtImportar: TEdit;
     edtNomeEmpresa: TEdit;
     edtNomeVinculador: TEdit;
     edtHistorico: TEdit;
@@ -147,6 +147,9 @@ type
     Label3: TLabel;
     Label30: TLabel;
     Label31: TLabel;
+    Label32: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -188,13 +191,13 @@ type
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnEditarLayoutClick(Sender: TObject);
-    procedure btnExportarPlano1Click(Sender: TObject);
+    procedure btnExportarClick(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnGravarLancamentoClick(Sender: TObject);
-    procedure btnImportarPlanoClick(Sender: TObject);
+    procedure btnImportarClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure btnNovoLayoutClick(Sender: TObject);
@@ -3253,7 +3256,7 @@ end;
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
 begin
   if OpenDialog1.Execute then
-    edtImportarPlano.Text := OpenDialog1.FileName;
+    edtImportar.Text := OpenDialog1.FileName;
 end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);
@@ -3917,13 +3920,23 @@ begin
   GravarLancamento;
 end;
 
-procedure TfrmPrincipal.btnImportarPlanoClick(Sender: TObject);
+procedure TfrmPrincipal.btnImportarClick(Sender: TObject);
 begin
-  if FileExists(edtImportarPlano.Text) then
+  if FileExists(edtImportar.Text) then
   begin
-    if ImportarPlanoDeContas(fEmpresaAtual, edtImportarPlano.Text, nil) then
+    if (cmbConjuntoImportacao.ItemIndex = 0) then
     begin
-      MensagemSucesso('Plano de contas importado com sucesso!', 'Importação de plano de contas');
+      if ImportarPlanoDeContas(fEmpresaAtual, edtImportar.Text, nil) then
+      begin
+        MensagemSucesso('Plano de contas importado com sucesso!', 'Sucesso');
+      end;
+    end
+    else if (cmbConjuntoImportacao.ItemIndex = 1) then
+    begin
+      if ImportarTabelas(edtImportar.Text, nil) then
+      begin
+        MensagemSucesso('Dados da empresa importados com sucesso!', 'Sucesso');
+      end;
     end;
   end;
 end;
@@ -3943,24 +3956,33 @@ begin
   EditarLayout;
 end;
 
-procedure TfrmPrincipal.btnExportarPlano1Click(Sender: TObject);
+procedure TfrmPrincipal.btnExportarClick(Sender: TObject);
 var
   lSucesso: Boolean;
 begin
-  {if FileExists(edtExportarPlano1.Text) then
-    DeleteFile(edtExportarPlano1.Text);
+  if (cmbConjuntoExportacao.ItemIndex = 0) then
+  begin
+    if ExportarDominio(fEmpresaAtual, edtExportar.Text, nil) then
+      MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
+  end
+  else if (cmbConjuntoExportacao.ItemIndex = 1) then
+  begin
+    if FileExists(edtExportar.Text) then
+      DeleteFile(edtExportar.Text);
 
-  lSucesso := true;
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', edtExportarPlano1.Text, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', edtExportarPlano1.Text, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', edtExportarPlano1.Text, nil);
-  //lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text, nil);
+    lSucesso := true;
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', edtExportar.Text, nil);
 
-  if (lSucesso) then
-    MensagemSucesso('Dados exportados com sucesso em ' + edtExportarPlano1.Text, 'Exportar dados');}
-
-  if ExportarDominio(fEmpresaAtual, edtExportarPlano1.Text, nil) then
-    MensagemSucesso('Dados exportados com sucesso em ' + edtExportarPlano1.Text, 'Exportar dados');
+    if (lSucesso) then
+      MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
+  end;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);

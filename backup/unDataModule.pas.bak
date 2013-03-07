@@ -378,7 +378,7 @@ begin
   AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false, false);
   AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false, false);
   AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,##', 8, false, false);
-  //AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
+  AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
 end;
 
 procedure TDataModule1.AddCampoLancamento(Nome, Descricao, Tipo, Formato: String;Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean);

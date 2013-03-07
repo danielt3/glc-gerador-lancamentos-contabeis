@@ -1,1 +1,7 @@
-SELECT  chave,  codigo,  nome,  cnpj FROM  empresa WHERE  chave = 2
+SELECT
+  a.chave
+FROM
+  lancamentos a
+WHERE
+  a.empresa = 2
+  AND a.layout = 16

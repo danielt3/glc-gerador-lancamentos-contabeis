@@ -373,7 +373,7 @@ begin
   AddCampoLancamento('fornecedor', ' Fornecedor', 'Caractere', '', 32, false, false);
   AddCampoLancamento('numero', ' Número do Doc.', 'Numeral', '##########', 10, false, false);
   AddCampoLancamento('pago_por', '#Pago Por', 'Caractere', '', 32, false, true);
-  AddCampoLancamento('data', 'Data', ' Data', 'DD/MM/AAAA', 10, true, false);
+  AddCampoLancamento('data', ' Data', 'Data', 'DD/MM/AAAA', 10, true, false);
   AddCampoLancamento('vinculador', ' Vinculador', 'Numeral', '##########', 10, true, false);
   AddCampoLancamento('historico', ' Histórico', 'Caractere', '', 32, false, false);
   AddCampoLancamento('cliente', ' Cliente', 'Caractere', '', 32, false, false);

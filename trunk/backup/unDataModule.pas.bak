@@ -366,19 +366,19 @@ end;
 
 procedure TDataModule1.MontarCamposLancamento;
 begin
-  AddCampoLancamento('entrada', 'Entrada', 'Decimal', '####.####,##', 8, false, false);
-  AddCampoLancamento('saida', 'Saída', 'Decimal', '####.####,##', 8, false, false);
-  AddCampoLancamento('data_pag', 'Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false, false);
-  AddCampoLancamento('forma_pag', 'Forma de Pagamento', 'Caractere', '', 32, false, true);
-  AddCampoLancamento('fornecedor', 'Fornecedor', 'Caractere', '', 32, false, false);
-  AddCampoLancamento('numero', 'Número do Doc.', 'Numeral', '##########', 10, false, false);
-  AddCampoLancamento('pago_por', 'Pago Por', 'Caractere', '', 32, false, true);
-  AddCampoLancamento('data', 'Data', 'Data', 'DD/MM/AAAA', 10, true, false);
-  AddCampoLancamento('vinculador', 'Vinculador', 'Numeral', '##########', 10, true, false);
-  AddCampoLancamento('historico', 'Histórico', 'Caractere', '', 32, false, false);
-  AddCampoLancamento('cliente', 'Cliente', 'Caractere', '', 32, false, false);
-  AddCampoLancamento('valor', 'Valor', 'Decimal', '####.####,##', 8, false, false);
-  AddCampoLancamento('teste', 'Olá Mundo', 'Caractere', '', 32, false);
+  AddCampoLancamento('entrada', '*Entrada', 'Decimal', '####.####,##', 8, false, false);
+  AddCampoLancamento('saida', '*Saída', 'Decimal', '####.####,##', 8, false, false);
+  AddCampoLancamento('data_pag', ' Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false, false);
+  AddCampoLancamento('forma_pag', '#Forma de Pagamento', 'Caractere', '', 32, false, true);
+  AddCampoLancamento('fornecedor', ' Fornecedor', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('numero', ' Número do Doc.', 'Numeral', '##########', 10, false, false);
+  AddCampoLancamento('pago_por', '#Pago Por', 'Caractere', '', 32, false, true);
+  AddCampoLancamento('data', 'Data', ' Data', 'DD/MM/AAAA', 10, true, false);
+  AddCampoLancamento('vinculador', ' Vinculador', 'Numeral', '##########', 10, true, false);
+  AddCampoLancamento('historico', ' Histórico', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('cliente', ' Cliente', 'Caractere', '', 32, false, false);
+  AddCampoLancamento('valor', '*Valor', 'Decimal', '####.####,##', 8, false, false);
+  //AddCampoLancamento('teste', ' Olá Mundo', 'Caractere', '', 32, false);
 end;
 
 procedure TDataModule1.AddCampoLancamento(Nome, Descricao, Tipo, Formato: String;Tamanho: Integer; Obrigatorio: Boolean; TemDados: Boolean);

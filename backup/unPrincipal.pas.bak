@@ -1784,25 +1784,25 @@ function TfrmPrincipal.ValidarLayout: Boolean;
 begin
   result := true;
 
-  if not (CampoSendoUtilizado('Valor')) and not (CampoSendoUtilizado('Entrada')) and not (CampoSendoUtilizado('Saída')) then
+  if not (CampoSendoUtilizado('*Valor')) and not (CampoSendoUtilizado('*Entrada')) and not (CampoSendoUtilizado('*Saída')) then
   begin
     MensagemAlerta('Para gravar um leiaute, é necessário informar a tabela "Valor" ou as tabelas "Entrada" e "Saída".', 'Erro');
     result := false;
     exit;
   end
-  else if (CampoSendoUtilizado('Entrada')) and not (CampoSendoUtilizado('Saída')) then
+  else if (CampoSendoUtilizado('*Entrada')) and not (CampoSendoUtilizado('*Saída')) then
   begin
     MensagemAlerta('Ao informar a tabela "Entrada" para o leiaute, é necessário informar também a tabela "Saída".', 'Erro');
     result := false;
     exit;
   end
-  else if (CampoSendoUtilizado('Saída')) and not (CampoSendoUtilizado('Entrada')) then
+  else if (CampoSendoUtilizado('*Saída')) and not (CampoSendoUtilizado('*Entrada')) then
   begin
     MensagemAlerta('Ao informar a tabela "Saída" para o leiaute, é necessário informar também a tabela "Entrada".', 'Erro');
     result := false;
     exit;
   end
-  else if not (CampoSendoUtilizado('Data')) then
+  else if not (CampoSendoUtilizado(' Data')) then
   begin
     MensagemAlerta('A tabela "Data" é obrigatória.', 'Erro');
     result := false;

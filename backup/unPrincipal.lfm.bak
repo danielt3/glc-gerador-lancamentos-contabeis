@@ -542,8 +542,8 @@ object frmPrincipal: TfrmPrincipal
               Width = 274
               Font.CharSet = ANSI_CHARSET
               Font.Height = -13
-              Font.Name = 'Lucida Sans Unicode'
-              Font.Pitch = fpVariable
+              Font.Name = 'Lucida Console'
+              Font.Pitch = fpFixed
               Font.Quality = fqDraft
               ItemHeight = 0
               MultiSelect = True

@@ -156,6 +156,8 @@ type
     Label35: TLabel;
     Label36: TLabel;
     Label37: TLabel;
+    Label38: TLabel;
+    lblTotalLancamento: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -412,6 +414,7 @@ type
     procedure QuebrarString(var pLista: TStringList; pString: String);
     function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
+    procedure TotalizarValores;
   public
     { public declarations }
   end; 
@@ -2226,7 +2229,7 @@ begin
   else if (DataModule1.CampoLancamentoNome = 'vinculador') then
     lColumn.Width := 164;
 
-  lColumn.Title.Caption := DataModule1.CampoLancamentoDescricao;
+  lColumn.Title.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
 
   if (DataModule1.CampoLancamentoNome = 'vinculador') then
     CreateVinculadorField(fLeft, fTop, fLength)
@@ -2279,6 +2282,7 @@ begin
   DataModule1.qLancamentos.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'ConsultarLancamentos.sql');
   DataModule1.qLancamentos.Open;
 
+  TotalizarValores;
   dbgLancamento.DataSource := DataModule1.dsLancamentos;
 end;
 
@@ -2462,7 +2466,7 @@ begin
   lLabel.Parent := gbLancamentos;
   lLabel.Left := pLeft;
   lLabel.Top := pTop - 19;
-  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
   lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
   lLabel.Visible := true;
   fListaCampos.Add(lLabel);
@@ -2504,7 +2508,7 @@ begin
   lLabel.Parent := gbLancamentos;
   lLabel.Left := pLeft;
   lLabel.Top := pTop - 19;
-  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
   lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
   lLabel.Visible := true;
   fListaCampos.Add(lLabel);
@@ -2552,7 +2556,7 @@ begin
   lLabel.Parent := gbLancamentos;
   lLabel.Left := pLeft;
   lLabel.Top := pTop - 19;
-  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
   lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
   lLabel.Visible := true;
   fListaCampos.Add(lLabel);
@@ -2593,7 +2597,7 @@ begin
   lLabel.Parent := gbLancamentos;
   lLabel.Left := pLeft;
   lLabel.Top := pTop - 19;
-  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
   lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
   lLabel.Visible := true;
   fListaCampos.Add(lLabel);
@@ -2638,7 +2642,7 @@ begin
   lLabel.Parent := gbLancamentos;
   lLabel.Left := pLeft;
   lLabel.Top := pTop - 19;
-  lLabel.Caption := DataModule1.CampoLancamentoDescricao;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
   lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
   lLabel.Visible := true;
   fListaCampos.Add(lLabel);
@@ -3172,6 +3176,32 @@ begin
       result := result + Caractere;
 
     result := result + Trim(Texto);
+  end;
+end;
+
+procedure TfrmPrincipal.TotalizarValores;
+var
+  lTotal: Extended;
+begin
+  lTotal := 0;
+  DataModule1.qLancamentos.DisableControls;
+
+  try
+    DataModule1.qLancamentos.First;
+
+    while not (DataModule1.qLancamentos.EOF) do
+    begin
+      lTotal := lTotal + DataModule1.qLancamentos.FieldByName('valor').AsFloat + DataModule1.qLancamentos.FieldByName('entrada').AsFloat - DataModule1.qLancamentos.FieldByName('saida').AsFloat;
+
+      DataModule1.qLancamentos.Next;
+    end;
+
+    lblTotalLancamento.Caption := FormatFloat('#,##0.00', lTotal);
+  finally
+    DataModule1.qLancamentos.EnableControls;
+
+    if not DataModule1.qLancamentos.IsEmpty then
+      DataModule1.qLancamentos.First;
   end;
 end;
 

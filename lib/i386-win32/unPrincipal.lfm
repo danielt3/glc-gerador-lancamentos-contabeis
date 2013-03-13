@@ -1180,16 +1180,17 @@ object frmPrincipal: TfrmPrincipal
           ClientWidth = 1029
           object GroupBox17: TGroupBox
             Left = 8
-            Height = 226
+            Height = 236
             Top = 232
             Width = 1008
             Caption = 'Lançamentos'
-            ClientHeight = 208
+            ClientHeight = 218
             ClientWidth = 1004
+            ParentFont = False
             TabOrder = 0
             object dbgLancamento: TDBGrid
               Left = 14
-              Height = 193
+              Height = 185
               Top = 8
               Width = 976
               Color = clWindow
@@ -1202,6 +1203,38 @@ object frmPrincipal: TfrmPrincipal
               OnDrawColumnCell = dbgLancamentoDrawColumnCell
               OnDblClick = dbgLancamentoDblClick
             end
+            object Label38: TLabel
+              Left = 782
+              Height = 24
+              Top = 192
+              Width = 45
+              Caption = 'Total'
+              Font.CharSet = ANSI_CHARSET
+              Font.Height = -19
+              Font.Name = 'Cambria'
+              Font.Pitch = fpVariable
+              Font.Quality = fqDraft
+              Font.Style = [fsBold, fsItalic]
+              ParentColor = False
+              ParentFont = False
+            end
+            object lblTotalLancamento: TLabel
+              Left = 844
+              Height = 24
+              Top = 192
+              Width = 125
+              Alignment = taRightJustify
+              AutoSize = False
+              Caption = 'Total'
+              Font.CharSet = ANSI_CHARSET
+              Font.Height = -19
+              Font.Name = 'Cambria'
+              Font.Pitch = fpVariable
+              Font.Quality = fqDraft
+              Font.Style = [fsBold, fsItalic]
+              ParentColor = False
+              ParentFont = False
+            end
           end
           object gbLancamentos: TGroupBox
             Left = 16
@@ -1211,6 +1244,7 @@ object frmPrincipal: TfrmPrincipal
             Caption = 'Leiaute a ser Utilizado:.'
             ClientHeight = 200
             ClientWidth = 1004
+            PopupMenu = popLancamentos
             TabOrder = 1
             object Label16: TLabel
               Left = 16

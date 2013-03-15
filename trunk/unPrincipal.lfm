@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pIntegracao
     Align = alTop
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pEmpresa
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -809,7 +809,7 @@ object frmPrincipal: TfrmPrincipal
             OnClick = btnNovoLayoutClick
             TabOrder = 10
           end
-          object GroupBox8: TGroupBox
+          object gdbHistorico: TGroupBox
             Left = 8
             Height = 121
             Top = 320
@@ -818,14 +818,14 @@ object frmPrincipal: TfrmPrincipal
             ClientHeight = 103
             ClientWidth = 708
             TabOrder = 11
-            object ComboBox2: TComboBox
+            object cmbTabelas: TComboBox
               Left = 54
               Height = 23
               Top = 5
               Width = 134
               ItemHeight = 15
               TabOrder = 0
-              Text = 'ComboBox2'
+              Text = 'cmbTabelas'
             end
             object Label7: TLabel
               Left = 8
@@ -835,14 +835,14 @@ object frmPrincipal: TfrmPrincipal
               Caption = 'Tabelas'
               ParentColor = False
             end
-            object Memo1: TMemo
+            object memConfHistorico: TMemo
               Left = 8
               Height = 58
               Top = 33
               Width = 694
               TabOrder = 1
             end
-            object Edit2: TEdit
+            object edtTabelas: TEdit
               Left = 198
               Height = 23
               Top = 5
@@ -1441,6 +1441,7 @@ object frmPrincipal: TfrmPrincipal
           Items.Strings = (
             'Lançamentos'
             'Empresas'
+            'Plano de Contas'
           )
           TabOrder = 3
           Text = 'Lançamentos'

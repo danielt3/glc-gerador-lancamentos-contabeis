@@ -1,1 +1,14 @@
-UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)
+insert into PLANO_CONTAS (
+  EMPRESA,
+  EMPRESA_OLD,
+  CODIGO_EXTERNO,
+  CODIGO,
+  DESCRICAO,
+  SINTETICA)
+values (
+  9, 
+  0, 
+  '2', 
+  '854562154', 
+  'OUTRO TESTE', 
+  'S')

@@ -56,7 +56,7 @@ type
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
-    ComboBox2: TComboBox;
+    cmbTabelas: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -72,7 +72,7 @@ type
     dbgLayouts: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
-    Edit2: TEdit;
+    edtTabelas: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
@@ -123,7 +123,7 @@ type
     GroupBox7: TGroupBox;
     gbTabelasDisponiveis: TGroupBox;
     gdbCaracteristicas: TGroupBox;
-    GroupBox8: TGroupBox;
+    gdbHistorico: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -165,7 +165,7 @@ type
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
-    Memo1: TMemo;
+    memConfHistorico: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -328,6 +328,7 @@ type
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ExportarPlanoDeContas(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
     procedure HabilitarAbasAdicionais(Habilitar: Boolean);
@@ -384,6 +385,7 @@ type
     procedure CarregarListaDadosCampo(pNomeCampo: String);
     function  PodeAdicionarCampo(i: Integer): Boolean;
     function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
+    procedure CarregarTabelasHistorico;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -768,6 +770,60 @@ begin
     result := true;
   except on e:exception do
     MensagemErro(e.Message, 'Importar Plano');
+  end;
+end;
+
+function TfrmPrincipal.ExportarPlanoDeContas(Empresa: Integer;pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+const
+  lNomeConsulta = 'Integracao';
+var
+  i: Integer;
+  lArquivo: TStringList;
+  lLinha: String;
+  pComandoSQL: String;
+begin
+  result := false;
+  lArquivo := TStringList.Create;
+
+  try
+    try
+      //Verificar se o arquivo já existe
+      if FileExists(pNomeArquivo) then
+        lArquivo.LoadFromFile(pNomeArquivo);
+
+      //Montar SQL
+      pComandoSQL := 'SELECT' + NewLine +
+                     '  *' + NewLine +
+                     'FROM' + NewLine +
+                     '  plano_contas' + NewLine +
+                     'WHERE' + NewLine +
+                     '  empresa = ' + IntToStr(fEmpresaAtual);
+
+      lArquivo.Clear;;
+
+      lLinha := '';
+      if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
+      begin
+        DataModule1.getQuery(lNomeConsulta).First;
+
+        while not (DataModule1.getQuery(lNomeConsulta).EOF) do
+        begin
+          lLinha := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo_externo').AsString, 7, '0') +
+                    AlignLeft(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 20, ' ') +
+                    AlignLeft(DataModule1.getQuery(lNomeConsulta).FieldByName('descricao').AsString, 40, ' ') +
+                    DataModule1.getQuery(lNomeConsulta).FieldByName('sintetica').AsString;
+
+          lArquivo.Add(lLinha);
+          DataModule1.getQuery(lNomeConsulta).Next;
+        end;
+      end;
+
+      lArquivo.SaveToFile(pNomeArquivo);
+    except on e:exception do
+      MensagemErro(e.Message, 'Erro');
+    end;
+  finally
+    FreeAndNil(lArquivo);
   end;
 end;
 
@@ -1638,6 +1694,8 @@ begin
       DataModule1.getQuery('CamposLayout').Next;
     end;
   end;
+
+  CarregarTabelasHistorico;
 end;
 
 procedure TfrmPrincipal.LimparTelaLayouts;
@@ -1651,14 +1709,19 @@ begin
 end;
 
 procedure TfrmPrincipal.HabilitarLayout(Habilitar: Boolean);
+var
+  PodeAlterar: Boolean;
 begin
-  gbNomeLayout.Enabled := Habilitar;
-  edtNomeLayout.Enabled := Habilitar;
-  gbTabelasDisponiveis.Enabled := Habilitar;
+  PodeAlterar := not ExisteLancamentos;
+
+  gbNomeLayout.Enabled := Habilitar and PodeAlterar;
+  edtNomeLayout.Enabled := Habilitar and PodeAlterar;
+  gbTabelasDisponiveis.Enabled := Habilitar and PodeAlterar;
   gbTabelasUtilizadas.Enabled := Habilitar;
-  gdbCaracteristicas.Enabled := Habilitar;
+  gdbCaracteristicas.Enabled := Habilitar and PodeAlterar;
   gdbOpcao.Enabled := Habilitar;
   gbInformacoes.Enabled := Habilitar;
+  gdbHistorico.Enabled := Habilitar and PodeAlterar;
 end;
 
 procedure TfrmPrincipal.NovoLayout;
@@ -1719,10 +1782,10 @@ procedure TfrmPrincipal.EditarLayout;
 begin
   if not (DataModule1.qLayouts.IsEmpty) then
   begin
-    if ExisteLancamentos then
-      MensagemAlerta('Existem lançamentos para esse leiaute. Antes de alterá-lo é necessário primeiro apagar todos os lançamentos.', 'Erro')
-    else
-    begin
+    //if ExisteLancamentos then
+    //  MensagemAlerta('Existem lançamentos para esse leiaute. Antes de alterá-lo é necessário primeiro apagar todos os lançamentos.', 'Erro')
+    //else
+    //begin
       CarregarLayout;
       fEstadoLayout := taEdicao;
 
@@ -1730,8 +1793,10 @@ begin
 
       PageControl.ActivePage := pContador;
       PageControl2.ActivePage := pLeiaute;
-      edtNomeLayout.SetFocus;
-    end;
+
+      if not ExisteLancamentos then
+        edtNomeLayout.SetFocus;
+    //end;
   end;
 end;
 
@@ -2042,6 +2107,16 @@ begin
       break;
     end;
   end;
+end;
+
+procedure TfrmPrincipal.CarregarTabelasHistorico;
+var
+  i: Integer;
+begin
+  cmbTabelas.Items.Clear;
+
+  for i := 0 to chkCamposUtilizados.Items.Count - 1 do
+    cmbTabelas.Items.Add(Copy(chkCamposUtilizados.Items.Strings[i], 2, 100));
 end;
 
 procedure TfrmPrincipal.CarregarLancamentoLayouts;
@@ -4043,7 +4118,12 @@ begin
 
     if (lSucesso) then
       MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
-  end;
+  end
+  else if (cmbConjuntoExportacao.ItemIndex = 2) then
+  begin
+    if ExportarPlanoDeContas(fEmpresaAtual, edtExportar.Text, nil) then
+      MensagemSucesso('Plano de contas exportado com sucesso em ' + edtExportar.Text, 'Exportar dados');
+  end ;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);
@@ -4092,6 +4172,8 @@ begin
     end;
 
     chkCamposDisponiveis.Selected[i] := lSelected;
+
+    CarregarTabelasHistorico;
   end;
 end;
 
@@ -4116,6 +4198,9 @@ begin
       i := TemCampoSelecionado(chkCamposUtilizados);
       chkCamposUtilizados.Selected[i] := false;
     end;
+
+
+    CarregarTabelasHistorico;
   end;
 end;
 

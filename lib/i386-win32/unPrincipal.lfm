@@ -1392,8 +1392,8 @@ object frmPrincipal: TfrmPrincipal
           Left = 14
           Height = 16
           Top = 56
-          Width = 109
-          Caption = 'Conjunto de Dados:.'
+          Width = 83
+          Caption = 'Tipo de Dados:.'
           ParentColor = False
         end
       end
@@ -1458,8 +1458,8 @@ object frmPrincipal: TfrmPrincipal
           Left = 14
           Height = 16
           Top = 56
-          Width = 109
-          Caption = 'Conjunto de Dados:.'
+          Width = 83
+          Caption = 'Tipo de Dados:.'
           ParentColor = False
         end
         object cmbTipoExportacao: TComboBox

@@ -2919,7 +2919,7 @@ begin
 
       if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
       begin
-        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 7, '0');
+        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 6, '0');
 
         lLinha := '01' +
                   lCodigoEmpresa +

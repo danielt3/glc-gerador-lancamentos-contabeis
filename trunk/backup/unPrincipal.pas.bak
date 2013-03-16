@@ -4119,10 +4119,10 @@ begin
     if (lSucesso) then
       MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end
-  else if (cmbConjuntoExportacao.ItemIndex = 0) then
+  else if (cmbConjuntoExportacao.ItemIndex = 2) then
   begin
-    if ExportarDominio(fEmpresaAtual, edtExportar.Text, nil) then
-      MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
+    if ExportarPlanoDeContas(fEmpresaAtual, edtExportar.Text, nil) then
+      MensagemSucesso('Plano de contas exportado com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end ;
 end;
 

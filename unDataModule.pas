@@ -259,6 +259,8 @@ begin
 
   lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
   Executar(lComandoSQL);
+  lComandoSQL := 'DELETE FROM layout_campos_dados WHERE layout = 0';
+  Executar(lComandoSQL);
 end;
 
 procedure TDataModule1.TabelaExiste(lNomeTabela: String);

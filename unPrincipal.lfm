@@ -1208,7 +1208,7 @@ object frmPrincipal: TfrmPrincipal
             end
             object Label38: TLabel
               Left = 782
-              Height = 24
+              Height = 23
               Top = 192
               Width = 45
               Caption = 'Total'

@@ -1,10 +1,20 @@
-INSERT INTO vinculadores_layout (
-chave,
-empresa,
-vinculador,
-layout)
+INSERT INTO lancamentos (
+  chave,
+  empresa,
+  layout,
+  data,
+  pago_por,
+  numero,
+  valor,
+  vinculador,
+  data_lanc)
 VALUES (
-28,
-25,
-14,
-25)
+  15,
+  2,
+  30,
+  '17.03.2013',
+  'GUIA',
+  '222',
+  '100.00',
+  2,
+  '17.03.2013')

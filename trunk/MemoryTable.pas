@@ -33,6 +33,7 @@ type
 
   TMemoryTable = class(TObject)
   private
+    fCurrentIndex: Integer;
     fFieldList: TList;
     fGarbageCollector: TGarbageCollector;
   public
@@ -62,7 +63,10 @@ begin
   inherited Destroy;
 
   for i := 0 to fFieldList.Count - 1 do
-    FreeAndNil(fFieldList.Items[i]);
+  begin
+    TObject(fFieldList.Items[i]).Free;
+    fFieldList.Items[i] := nil;
+  end;
 
   FreeAndNil(fGarbageCollector);
 end;

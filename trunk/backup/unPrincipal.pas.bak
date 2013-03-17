@@ -386,6 +386,7 @@ type
     function  PodeAdicionarCampo(i: Integer): Boolean;
     function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
     procedure CarregarTabelasHistorico;
+    function  MontarDataSets: Boolean;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -2119,6 +2120,11 @@ begin
     cmbTabelas.Items.Add(Copy(chkCamposUtilizados.Items.Strings[i], 2, 100));
 end;
 
+function TfrmPrincipal.MontarDataSets: Boolean;
+begin
+
+end;
+
 procedure TfrmPrincipal.CarregarLancamentoLayouts;
 const
   lTabela = 'LancamentoLayouts';
@@ -2919,7 +2925,7 @@ begin
 
       if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
       begin
-        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 7, '0');
+        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 6, '0');
 
         lLinha := '01' +
                   lCodigoEmpresa +

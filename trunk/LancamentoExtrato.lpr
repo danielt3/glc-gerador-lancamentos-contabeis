@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, unPrincipal, zcomponent, unDataModule, unListaCodigo, 
 unGarbageCollector, unUtilitario, lazcontrols, runtimetypeinfocontrols, 
-unApresentacao, unNovoCampo, unConsultar, unConsultarPlanoContas;
+unApresentacao, unNovoCampo, unConsultar, unConsultarPlanoContas, MemoryTable;
 
 {$R *.res}
 

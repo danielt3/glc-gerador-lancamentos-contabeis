@@ -19,14 +19,20 @@ type
   public
     Description: String;
     Name: String;
+
+    property Values: TStringValues read fValues write fValues;
   end;
+
+  { TIntegerField }
 
   TIntegerField = class(TObject)
   private
-    Values: TIntegerValues;
+    fValues: TIntegerValues;
   public
     Description: String;
     Name: String;
+
+    property Values: TIntegerValues read fValues write fValues;
   end;
 
   { TMemoryTable }
@@ -42,6 +48,8 @@ type
 
     function AddStringField(Name, Description: String): Boolean;
     function AddIntegerField(Name, Description: String): Boolean;
+
+    procedure Append;
 
     property CurrentIndex: Integer read fCurrentIndex;
   end;
@@ -101,6 +109,14 @@ begin
   lIntegerField.Description := Description;
   lIntegerField.Name := Name;
   fFieldList.Add(lIntegerField);
+end;
+
+procedure TMemoryTable.Append;
+var
+  lNewData: Integer;
+begin
+
+  //lNewData := Length(fFieldList.Items[0]);
 end;
 
 end.

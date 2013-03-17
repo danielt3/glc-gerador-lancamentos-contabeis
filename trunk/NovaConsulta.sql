@@ -1,9 +1,7 @@
 SELECT
-  a.vinculador,
-  b.descricao
+  MAX(CAST(codigo_externo AS INT)) as codigo
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
+  plano_contas a
 WHERE
-  a.layout = 1
+  empresa = 2 AND
+  codigo_externo <= '999999'

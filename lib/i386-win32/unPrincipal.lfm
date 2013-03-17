@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pContador
+    ActivePage = pClientes
     Align = alTop
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pPlanoContas
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 1
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -541,7 +541,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 274
               Font.CharSet = ANSI_CHARSET
-              Font.Height = -13
+              Font.Height = -12
               Font.Name = 'Lucida Console'
               Font.Pitch = fpFixed
               Font.Quality = fqDraft
@@ -571,7 +571,7 @@ object frmPrincipal: TfrmPrincipal
               Top = 4
               Width = 264
               Font.CharSet = ANSI_CHARSET
-              Font.Height = -13
+              Font.Height = -12
               Font.Name = 'Lucida Console'
               Font.Pitch = fpFixed
               Font.Quality = fqDraft
@@ -641,17 +641,17 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 5
             object gdbCaracteristicas: TGroupBox
               Left = 6
-              Height = 59
-              Top = 14
+              Height = 83
+              Top = -1
               Width = 472
               Caption = 'Características'
-              ClientHeight = 41
+              ClientHeight = 65
               ClientWidth = 468
               TabOrder = 0
               object Label13: TLabel
                 Left = 6
                 Height = 16
-                Top = 9
+                Top = 25
                 Width = 31
                 Caption = 'Tipo:.'
                 ParentColor = False
@@ -659,7 +659,7 @@ object frmPrincipal: TfrmPrincipal
               object Label15: TLabel
                 Left = 150
                 Height = 16
-                Top = 9
+                Top = 25
                 Width = 52
                 Caption = 'Formato:.'
                 ParentColor = False
@@ -667,7 +667,7 @@ object frmPrincipal: TfrmPrincipal
               object Label31: TLabel
                 Left = 318
                 Height = 16
-                Top = 9
+                Top = 25
                 Width = 34
                 Caption = 'Tam.:.'
                 ParentColor = False
@@ -675,7 +675,7 @@ object frmPrincipal: TfrmPrincipal
               object edtTipoCampo: TEdit
                 Left = 38
                 Height = 23
-                Top = 3
+                Top = 19
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
@@ -684,7 +684,7 @@ object frmPrincipal: TfrmPrincipal
               object edtFormatoCampo: TEdit
                 Left = 206
                 Height = 23
-                Top = 3
+                Top = 19
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
@@ -693,7 +693,7 @@ object frmPrincipal: TfrmPrincipal
               object edtTamanhoCampo: TEdit
                 Left = 358
                 Height = 23
-                Top = 3
+                Top = 19
                 Width = 100
                 Enabled = False
                 PopupMenu = popLayout
@@ -702,11 +702,11 @@ object frmPrincipal: TfrmPrincipal
             end
             object gdbOpcao: TGroupBox
               Left = 486
-              Height = 88
-              Top = -5
+              Height = 83
+              Top = -1
               Width = 216
               Caption = 'Opção'
-              ClientHeight = 70
+              ClientHeight = 65
               ClientWidth = 212
               TabOrder = 1
               object btnAdicionarDadosCampo: TButton
@@ -824,8 +824,11 @@ object frmPrincipal: TfrmPrincipal
               Top = 5
               Width = 134
               ItemHeight = 15
+              ItemIndex = 0
+              Items.Strings = (
+                ''
+              )
               TabOrder = 0
-              Text = 'cmbTabelas'
             end
             object Label7: TLabel
               Left = 8

@@ -1,7 +1,1 @@
-UPDATE plano_contas SET
-  codigo_externo = '504',
-  codigo = '11101004',
-  descricao = 'CAIXA 2',
-  sintetica = 'A'
-WHERE
-  chave = 7176
+UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)

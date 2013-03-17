@@ -641,11 +641,11 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 5
             object gdbCaracteristicas: TGroupBox
               Left = 6
-              Height = 59
-              Top = 14
+              Height = 83
+              Top = -1
               Width = 472
               Caption = 'Características'
-              ClientHeight = 41
+              ClientHeight = 65
               ClientWidth = 468
               TabOrder = 0
               object Label13: TLabel
@@ -702,11 +702,11 @@ object frmPrincipal: TfrmPrincipal
             end
             object gdbOpcao: TGroupBox
               Left = 486
-              Height = 88
-              Top = -5
+              Height = 83
+              Top = -1
               Width = 216
               Caption = 'Opção'
-              ClientHeight = 70
+              ClientHeight = 65
               ClientWidth = 212
               TabOrder = 1
               object btnAdicionarDadosCampo: TButton

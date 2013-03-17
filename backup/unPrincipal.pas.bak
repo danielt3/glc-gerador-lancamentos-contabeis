@@ -891,6 +891,7 @@ begin
   result := not DataModule1.qPlanoContas.IsEmpty;
   dbgPlano.DataSource := DataModule1.dsPlanoContas;
   CarregarTelaPlanoDeContas;
+  ComboBox4Change(ComboBox4);
   HabilitarAbasAdicionais(not DataModule1.qPlanoContas.IsEmpty);
 end;
 

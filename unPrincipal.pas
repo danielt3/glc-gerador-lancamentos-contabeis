@@ -386,6 +386,7 @@ type
     function  PodeAdicionarCampo(i: Integer): Boolean;
     function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
     procedure CarregarTabelasHistorico;
+    function  MontarDataSets: Boolean;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -2117,6 +2118,11 @@ begin
 
   for i := 0 to chkCamposUtilizados.Items.Count - 1 do
     cmbTabelas.Items.Add(Copy(chkCamposUtilizados.Items.Strings[i], 2, 100));
+end;
+
+function TfrmPrincipal.MontarDataSets: Boolean;
+begin
+
 end;
 
 procedure TfrmPrincipal.CarregarLancamentoLayouts;

@@ -2603,6 +2603,7 @@ begin
   lEdit.MaxLength := DataModule1.CampoLancamentoTamanho;
   lEdit.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
   lEdit.Visible := true;
+  lEdit.Alignment := taRightJustify;
   lEdit.Text := '';
   lEdit.OnKeyPress := @DecimalValidator;
   lEdit.OnExit := @DecimalExit;
@@ -4261,9 +4262,9 @@ begin
       lComando := 'DELETE FROM' + NewLine +
                   '  layout_campos_dados' + NewLine +
                   'WHERE' + NewLine +
-                   '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
-                   '  campo = ' + QuotedStr(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]) + ' AND' + NewLine +
-                   '  dado = ' + QuotedStr(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
+                  '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
+                  '  campo = ' + QuotedStr(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]) + ' AND' + NewLine +
+                  '  dado = ' + QuotedStr(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
 
       DataModule1.Executar(lComando);
 

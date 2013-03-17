@@ -270,6 +270,7 @@ type
     procedure GravarInserirCampo(pNomeCampo: String);
     procedure DateValidator(Sender: TObject; var Key: char);
     procedure DecimalValidator(Sender: TObject; var Key: char);
+    procedure IntegerValidator(Sender: TObject; var Key: char);
     procedure DecimalExit(Sender: TObject);
     procedure ComboValidator(Sender: TObject; var Key: char);
     procedure CheckboxDrawItem(Control: TWinControl; Index: Integer; ARect: TRect; State: TOwnerDrawState);
@@ -399,6 +400,7 @@ type
     procedure EditarLancamento;
     procedure ExcluirLancamento;
     procedure CreateStringField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
+    procedure CreateIntegerField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateDecimalField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateDateField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
     procedure CreateVinculadorField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
@@ -1731,12 +1733,12 @@ begin
   LimparTelaLayouts;
 
   fEstadoLayout := taInclusao;
+  fLayoutAtual := DataModule1.GerarChave('GEN_LAYOUTS');;
 
   HabilitarLayout(true);
 
   PageControl.ActivePage := pContador;
   PageControl2.ActivePage := pLeiaute;
-  fLayoutAtual := 0;
   CarregarListaDadosCampo('none');
   edtNomeLayout.SetFocus;
 end;
@@ -1751,6 +1753,13 @@ begin
   begin
     if (fEmpresaAtual > 0) and (MensagemConfirmacao('Deseja realmente excluir esse Leiaute?', 'GLC')) then
     begin
+      lComandoSQL := 'DELETE FROM' + NewLine +
+                     '  layout_campos_dados' + NewLine +
+                     'WHERE' + NewLine +
+                     '  layout = ' + IntToStr(fLayoutAtual);
+
+      DataModule1.Executar(lComandoSQL);
+
       lComandoSQL := 'DELETE FROM' + NewLine +
                      '  layout_campos' + NewLine +
                      'WHERE' + NewLine +
@@ -1887,7 +1896,6 @@ begin
   result := false;
 
   try
-    fLayoutAtual := DataModule1.GerarChave('GEN_LAYOUTS');
     lComando := 'INSERT INTO layouts (' + NewLine +
                 'chave,' + NewLine +
                 'empresa,' + NewLine +
@@ -2319,6 +2327,8 @@ begin
     CreateComboField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftString) then
     CreateStringField(fLeft, fTop, fLength)
+  else if (DataModule1.CampoLancamentoType = ftInteger) then
+    CreateIntegerField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftFloat) then
     CreateDecimalField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftDateTime) then
@@ -2573,6 +2583,55 @@ begin
   btnGravarLancamento.Left := pLeft;
 end;
 
+procedure TfrmPrincipal.CreateIntegerField(var pLeft: Integer;var pTop: Integer; pLength: Integer);
+var
+  lWidth: Integer;
+  lLabel: TLabel;
+  lEdit: TEdit;
+begin
+  lWidth := 88;
+  if ((pLeft + lWidth + 12) > pLength) then
+  begin
+    pTop := pTop + 48;
+    pLeft := 16;
+  end;
+
+  lLabel := TLabel.Create(frmPrincipal);
+  lLabel.Parent := gbLancamentos;
+  lLabel.Left := pLeft;
+  lLabel.Top := pTop - 19;
+  lLabel.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
+  lLabel.Name := 'lblLanc_' + DataModule1.CampoLancamentoNome;
+  lLabel.Visible := true;
+  fListaCampos.Add(lLabel);
+
+  lEdit := TEdit.Create(frmPrincipal);
+  lEdit.Parent := gbLancamentos;
+  lEdit.Left := pLeft;
+  lEdit.Top := pTop;
+  lEdit.Width := lWidth;
+  lEdit.MaxLength := DataModule1.CampoLancamentoTamanho;
+  lEdit.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
+  lEdit.Visible := true;
+  lEdit.Alignment := taRightJustify;
+  lEdit.Text := '';
+  lEdit.OnKeyPress := @IntegerValidator;
+  //lEdit.OnExit := @DecimalExit;
+  fListaCampos.Add(lEdit);
+
+  if (DataModule1.CampoLancamentoNome = 'entrada') then
+    fCampoEntrada := lEdit
+  else if (DataModule1.CampoLancamentoNome = 'saida') then
+    fCampoSaida := lEdit;
+
+  pLeft := pLeft + lWidth + 10;
+
+  btnGravarLancamento.TabOrder := lEdit.TabOrder + 1;
+  btnGravarLancamento.Visible := true;
+  btnGravarLancamento.Top  := pTop;
+  btnGravarLancamento.Left := pLeft;
+end;
+
 procedure TfrmPrincipal.CreateDecimalField(var pLeft: Integer; var pTop: Integer; pLength: Integer);
 var
   lWidth: Integer;
@@ -2603,6 +2662,7 @@ begin
   lEdit.MaxLength := DataModule1.CampoLancamentoTamanho;
   lEdit.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
   lEdit.Visible := true;
+  lEdit.Alignment := taRightJustify;
   lEdit.Text := '';
   lEdit.OnKeyPress := @DecimalValidator;
   lEdit.OnExit := @DecimalExit;
@@ -3768,6 +3828,12 @@ begin
   end;
 
   TEdit(Sender).SelStart := Length(TEdit(Sender).Text);
+end;
+
+procedure TfrmPrincipal.IntegerValidator(Sender: TObject; var Key: char);
+begin
+  if (Key <> #8) and not (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
+    Key := #0;
 end;
 
 procedure TfrmPrincipal.DecimalExit(Sender: TObject);

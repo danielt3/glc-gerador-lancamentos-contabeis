@@ -258,6 +258,7 @@ begin
   CriarTabelaLancamentos;
 
   lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
+  lComandoSQL := 'DELETE FROM layout_campos_dados WHERE layout = 0';
   Executar(lComandoSQL);
 end;
 
@@ -372,7 +373,7 @@ begin
   AddCampoLancamento('forma_pag', '#Forma de Pagamento', 'Caractere', '', 32, false, true);
   AddCampoLancamento('fornecedor', ' Fornecedor', 'Caractere', '', 32, false, false);
   AddCampoLancamento('numero', ' Número do Doc.', 'Numeral', '##########', 10, false, false);
-  AddCampoLancamento('pago_por', '#Pago Por', 'Caractere', '', 32, false, true);
+  AddCampoLancamento('pago_por', '#Tipo de Título', 'Caractere', '', 32, false, true);
   AddCampoLancamento('data', ' Data', 'Data', 'DD/MM/AAAA', 10, true, false);
   AddCampoLancamento('vinculador', ' Vinculador', 'Numeral', '##########', 10, true, false);
   AddCampoLancamento('historico', ' Histórico', 'Caractere', '', 32, false, false);

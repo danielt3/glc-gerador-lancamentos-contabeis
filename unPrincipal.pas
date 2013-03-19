@@ -2772,6 +2772,7 @@ var
   lCombo: TcomboBox;
   lLabel: TLabel;
   lWidth: Integer;
+  i: Integer;
 begin
   lWidth := 208;
   if ((pLeft + lWidth + 12) > pLength) then
@@ -2793,7 +2794,7 @@ begin
   lCombo.Parent := gbLancamentos;
   lCombo.AutoComplete := true;
   lCombo.AutoCompleteText := [cbactEnabled];
-  lCombo.Style := csSimple;
+  //lCombo.Style := csSimple;
   lCombo.Left := pLeft;
   lCombo.Top := pTop;
   lCombo.Width := lWidth;
@@ -2802,6 +2803,16 @@ begin
   lCombo.Text := '';
   lCombo.Visible := true;
   CarregarListaDadosCampoLancamento(lCombo, DataModule1.CampoLancamentoDescricao);
+
+  i := lCombo.Items.Count;
+  if lCombo.Items.Count > 0 then
+  begin
+    lCombo.ItemIndex := 1;
+    lCombo.Text := lCombo.Items.Strings[1];
+  end;
+
+  i := lCombo.ItemIndex;
+
   lCombo.OnKeyPress := @ComboValidator;
   fListaCampos.Add(lCombo);
 
@@ -2923,7 +2934,11 @@ begin
     if Vazio(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text) then
       result := '0'
     else
-      result := QuotedStr(StringReplace(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, DecimalSeparator, '.', [rfReplaceAll]))
+    begin
+      result := StringReplace(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, ThousandSeparator, '', [rfReplaceAll]);
+      result := StringReplace(result, DecimalSeparator, '.', [rfReplaceAll]);
+      result := QuotedStr(result);
+    end;
   end
   else if (DataModule1.CampoLancamentoType = ftDateTime) then
     result := QuotedStr(FormatDateTime('dd.mm.yyyy', TDateEdit(FindComponent('edtLanc_' + pNomeCampo)).Date));

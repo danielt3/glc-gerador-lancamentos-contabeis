@@ -390,6 +390,7 @@ type
     function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
     procedure CarregarTabelasHistorico;
     function  MontarDataSets: Boolean;
+    function  TemOpcoesGravadas(pLayout: Integer; pNomeCampo: String): Boolean;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -1894,6 +1895,18 @@ begin
     MensagemAlerta('A tabela "Data" é obrigatória.', 'Erro');
     result := false;
     exit;
+  end
+  else if (CampoSendoUtilizado('#Forma de Pagamento')) and not (TemOpcoesGravadas(fLayoutAtual, '#Forma de Pagamento')) then
+  begin
+    MensagemAlerta('Não foram gravadas opções para a tabela Forma de Pagamento.', 'Erro');
+    result := false;
+    exit;
+  end
+  else if (CampoSendoUtilizado('#Tipo de Título')) and not (TemOpcoesGravadas(fLayoutAtual, '#Tipo de Título')) then
+  begin
+    MensagemAlerta('Não foram gravadas opções para a tabela Tipo de Título.', 'Erro');
+    result := false;
+    exit;
   end;
 end;
 
@@ -2140,6 +2153,22 @@ end;
 function TfrmPrincipal.MontarDataSets: Boolean;
 begin
 
+end;
+
+function TfrmPrincipal.TemOpcoesGravadas(pLayout: Integer; pNomeCampo: String): Boolean;
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  chave' + NewLine +
+                 'FROM' + NewLine +
+                 '  layout_campos_dados' + NewLine +
+                 'WHERE' + NewLine +
+                 '  empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
+                 '  layout = ' + IntToStr(pLayout) + ' AND' + NewLine +
+                 '  campo = ' + QuotedStr(Trim(pNomeCampo));
+
+  result := DataModule1.Consultar(lComandoSQL) > 0;
 end;
 
 procedure TfrmPrincipal.CarregarLancamentoLayouts;

@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pClientes
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1037
-        ActivePage = pLeiaute
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 2
+        TabIndex = 3
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -993,7 +993,6 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 168
               Width = 596
-              CharCase = ecUppercase
               Enabled = False
               TabOrder = 4
             end
@@ -1296,6 +1295,15 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 2
               Visible = False
             end
+            object Button4: TButton
+              Left = 612
+              Height = 25
+              Top = 164
+              Width = 75
+              Caption = 'Button4'
+              OnClick = Button4Click
+              TabOrder = 3
+            end
           end
         end
       end
@@ -1586,8 +1594,10 @@ object frmPrincipal: TfrmPrincipal
           Height = 23
           Top = 26
           Width = 59
+          Alignment = taRightJustify
           OnKeyPress = edtLoteKeyPress
           TabOrder = 7
+          Text = '1'
         end
         object Label35: TLabel
           Left = 344

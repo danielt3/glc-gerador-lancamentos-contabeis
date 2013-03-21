@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1045
-    ActivePage = pIntegracao
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -993,7 +993,6 @@ object frmPrincipal: TfrmPrincipal
               Height = 23
               Top = 168
               Width = 596
-              CharCase = ecUppercase
               Enabled = False
               TabOrder = 4
             end

@@ -6,4 +6,4 @@ FROM
   JOIN vinculadores b ON (
     b.chave = a.vinculador)
 WHERE
-  a.layout = 29
+  a.layout = 30

@@ -46,6 +46,7 @@ type
     btnGravarLancamento: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Button5: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -216,6 +217,7 @@ type
     procedure btnAdicionarDadosCampoClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
@@ -1863,7 +1865,13 @@ function TfrmPrincipal.ValidarLayout: Boolean;
 begin
   result := true;
 
-  if not (CampoSendoUtilizado('*Valor')) and not (CampoSendoUtilizado('*Entrada')) and not (CampoSendoUtilizado('*Saída')) then
+  if Vazio(edtNomeLayout.Text) then
+  begin
+    MensagemAlerta('Para gravar um leiaute, é necessário informar um nome.', 'Erro');
+    result := false;
+    exit;
+  end
+  else if not (CampoSendoUtilizado('*Valor')) and not (CampoSendoUtilizado('*Entrada')) and not (CampoSendoUtilizado('*Saída')) then
   begin
     MensagemAlerta('Para gravar um leiaute, é necessário informar a tabela "Valor" ou as tabelas "Entrada" e "Saída".', 'Erro');
     result := false;
@@ -2807,8 +2815,8 @@ begin
   i := lCombo.Items.Count;
   if lCombo.Items.Count > 0 then
   begin
-    lCombo.ItemIndex := 0;
-    lCombo.Text := lCombo.Items.Strings[0];
+    lCombo.ItemIndex := 1;
+    lCombo.Text := lCombo.Items.Strings[1];
   end;
 
   i := lCombo.ItemIndex;
@@ -3003,7 +3011,7 @@ begin
 
       if (DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL) > 0) then
       begin
-        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 6, '0');
+        lCodigoEmpresa := AlignRight(DataModule1.getQuery(lNomeConsulta).FieldByName('codigo').AsString, 7, '0');
 
         lLinha := '01' +
                   lCodigoEmpresa +
@@ -3024,8 +3032,8 @@ begin
                   AlignRight(ApenasNumeros(edtLote.Text), 7, '0') +
                   'X' +
                   FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
-                  AlignLeft('GERENTE', 30, ' ') +
-                  AlignLeft('', 100, ' ');
+                  AlignLeft('GERENTE', 45, ' ') +
+                  AlignLeft('N', 100, ' ');
 
         lArquivo.Add(lLinha);
 
@@ -3048,6 +3056,7 @@ begin
                        '    WHEN NOT a.pago_por IS NULL THEN ''Pago por '' || a.pago_por' + NewLine +
                        '    WHEN NOT a.fornecedor IS NULL THEN ''Pago a '' || a.fornecedor' + NewLine +
                        '    WHEN NOT a.cliente IS NULL THEN ''Pago por '' || a.cliente' + NewLine +
+                       '    WHEN NOT b.historico IS NULL THEN b.historico' + NewLine +
                        '    ELSE ''''' + NewLine +
                        '  END as historico' + NewLine +
                        'FROM' + NewLine +
@@ -3083,14 +3092,14 @@ begin
                     AlignRight(IntToStr(iSequencial), 7, '0') +
                     AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('debitar').AsString), 7, '0') +
                     AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('creditar').AsString), 7, '0') +
-                    AlignRight(FormatFloat('##############0.00', DataModule1.getQuery(lNomeConsulta).FieldByName('valor').AsFloat), 15, '0');
+                    AlignRight(StringReplace(FormatFloat('##############0.00', DataModule1.getQuery(lNomeConsulta).FieldByName('valor').AsFloat), DecimalSeparator, '', [rfReplaceAll]), 15, '0');
 
           lLinha := lLinha +
                     AlignRight('0', 7, '0');
           lLinha := lLinha +
                     AlignLeft(DataModule1.getQuery(lNomeConsulta).FieldByName('historico').AsString, 512, ' ');
           lLinha := lLinha +
-                    AlignLeft('', 7, ' ') +
+                    lCodigoEmpresa +
                     AlignLeft('', 100, ' ');
 
           lArquivo.Add(lLinha);
@@ -3471,6 +3480,19 @@ procedure TfrmPrincipal.Button2Click(Sender: TObject);
 begin
   if OpenDialog1.Execute then
     edtImportar.Text := OpenDialog1.FileName;
+end;
+
+procedure TfrmPrincipal.Button4Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to fListaCamposNome.Count - 1 do
+  begin
+    DataModule1.CampoLancamentoLocate(fListaCamposNome.Strings[i]);
+
+    if (FindComponent('edtLanc_' + fListaCamposNome.Strings[i]) is TComboBox) then
+      TComboBox(FindComponent('edtLanc_' + fListaCamposNome.Strings[i])).ItemIndex := 0;
+  end;
 end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);

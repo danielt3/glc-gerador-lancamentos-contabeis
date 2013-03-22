@@ -2166,9 +2166,7 @@ begin
                  'WHERE' + NewLine +
                  '  empresa = ' + IntToStr(fEmpresaAtual) + ' AND' + NewLine +
                  '  layout = ' + IntToStr(pLayout) + ' AND' + NewLine +
-                 '  campo = ' + QuotedStr(Trim(pNomeCampo)) + NewLine +
-                 'ORDER BY' + NewLine +
-                 '  nome';
+                 '  campo = ' + QuotedStr(Trim(pNomeCampo));
 
   result := DataModule1.Consultar(lComandoSQL) > 0;
 end;

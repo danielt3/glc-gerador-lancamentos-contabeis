@@ -2471,7 +2471,7 @@ begin
     fGarbageCollector.Add(fVinculadoresLayout);
   end;
 
-  fVinculadoresLayout.Items.Clear;
+  fVinculadoresLayout.Clear;
 
   lComandoSQL := 'SELECT' + NewLine +
                  '  a.vinculador,' + NewLine +
@@ -3022,6 +3022,7 @@ var
   lLinha: String;
   pComandoSQL: String;
   lCodigoEmpresa: String;
+  lLote: Integer;
 begin
   result := false;
   lArquivo := TStringList.Create;
@@ -3058,12 +3059,7 @@ begin
 
         lArquivo.Add(lLinha);
 
-        lLinha := '02' +
-                  AlignRight(ApenasNumeros(edtLote.Text), 7, '0') +
-                  'X' +
-                  FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
-                  AlignLeft('GERENTE', 45, ' ') +
-                  AlignLeft('N', 100, ' ');
+        lLote := StrToIntDef(ApenasNumeros(edtLote.Text), 0);
 
         lArquivo.Add(lLinha);
 
@@ -3108,6 +3104,13 @@ begin
         begin
           iSequencial := iSequencial + 1;
 
+          lLinha := '02' +
+                    AlignRight(IntToStr(lLote), 7, '0') +
+                    'X' +
+                    FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
+                    AlignLeft('GERENTE', 45, ' ') +
+                    AlignLeft('N', 100, ' ');
+
           {lLinha := '03' +
                     AlignRight(IntToStr(iSequencial), 7, '0') +
                     AlignRight(ApenasNumeros(DataModule1.getQuery(lNomeConsulta).FieldByName('debitar').AsString), 7, '0') +
@@ -3134,6 +3137,8 @@ begin
 
           lArquivo.Add(lLinha);
           DataModule1.getQuery(lNomeConsulta).Next;
+
+          lLote := lLote + 1;
         end;
 
         lLinha := '99' +

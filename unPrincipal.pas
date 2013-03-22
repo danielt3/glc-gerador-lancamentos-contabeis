@@ -2471,6 +2471,8 @@ begin
     fGarbageCollector.Add(fVinculadoresLayout);
   end;
 
+  fVinculadoresLayout.Clear;
+
   lComandoSQL := 'SELECT' + NewLine +
                  '  a.vinculador,' + NewLine +
                  '  b.descricao' + NewLine +

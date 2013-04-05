@@ -11,7 +11,7 @@ uses
   PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
   unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
   RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo,
-  unConsultarPlanoContas;
+  unConsultarPlanoContas, fpspreadsheet, fpsallformats;
 
 type
   { TfrmPrincipal }
@@ -55,6 +55,7 @@ type
     chkLayoutsDisponiveis: TCheckListBox;
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
+    cmbLancamentoLayout1: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
     ComboBox3: TComboBox;
@@ -224,6 +225,7 @@ type
     procedure chkCamposUtilizadosClick(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
     procedure cmbLancamentoLayoutChange(Sender: TObject);
+    procedure cmbTipoExportacaoChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
     procedure dbgLancamentoDblClick(Sender: TObject);
@@ -418,6 +420,7 @@ type
     function  ExportarDominio(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     procedure QuebrarString(var pLista: TStringList; pString: String);
     function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
@@ -818,7 +821,7 @@ begin
                     AlignLeft(DataModule1.getQuery(lNomeConsulta).FieldByName('descricao').AsString, 40, ' ') +
                     DataModule1.getQuery(lNomeConsulta).FieldByName('sintetica').AsString;
 
-          lArquivo.Add(lLinha);
+          lArquivo.Add(UTF8Decode(lLinha));
           DataModule1.getQuery(lNomeConsulta).Next;
         end;
       end;
@@ -1329,6 +1332,16 @@ begin
   begin
     MensagemAlerta('Nâo é permitido gravar  vinculador sem leiaute definido.', 'Erro');
     chkLayoutsDisponiveis.SetFocus;
+  end
+  else if Vazio(edtCodigoDebitar.Text) then
+  begin
+    MensagemAlerta('Nâo é permitido gravar  vinculador sem informar conta débito.', 'Erro');
+    edtCodigoDebitar.SetFocus;
+  end
+  else if Vazio(edtCodigoCreditar.Text) then
+  begin
+    MensagemAlerta('Nâo é permitido gravar  vinculador sem informar conta crédito.', 'Erro');
+    edtCodigoCreditar.SetFocus;
   end
   else
     result := true;
@@ -2062,7 +2075,7 @@ end;
 
 procedure TfrmPrincipal.MostrarDadosCampo(pDescricao: String; HabilitarInsercao: Boolean);
 begin
-  if (DataModule1.CampoLancamentoLocateDescricao(pDescricao) > -1) then
+  if (DataModule1.CampoLancamentoLocateDescricao(pDescricao) > -1) and HabilitarInsercao then
   begin
     edtTipoCampo.Text := DataModule1.CampoLancamentoTipo;
     edtFormatoCampo.Text := DataModule1.CampoLancamentoFormato;
@@ -3061,8 +3074,6 @@ begin
 
         lLote := StrToIntDef(ApenasNumeros(edtLote.Text), 0);
 
-        lArquivo.Add(lLinha);
-
         pComandoSQL := 'SELECT' + NewLine +
                        '  a.chave,' + NewLine +
                        '  b.debitar AS chave_debitar,' + NewLine +
@@ -3110,6 +3121,8 @@ begin
                     FormatDateTime('dd/mm/yyyy', dhInicio.Date) +
                     AlignLeft('GERENTE', 45, ' ') +
                     AlignLeft('N', 100, ' ');
+
+          lArquivo.Add(lLinha);
 
           {lLinha := '03' +
                     AlignRight(IntToStr(iSequencial), 7, '0') +
@@ -3326,6 +3339,159 @@ begin
       FreeAndNil(lArquivo);
       FreeAndNil(lLinha);
     end;
+  end;
+end;
+
+function TfrmPrincipal.ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+const
+  lNomeConsulta2 = 'CamposExcel';
+  lNomeConsulta = 'GerarExcel';
+  OUTPUT_FORMAT = sfExcel8;
+var
+  pComandoSQL: String;
+  lLinha: Integer;
+  lColuna: Integer;
+  MyWorkbook: TsWorkbook;
+  MyWorksheet: TsWorksheet;
+  MyFormula: TsRPNFormula;
+begin
+
+  try
+    try
+      {pComandoSQL := 'SELECT' + NewLine +
+                     '  b.nome' + NewLine +
+                     'FROM' + NewLine +
+                     '  layouts a' + NewLine +
+                     '  JOIN layout_campos b ON (' + NewLine +
+                     '    b.layout = a.chave)' + NewLine +
+                     'WHERE' + NewLine +
+                     '  a.chave = ' + IntToStr(Layout);}
+
+        pComandoSQL := 'SELECT' + NewLine +
+                       '  (1) as indice,' + NewLine +
+                       '  chave,' + NewLine +
+                       '  nome' + NewLine +
+                       'FROM' + NewLine +
+                       '  layout_campos' + NewLine +
+                       'WHERE' + NewLine +
+                       '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                       '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                       '  AND nome = ' + QuotedStr('data') + NewLine +
+                       'UNION' + NewLine +
+                       'SELECT' + NewLine +
+                       '  (2) as indice,' + NewLine +
+                       '  chave,' + NewLine +
+                       '  nome' + NewLine +
+                       'FROM' + NewLine +
+                       '  layout_campos' + NewLine +
+                       'WHERE' + NewLine +
+                       '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                       '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                       '  AND nome <> ' + QuotedStr('data') + NewLine +
+                       '  AND nome <> ' + QuotedStr('vinculador') + NewLine +
+                       'UNION' + NewLine +
+                       'SELECT' + NewLine +
+                       '  (3) as indice,' + NewLine +
+                       '  chave,' + NewLine +
+                       '  nome' + NewLine +
+                       'FROM' + NewLine +
+                       '  layout_campos' + NewLine +
+                       'WHERE' + NewLine +
+                       '  layout = ' + IntToStr(fLancamentoLayoutAtual) + NewLine +
+                       '  AND empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+                       '  AND nome = ' + QuotedStr('vinculador') + NewLine +
+                       'ORDER BY 1, 2';
+
+      DataModule1.NovaConsulta(lNomeConsulta2, pComandoSQL);
+
+      if not DataModule1.getQuery(lNomeConsulta2).IsEmpty then
+      begin
+        MyWorkbook := TsWorkbook.Create;
+        MyWorksheet := MyWorkbook.AddWorksheet('GLC');
+
+        DataModule1.getQuery(lNomeConsulta2).First;
+        lColuna := 0;
+        while not (DataModule1.getQuery(lNomeConsulta2).Eof) do
+        begin
+          DataModule1.CampoLancamentoLocate(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString);
+          MyWorksheet.WriteUTF8Text(0, lColuna, Copy(DataModule1.CampoLancamentoDescricao, 2, 100));
+          lColuna := lColuna + 1;
+
+          DataModule1.getQuery(lNomeConsulta2).Next;
+        end;
+
+        pComandoSQL := 'SELECT' + NewLine +
+                       '  a.chave,' + NewLine +
+                       '  b.debitar AS chave_debitar,' + NewLine +
+                       '  c.codigo_externo AS debitar,' + NewLine +
+                       '  c.descricao AS no_debitar,' + NewLine +
+                       '  b.creditar AS chave_creditar,' + NewLine +
+                       '  d.codigo_externo AS creditar,' + NewLine +
+                       '  d.descricao AS no_creditar,' + NewLine +
+                       '  a.data_pag AS data_pag,' + NewLine +
+                       '  b.descricao AS no_vinculador,' + NewLine;
+
+        DataModule1.getQuery(lNomeConsulta2).First;
+        while not (DataModule1.getQuery(lNomeConsulta2).Eof) do
+        begin
+          //if (Pos(Trim(DataModule1.getQuery(lNomeConsulta).FieldByName('nome').AsString), 'entrada, saida, forma_pag, nota_fiscal, pago_por, fornecedor, cliente, numero') > 0) then
+          pComandoSQL := pComandoSQL + '  a.' + Trim(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString) + ',' + NewLine;
+
+          DataModule1.getQuery(lNomeConsulta2).Next;
+        end;
+
+        pComandoSQL := pComandoSQL +
+                       '  CASE' + NewLine +
+                       '    WHEN NOT a.historico IS NULL THEN a.historico' + NewLine +
+                       '    WHEN NOT a.pago_por IS NULL THEN ''Pago por '' || a.pago_por' + NewLine +
+                       '    WHEN NOT a.fornecedor IS NULL THEN ''Pago a '' || a.fornecedor' + NewLine +
+                       '    WHEN NOT a.cliente IS NULL THEN ''Pago por '' || a.cliente' + NewLine +
+                       '    WHEN NOT b.historico IS NULL THEN b.historico' + NewLine +
+                       '    ELSE ''''' + NewLine +
+                       '  END as historico' + NewLine +
+                       'FROM' + NewLine +
+                       '  lancamentos a' + NewLine +
+                       '  JOIN vinculadores b ON (' + NewLine +
+                       '    b.chave = a.vinculador)' + NewLine +
+                       '  JOIN plano_contas c ON (' + NewLine +
+                       '    c.chave = b.debitar)' + NewLine +
+                       '  JOIN plano_contas d ON (' + NewLine +
+                       '    d.chave = b.creditar)' + NewLine +
+                       'WHERE' + NewLine +
+                       '  a.empresa = ' + IntToStr(Empresa) + NewLine +
+                       '  AND a.layout = ' + IntToStr(Layout) + NewLine;
+
+        DataModule1.NovaConsulta(lNomeConsulta, pComandoSQL);
+
+        DataModule1.getQuery(lNomeConsulta).First;
+        lLinha := 1;
+        while not DataModule1.getQuery(lNomeConsulta).EOF do
+        begin
+          DataModule1.getQuery(lNomeConsulta2).First;
+          lColuna := 0;
+          while not (DataModule1.getQuery(lNomeConsulta2).Eof) do
+          begin
+            DataModule1.CampoLancamentoLocate(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString);
+
+            MyWorksheet.WriteUTF8Text(lLinha, lColuna, DataModule1.getQuery(lNomeConsulta).FieldByName(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString).AsString);
+            lColuna := lColuna + 1;
+
+            DataModule1.getQuery(lNomeConsulta2).Next;
+          end;
+
+          //MyWorksheet.WriteNumber(lLinha, 0, DataModule1.getQuery(lNomeConsulta).FieldByName('chave').AsInteger);
+
+          DataModule1.getQuery(lNomeConsulta).Next;
+          lLinha := lLinha + 1;
+        end;
+
+        MyWorkbook.WriteToFile(pNomeArquivo, OUTPUT_FORMAT);
+      end;
+    except on e:exception do
+      MensagemErro(e.Message, 'Erro');
+    end;
+  finally
+    MyWorkbook.Free;
   end;
 end;
 
@@ -3565,6 +3731,14 @@ procedure TfrmPrincipal.cmbLancamentoLayoutChange(Sender: TObject);
 begin
   fLancamentoLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0);
   MontarTelaLancamento;
+end;
+
+procedure TfrmPrincipal.cmbTipoExportacaoChange(Sender: TObject);
+begin
+  if (cmbTipoExportacao.ItemIndex = 0) then
+    edtExportar.Text := StringReplace(edtExportar.Text, ExtractFileExt(edtExportar.Text), '.txt', [rfReplaceAll])
+  else
+    edtExportar.Text := StringReplace(edtExportar.Text, ExtractFileExt(edtExportar.Text), '.xls', [rfReplaceAll]);
 end;
 
 procedure TfrmPrincipal.ComboValidator(Sender: TObject; var Key: char);
@@ -4243,7 +4417,7 @@ procedure TfrmPrincipal.btnExportarClick(Sender: TObject);
 var
   lSucesso: Boolean;
 begin
-  if (cmbConjuntoExportacao.ItemIndex = 0) then
+  if (cmbConjuntoExportacao.ItemIndex = 0) and (cmbTipoExportacao.ItemIndex = 0) then
   begin
     if ExportarDominio(fEmpresaAtual, edtExportar.Text, nil) then
       MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
@@ -4270,7 +4444,12 @@ begin
   begin
     if ExportarPlanoDeContas(fEmpresaAtual, edtExportar.Text, nil) then
       MensagemSucesso('Plano de contas exportado com sucesso em ' + edtExportar.Text, 'Exportar dados');
-  end ;
+  end
+  else if (cmbConjuntoExportacao.ItemIndex = 0) and (cmbTipoExportacao.ItemIndex = 1) then
+  begin
+    if ExportarLancamentosExcel(fEmpresaAtual, fLayoutAtual, edtExportar.Text, nil) then
+      MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
+  end;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);

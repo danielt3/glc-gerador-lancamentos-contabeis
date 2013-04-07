@@ -58,6 +58,7 @@ type
     cmbLancamentoLayout1: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
+    ComboBox1: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -761,7 +762,10 @@ begin
         begin
           lExterno := IntToStr(StrToIntDef(Copy(lArquivo.Strings[i], 1, 7), 0));
           lCodigo := ApenasNumeros(Copy(lArquivo.Strings[i], 8, 20));
-          lDescricao:= Trim(Copy(lArquivo.Strings[i], 28, 40));
+          lDescricao := lArquivo.Strings[i];
+          lDescricao := AnsiToUtf8(lDescricao);
+          lDescricao := Copy(lDescricao, 28, 40);
+          lDescricao:= Trim(lDescricao);
           lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
 
           AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
@@ -3435,7 +3439,7 @@ begin
         while not (DataModule1.getQuery(lNomeConsulta2).Eof) do
         begin
           //if (Pos(Trim(DataModule1.getQuery(lNomeConsulta).FieldByName('nome').AsString), 'entrada, saida, forma_pag, nota_fiscal, pago_por, fornecedor, cliente, numero') > 0) then
-          pComandoSQL := pComandoSQL + '  a.' + Trim(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString) + ',' + NewLine;
+          pComandoSQL := pComandoSQL + '  a.' + Trim(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString) + ' AS ' + Trim(DataModule1.getQuery(lNomeConsulta2).FieldByName('nome').AsString) + ',' + NewLine;
 
           DataModule1.getQuery(lNomeConsulta2).Next;
         end;

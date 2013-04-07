@@ -1,3 +1,15 @@
+<<<<<<< .mine
+INSERT INTO layout_campos (
+chave,
+empresa,
+layout,
+nome)
+VALUES (
+317,
+28,
+36,
+'forma_pag')
+=======
 insert into PLANO_CONTAS (
   EMPRESA,
   EMPRESA_OLD,
@@ -12,3 +24,4 @@ values (
   '11', 
   'ATIVO CIRCULANTE', 
   'S')
+>>>>>>> .r143

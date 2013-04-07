@@ -150,6 +150,7 @@ end;
 function TDataModule1.Conectar: Boolean;
 begin
   result := false;
+  //Conexao.Properties.Add('CODEPAGE=UTF8');
   Conexao.Connect;
   result := Conexao.Connected;
 end;

@@ -58,6 +58,7 @@ type
     cmbLancamentoLayout1: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
+    ComboBox1: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -761,7 +762,10 @@ begin
         begin
           lExterno := IntToStr(StrToIntDef(Copy(lArquivo.Strings[i], 1, 7), 0));
           lCodigo := ApenasNumeros(Copy(lArquivo.Strings[i], 8, 20));
-          lDescricao:= Trim(Copy(lArquivo.Strings[i], 28, 40));
+          lDescricao := lArquivo.Strings[i];
+          lDescricao := UnicodeToUtf8(lDescricao);
+          lDescricao := Copy(lDescricao, 28, 40);
+          lDescricao:= Trim(lDescricao);
           lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
 
           AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);

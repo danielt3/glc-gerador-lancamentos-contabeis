@@ -150,6 +150,7 @@ end;
 function TDataModule1.Conectar: Boolean;
 begin
   result := false;
+  //Conexao.Properties.Add('CODEPAGE=UTF8');
   Conexao.Connect;
   result := Conexao.Connected;
 end;
@@ -258,6 +259,7 @@ begin
   CriarTabelaLancamentos;
 
   lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
+  Executar(lComandoSQL);
   lComandoSQL := 'DELETE FROM layout_campos_dados WHERE layout = 0';
   Executar(lComandoSQL);
 end;

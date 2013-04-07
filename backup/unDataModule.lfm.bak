@@ -9,9 +9,10 @@ object DataModule1: TDataModule1
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8
     UTF8StringsAsWideField = False
-    AutoEncodeStrings = False
+    ClientCodepage = 'UTF8'
     Properties.Strings = (
-      'AutoEncodeStrings='
+      'AutoEncodeStrings=ON'
+      'codepage=UTF8'
     )
     Port = 0
     Database = 'database.fdb'

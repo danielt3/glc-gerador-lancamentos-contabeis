@@ -318,6 +318,7 @@ type
     fLength: Integer;
     fCampoEntrada: TEdit;
     fCampoSaida: TEdit;
+    fModoContador: Boolean;
 
     //Empresa
     procedure NovaEmpresa;
@@ -417,6 +418,11 @@ type
     function  ValidarLancamento: Boolean;
     function getValue(pNomeCampo: String): String;
     procedure setValue(pNomeCampo: String); Overload;
+
+    procedure ToggleCliente;
+    procedure AtivarModoContador;
+    function  LerEmpresaPadrao: Integer;
+    procedure GravarEmpresaPadrao(pEmpresaAtual: Integer);
     //Integração
     function  ExportarDominio(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
@@ -598,6 +604,7 @@ begin
       CarregarVinculadores(fEmpresaAtual);
       CarregarLayouts(fEmpresaAtual);
       CarregarLancamentoLayouts;
+      GravarEmpresaPadrao(Empresa);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -687,6 +694,9 @@ begin
 
         DataModule1.qConsulta.Next;
       end;
+
+      if (fListaEmpresa.IndexOf(fEmpresaAtual) > -1) then
+        fEmpresaAtual  := LerEmpresaPadrao;
 
       if DataModule1.qConsulta.Locate('chave', IntToStr(fEmpresaAtual), []) then
         cmbEmpresa.ItemIndex:= fListaEmpresa.IndexOf(fEmpresaAtual)
@@ -3039,6 +3049,81 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.ToggleCliente;
+begin
+  if not fModoContador then
+    PageControl.ActivePage := pClientes;
+
+  pContador.TabVisible := fModoContador;
+  cmbEmpresa.Enabled := fModoContador;
+end;
+
+procedure TfrmPrincipal.AtivarModoContador;
+var
+  lLeitura: TStringList;
+  lChave: String;
+begin
+  lLeitura := TStringList.Create;
+
+  try
+    if FileExists(ExtractFilePath(Application.ExeName) + 'utils.dll') then
+    begin
+      lLeitura.LoadFromFile(ExtractFilePath(Application.ExeName) + 'utils.dll');
+      lChave := Trim(lLeitura.Strings[0]);
+
+      if (lChave = '&5oO_p946') then
+        fModoContador := true
+      else
+      begin
+        cmbEmpresa.ItemIndex := fListaEmpresa.IndexOf(StrToIntDef(ApenasNumeros(lChave), 0));
+        cmbEmpresaChange(cmbEmpresa);
+        fModoContador := false;
+      end;
+    end
+    else
+      fModoContador := false;
+
+    ToggleCliente;
+  finally
+    FreeandNil(lLeitura);
+  end;
+end;
+
+function TfrmPrincipal.LerEmpresaPadrao: Integer;
+var
+  lArquivo: TStringList;
+  lEmpresa: String;
+begin
+  result := fListaEmpresa.Value(0);
+  lArquivo := TStringList.Create;
+
+  try
+    if (FileExists(ExtractFilePath(Application.ExeName) + 'default.dll')) then
+    begin
+      lArquivo.LoadFromFile(ExtractFilePath(Application.ExeName) + 'default.dll');
+      lEmpresa := Trim(lArquivo.Strings[0]);
+      result := StrToIntDef(ApenasNumeros(lEmpresa), 0);
+    end;
+  finally
+    FreeAndNil(lArquivo);
+  end;
+end;
+
+procedure TfrmPrincipal.GravarEmpresaPadrao(pEmpresaAtual: Integer);
+var
+  lArquivo: TStringList;
+begin
+  lArquivo := TStringList.Create;
+
+  try
+    lArquivo.Clear;
+    lArquivo.Add(IntToStr(pEmpresaAtual));
+    lArquivo.SaveToFile(ExtractFilePath(Application.ExeName) + 'default.dll');
+  finally
+    FreeAndNil(lArquivo);
+  end;
+end;
+
 function TfrmPrincipal.ExportarDominio(Empresa: Integer; pNomeArquivo: String;
   pBarraProgresso: TProgressBar): Boolean;
 const
@@ -3629,6 +3714,8 @@ begin
   DecodeDate(Now, a, m, d);
   dhInicio.Date := EncodeDate(a, m, 1);
   dhFim.Date := Now;
+
+  AtivarModoContador;
 
   PrepararComboTipoPlanoContas;
 end;
@@ -4586,7 +4673,7 @@ begin
     fLayoutsUtilizados.Add(fLayoutsDisponiveis.Strings[i]);
     fLayoutsDisponiveis.Delete(i);
 
-    if (chkLayoutsDisponiveis.Count >= i) then
+    if (chkLayoutsDisponiveis.Count >= (i + 1)) then
       chkLayoutsDisponiveis.Selected[i] := lSelected;
   end;
 end;

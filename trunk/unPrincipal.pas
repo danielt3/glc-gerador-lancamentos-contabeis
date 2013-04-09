@@ -55,7 +55,7 @@ type
     chkLayoutsDisponiveis: TCheckListBox;
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
-    cmbLancamentoLayout1: TComboBox;
+    cmbExportacaoLayout: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
     ComboBox1: TComboBox;
@@ -709,7 +709,7 @@ begin
                  'set' + NewLine +
                  '  ANOTACOES = ' + QuotedStr(memAnotacoes.Lines.Text) + NewLine +
                  'where' + NewLine +
-                 '  EMPRESA = ' + IntToStr(fEmpresaAtual);
+                 '  chave = ' + IntToStr(fEmpresaAtual);
 
   DataModule1.Executar(lComandoSQL);
 end;
@@ -736,8 +736,10 @@ var
 
   lExterno: String;
   lCodigo: String;
-  lDescricao: String;
+  lDescricao: WideString;
+  lDescricao2: WideString;
   lSintetico: String;
+  lDescricao3: UTF8String;
 begin
   result := false;
   try
@@ -763,7 +765,11 @@ begin
           lExterno := IntToStr(StrToIntDef(Copy(lArquivo.Strings[i], 1, 7), 0));
           lCodigo := ApenasNumeros(Copy(lArquivo.Strings[i], 8, 20));
           lDescricao := lArquivo.Strings[i];
-          lDescricao := UnicodeToUtf8(lDescricao);
+          //lDescricao := AnsiToUtf8(lDescricao);
+          lDescricao2 := UTF8Encode(lDescricao);
+          lDescricao2 := Utf8ToAnsi(lDescricao);
+          lDescricao3 := lArquivo.Strings[i];
+          lDescricao3 := AnsiToUtf8(lArquivo.Strings[i]);
           lDescricao := Copy(lDescricao, 28, 40);
           lDescricao:= Trim(lDescricao);
           lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
@@ -859,6 +865,7 @@ begin
                  '  ' + QuotedStr(Trim(pSintetico)) + ')';
 
   result := DataModule1.Executar(lComandoSQL);
+  Application.ProcessMessages;
 end;
 
 function TfrmPrincipal.CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
@@ -2194,6 +2201,7 @@ var
   lComandoSQL: String;
 begin
   cmbLancamentoLayout.Items.Clear;
+  cmbExportacaoLayout.Items.Clear;
   fLancamentoLayouts.Clear;
 
   lComandoSQL := 'SELECT' + NewLine +
@@ -2213,12 +2221,15 @@ begin
     while not (DataModule1.getQuery(lTabela).EOF) do
     begin
       cmbLancamentoLayout.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      cmbExportacaoLayout.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+
       fLancamentoLayouts.Add(DataModule1.getQuery(lTabela).FieldByName('chave').AsString);
 
       DataModule1.getQuery(lTabela).Next;
     end;
 
     cmbLancamentoLayout.ItemIndex := 0;
+    cmbExportacaoLayout.ItemIndex := 0;
     fLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[0], 0);
     cmbLancamentoLayoutChange(cmbLancamentoLayout);
   end
@@ -3359,9 +3370,13 @@ var
   MyWorksheet: TsWorksheet;
   MyFormula: TsRPNFormula;
 begin
+  result := false;
 
   try
     try
+      if FileExists(pNomeArquivo) then
+        DeleteFile(pNomeArquivo);
+
       {pComandoSQL := 'SELECT' + NewLine +
                      '  b.nome' + NewLine +
                      'FROM' + NewLine +
@@ -3455,11 +3470,11 @@ begin
                        '  END as historico' + NewLine +
                        'FROM' + NewLine +
                        '  lancamentos a' + NewLine +
-                       '  JOIN vinculadores b ON (' + NewLine +
+                       '  LEFT JOIN vinculadores b ON (' + NewLine +
                        '    b.chave = a.vinculador)' + NewLine +
-                       '  JOIN plano_contas c ON (' + NewLine +
+                       '  LEFT JOIN plano_contas c ON (' + NewLine +
                        '    c.chave = b.debitar)' + NewLine +
-                       '  JOIN plano_contas d ON (' + NewLine +
+                       '  LEFT JOIN plano_contas d ON (' + NewLine +
                        '    d.chave = b.creditar)' + NewLine +
                        'WHERE' + NewLine +
                        '  a.empresa = ' + IntToStr(Empresa) + NewLine +
@@ -3491,6 +3506,8 @@ begin
 
         MyWorkbook.WriteToFile(pNomeArquivo, OUTPUT_FORMAT);
       end;
+
+      result := true;
     except on e:exception do
       MensagemErro(e.Message, 'Erro');
     end;
@@ -4451,7 +4468,7 @@ begin
   end
   else if (cmbConjuntoExportacao.ItemIndex = 0) and (cmbTipoExportacao.ItemIndex = 1) then
   begin
-    if ExportarLancamentosExcel(fEmpresaAtual, fLayoutAtual, edtExportar.Text, nil) then
+    if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text, nil) then
       MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end;
 end;
@@ -4560,13 +4577,17 @@ begin
   while TemCampoSelecionado(chkLayoutsDisponiveis) > -1 do
   begin
     i := TemCampoSelecionado(chkLayoutsDisponiveis);
-    lSelected := chkLayoutsDisponiveis.Selected[i + 1];
+
+    if (chkLayoutsDisponiveis.Count > (i + 1)) then
+      lSelected := chkLayoutsDisponiveis.Selected[i + 1];
 
     chkLayoutsUtilizados.Items.Add(chkLayoutsDisponiveis.Items.Strings[i]);
     chkLayoutsDisponiveis.Items.Delete(i);
     fLayoutsUtilizados.Add(fLayoutsDisponiveis.Strings[i]);
     fLayoutsDisponiveis.Delete(i);
-    chkLayoutsDisponiveis.Selected[i] := lSelected;
+
+    if (chkLayoutsDisponiveis.Count >= (i + 1)) then
+      chkLayoutsDisponiveis.Selected[i] := lSelected;
   end;
 end;
 

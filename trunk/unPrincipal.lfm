@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1044
-    ActivePage = pIntegracao
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -1617,7 +1617,7 @@ object frmPrincipal: TfrmPrincipal
           Caption = 'Fim:.'
           ParentColor = False
         end
-        object cmbLancamentoLayout1: TComboBox
+        object cmbExportacaoLayout: TComboBox
           Left = 413
           Height = 21
           Top = 27

@@ -695,7 +695,7 @@ begin
         DataModule1.qConsulta.Next;
       end;
 
-      if (fListaEmpresa.IndexOf(fEmpresaAtual) > -1) then
+      if (fListaEmpresa.IndexOf(LerEmpresaPadrao) > -1) then
         fEmpresaAtual  := LerEmpresaPadrao;
 
       if DataModule1.qConsulta.Locate('chave', IntToStr(fEmpresaAtual), []) then

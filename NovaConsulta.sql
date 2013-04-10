@@ -1,9 +1,7 @@
 SELECT
-  a.vinculador,
-  b.descricao
+  dado
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
+  layout_campos_dados
 WHERE
-  a.layout = 1
+  layout = 2 AND
+  campo = 'none'

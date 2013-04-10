@@ -4596,7 +4596,8 @@ begin
   while TemCampoSelecionado(chkCamposDisponiveis) > -1 do
   begin
     i := TemCampoSelecionado(chkCamposDisponiveis);
-    lSelected := chkCamposDisponiveis.Selected[i + 1];
+    if (chkCamposDisponiveis.Count >= (i + 2)) then
+      lSelected := chkCamposDisponiveis.Selected[i + 1];
 
     if PodeAdicionarCampo(i) then
     begin
@@ -4604,7 +4605,8 @@ begin
       chkCamposDisponiveis.Items.Delete(i);
     end;
 
-    chkCamposDisponiveis.Selected[i] := lSelected;
+    if (chkCamposDisponiveis.Count >= (i + 1)) then
+      chkCamposDisponiveis.Selected[i] := lSelected;
 
     CarregarTabelasHistorico;
   end;

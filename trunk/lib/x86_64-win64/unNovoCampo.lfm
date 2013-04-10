@@ -1,0 +1,44 @@
+object frmNovoCampo: TfrmNovoCampo
+  Left = 681
+  Height = 100
+  Top = 304
+  Width = 479
+  Caption = 'Novo Tipo de Pagamento'
+  ClientHeight = 100
+  ClientWidth = 479
+  LCLVersion = '0.9.30.4'
+  object edtNomeCampo: TEdit
+    Left = 62
+    Height = 23
+    Top = 24
+    Width = 392
+    CharCase = ecUppercase
+    TabOrder = 0
+  end
+  object Label23: TLabel
+    Left = 16
+    Height = 16
+    Top = 27
+    Width = 40
+    Caption = 'Nome:.'
+    ParentColor = False
+  end
+  object btnCancelarCampo: TButton
+    Left = 291
+    Height = 25
+    Top = 64
+    Width = 75
+    Caption = 'Cancelar'
+    OnClick = btnCancelarCampoClick
+    TabOrder = 1
+  end
+  object btnGravarCampo: TButton
+    Left = 379
+    Height = 25
+    Top = 64
+    Width = 75
+    Caption = 'Gravar'
+    OnClick = btnGravarCampoClick
+    TabOrder = 2
+  end
+end

@@ -1,0 +1,127 @@
+inherited frmConsultarPlanoContas: TfrmConsultarPlanoContas
+  Caption = 'Consultar Plano Contas'
+  OnCreate = FormCreate
+  inherited edtConsultarPlanoClassificacao: TEdit
+    Top = 30
+    Width = 216
+    OnChange = edtConsultarPlanoClassificacaoChange
+  end
+  inherited Label27: TLabel
+    Width = 64
+    Caption = 'Clasificacao'
+  end
+  inherited dbgConsulta: TDBGrid
+    Height = 248
+    Top = 112
+    Columns = <    
+      item
+        PickList.Strings = (        )
+        Title.Caption = 'Código'
+        Width = 52
+        FieldName = 'codigo_externo'
+      end    
+      item
+        PickList.Strings = (        )
+        Title.Caption = 'Classificação'
+        Width = 144
+        FieldName = 'codigo'
+      end    
+      item
+        PickList.Strings = (        )
+        Title.Caption = 'Descrição'
+        Width = 377
+        FieldName = 'descricao'
+      end>
+    TabOrder = 5
+    OnDrawColumnCell = dbgConsultaDrawColumnCell
+    OnDblClick = dbgConsultaDblClick
+  end
+  inherited btnCancelar: TButton
+    TabOrder = 6
+  end
+  inherited btnOK: TButton
+    OnClick = btnOKClick
+    TabOrder = 7
+  end
+  object edtConsultarPlanoDescricao: TEdit[5]
+    Left = 240
+    Height = 23
+    Top = 30
+    Width = 216
+    CharCase = ecUppercase
+    OnChange = edtConsultarPlanoDescricaoChange
+    TabOrder = 1
+  end
+  object Label28: TLabel[6]
+    Left = 240
+    Height = 16
+    Top = 8
+    Width = 52
+    Caption = 'Descrição'
+    ParentColor = False
+  end
+  object ComboBox3: TComboBox[7]
+    Left = 8
+    Height = 23
+    Top = 80
+    Width = 100
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'Crescente'
+      'Decrescente'
+    )
+    OnChange = ComboBox3Change
+    TabOrder = 2
+    Text = 'Crescente'
+  end
+  object Label29: TLabel[8]
+    Left = 8
+    Height = 16
+    Top = 56
+    Width = 100
+    Caption = 'Ordem Alfabetica:.'
+    ParentColor = False
+  end
+  object ComboBox4: TComboBox[9]
+    Left = 152
+    Height = 23
+    Top = 80
+    Width = 100
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'Crescente'
+      'Decrescente'
+    )
+    OnChange = ComboBox4Change
+    TabOrder = 3
+    Text = 'Crescente'
+  end
+  object Label30: TLabel[10]
+    Left = 152
+    Height = 16
+    Top = 56
+    Width = 99
+    Caption = 'Ordem Númerica:.'
+    ParentColor = False
+  end
+  object cmbPlanoContasTipo2: TDBLookupComboBox[11]
+    Left = 332
+    Height = 23
+    Top = 80
+    Width = 124
+    ListFieldIndex = 0
+    LookupCache = False
+    OnChange = cmbPlanoContasTipo2Change
+    TabOrder = 4
+  end
+  object Label17: TLabel[12]
+    Left = 381
+    Height = 16
+    Top = 56
+    Width = 31
+    Caption = 'Tipo:.'
+    ParentColor = False
+  end
+end

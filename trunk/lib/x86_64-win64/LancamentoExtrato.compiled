@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Compiler Value="C:\lazarus\fpc\2.6.2\bin\x86_64-win64\fpc.exe" Date="1114731730"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -WG -vewnhi &quot;-FiD:\Projetos\GLC - Gerador de Lançamentos Contábeis\lib\x86_64-win64&quot; -FuC:\lazarus\components\ZEOSDBO-7.0.3-stable\packages\lazarus\lib\x86_64-win64 -FuC:\lazarus\components\lazcontrols\lib\x86_64-win64\win32 -FuC:\lazarus\components\rtticontrols\lib\x86_64-win64\win32 -FuC:\lazarus\ideintf\units\x86_64-win64\win32 -FuC:\lazarus\lcl\units\x86_64-win64\win32 -FuC:\lazarus\lcl\units\x86_64-win64 -FuC:\lazarus\components\fpspreadsheet\lib\x86_64-win64 -FuC:\lazarus\components\lazutils\lib\x86_64-win64 -FuC:\lazarus\packager\units\x86_64-win64 &quot;-FuD:\Projetos\GLC - Gerador de Lançamentos Contábeis\&quot; &quot;-FUD:\Projetos\GLC - Gerador de Lançamentos Contábeis\lib\x86_64-win64\&quot; -l -dLCL -dLCLwin32 LancamentoExtrato.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

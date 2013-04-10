@@ -1383,15 +1383,6 @@ object frmPrincipal: TfrmPrincipal
           Caption = 'Tipo de Dados:.'
           ParentColor = False
         end
-        object ComboBox1: TComboBox
-          Left = 574
-          Height = 23
-          Top = 56
-          Width = 80
-          ItemHeight = 15
-          TabOrder = 5
-          Text = 'ComboBox1'
-        end
       end
       object GroupBox2: TGroupBox
         Left = 12

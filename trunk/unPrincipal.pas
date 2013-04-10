@@ -58,7 +58,6 @@ type
     cmbExportacaoLayout: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
-    ComboBox1: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;

@@ -1,1 +1,10 @@
-DELETE FROM layout_campos_dados WHERE layout = 0
+INSERT INTO vinculadores_layout (
+chave,
+empresa,
+vinculador,
+layout)
+VALUES (
+12,
+2,
+3,
+2)

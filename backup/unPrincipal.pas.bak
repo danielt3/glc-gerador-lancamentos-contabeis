@@ -11,7 +11,7 @@ uses
   PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
   unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
   RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo,
-  unConsultarPlanoContas, fpspreadsheet, fpsallformats;
+  unConsultarPlanoContas, fpspreadsheet, fpsallformats, lclproc;
 
 type
   { TfrmPrincipal }
@@ -333,6 +333,7 @@ type
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ImportarPlanoDeContas2(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ExportarPlanoDeContas(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
@@ -352,6 +353,8 @@ type
     procedure ConsultarVinculadorDebito(pRegistro: Integer);
     procedure ConsultarVinculadorCredito(pRegistro: Integer);
     function BuscarPlanoNaLista(pListaPlano: TStringList; Codigo: String): Integer;
+
+    function CopyBugado(pTexto: UTF8String; Inicio, Contador: Integer): UTF8String;
     //Vinculadores
     function  CarregarVinculadores(pEmpresa4: Integer): Boolean;
     procedure LimparTelaVinculadores;
@@ -727,15 +730,23 @@ function TfrmPrincipal.LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
 var
   lComandoSQL: String;
 begin
-  lComandoSQL := 'update' + NewLine +
-                 '  PLANO_CONTAS' + NewLine +
-                 'set' + NewLine +
-                 '  EMPRESA_OLD = EMPRESA,' + NewLine +
-                 '  EMPRESA = 0' + NewLine +
-                 'where' + NewLine +
-                 '  EMPRESA = ' + IntToStr(pEmpresa1);
+  try
+    {lComandoSQL := 'update' + NewLine +
+                   '  PLANO_CONTAS' + NewLine +
+                   'set' + NewLine +
+                   '  EMPRESA_OLD = EMPRESA,' + NewLine +
+                   '  EMPRESA = 0' + NewLine +
+                   'where' + NewLine +
+                   '  EMPRESA = ' + IntToStr(pEmpresa1);}
+    lComandoSQL := 'delete from' + NewLine +
+                   '  PLANO_CONTAS' + NewLine +
+                   'where' + NewLine +
+                   '  EMPRESA = ' + IntToStr(pEmpresa1);
 
-  result := DataModule1.Executar(lComandoSQL);
+    result := DataModule1.Executar(lComandoSQL);
+  except on e:exception do
+    MensagemErro(e.Message, 'Erro');
+  end;
 end;
 
 function TfrmPrincipal.ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
@@ -747,8 +758,11 @@ var
   lCodigo: String;
   lDescricao: WideString;
   lDescricao2: WideString;
-  lSintetico: String;
+  lSintetico: UnicodeString;
+  lSintetico2: WideString;
   lDescricao3: UTF8String;
+  lDescricao4: AnsiString;
+  y: Integer;
 begin
   result := false;
   try
@@ -776,12 +790,20 @@ begin
           lDescricao := lArquivo.Strings[i];
           //lDescricao := AnsiToUtf8(lDescricao);
           lDescricao2 := UTF8Encode(lDescricao);
+          lDescricao4 := lArquivo.Strings[i];
           lDescricao2 := Utf8ToAnsi(lDescricao);
           lDescricao3 := lArquivo.Strings[i];
-          lDescricao3 := AnsiToUtf8(lArquivo.Strings[i]);
+          lDescricao3 := UTF8Encode(lArquivo.Strings[i]);
           lDescricao := Copy(lDescricao, 28, 40);
+          lDescricao4 := Copy(lDescricao4, 28, 40);
           lDescricao:= Trim(lDescricao);
-          lSintetico:= Copy(lArquivo.Strings[i], 68, 1);
+          lSintetico := UTF8Encode(Utf8ToAnsi(lArquivo.Strings[i]));
+          lSintetico2 := Copy(lSintetico, 68, 1);
+          lSintetico := lArquivo.Strings[i];
+          y := Length(lSintetico);
+          lSintetico:= CopyBugado(lSintetico, 68, 1);
+          lSintetico := UTF8Encode(lArquivo.Strings[i]);
+          lSintetico := Copy(lSintetico, 68, 1);
 
           AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
           if Assigned(pBarraProgresso) then
@@ -797,6 +819,68 @@ begin
     result := true;
   except on e:exception do
     MensagemErro(e.Message, 'Importar Plano');
+  end;
+end;
+
+function TfrmPrincipal.ImportarPlanoDeContas2(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+const
+  LegalChar = '0123456789ABCDEFGHIJKLMNOPQRSTUVWYZ? ';
+  lNumber = '0123456789';
+var
+  lArquivo: TextFile;
+  lLinha: String;
+  i: Integer;
+
+  lExterno: String;
+  lCodigo: String;
+  lDescricao: String;
+  lDescricao2: String;
+  lSintetico: String;
+  lSintetico2: String;
+  lChar: String;
+begin
+  result := false;
+  try
+    if FileExists(pNomeArquivo) then
+    begin
+      LimparPlanoDeContas(pEmpresa2);
+      AssignFile(lArquivo, pNomeArquivo);
+      Reset(lArquivo);
+
+      while not Eof(lArquivo) do
+      begin
+        ReadLn(lArquivo, lLinha);
+
+        while not (UTF8Pos(lLinha[1], lNumber) > 0) do
+          UTF8Delete(lLinha, 1, 1);
+
+        lExterno := IntToStr(StrToIntDef(UTF8Copy(lLinha, 1, 7), 0));
+        lCodigo := UTF8Copy(lLinha, 8, 20);
+        lCodigo := ApenasNumeros(lCodigo);
+        lDescricao := UTF8Encode(lLinha);
+        lDescricao := UTF8Copy(lLinha, 28, 40);
+
+        i := Length(lLinha);
+        lSintetico2 := UTF8Copy(lLinha, 68, 1);
+        for i := Length(lLinha) downto 1 do
+        begin
+          lChar := lLinha[i];
+          if not Vazio(lChar) then
+          begin
+            lSintetico := lChar;
+            break;
+          end;
+        end;
+        AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
+        if Assigned(pBarraProgresso) then
+          pBarraProgresso.StepBy(1);
+      end;
+
+      // Close the file for the last time
+      CloseFile(lArquivo);
+      result := true;
+    end;
+  finally
   end;
 end;
 
@@ -1206,6 +1290,26 @@ begin
       break;
     end;
   end;
+end;
+
+function TfrmPrincipal.CopyBugado(pTexto: UTF8String; Inicio, Contador: Integer): UTF8String;
+var
+  Tamanho: Integer;
+  i: Integer;
+  lTeste: AnsiString;
+begin
+  result := '';
+  lTeste := UTF8Decode(pTexto);
+  lTeste := '';
+
+  for i := 1 to Length(pTexto) do
+  begin
+    lTeste := lTeste + pTexto[i];
+    if (i >= Inicio) and (i < (Inicio + Contador)) then
+      result := result + pTexto[i];
+  end;
+
+  lTeste := lTeste;
 end;
 
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
@@ -4490,7 +4594,7 @@ begin
   begin
     if (cmbConjuntoImportacao.ItemIndex = 0) then
     begin
-      if ImportarPlanoDeContas(fEmpresaAtual, edtImportar.Text, nil) then
+      if ImportarPlanoDeContas2(fEmpresaAtual, edtImportar.Text, nil) then
       begin
         MensagemSucesso('Plano de contas importado com sucesso!', 'Sucesso');
       end;

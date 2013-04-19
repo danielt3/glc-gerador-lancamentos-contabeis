@@ -9,6 +9,7 @@ object DataModule1: TDataModule1
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8
     UTF8StringsAsWideField = False
+    AutoEncodeStrings = False
     ClientCodepage = 'UNICODE_FSS'
     Properties.Strings = (
       'AutoEncodeStrings=ON'

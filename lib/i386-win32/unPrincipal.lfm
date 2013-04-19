@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1044
-    ActivePage = pContador
+    ActivePage = pIntegracao
     Align = alTop
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Contador'
@@ -1626,6 +1626,15 @@ object frmPrincipal: TfrmPrincipal
           Width = 45
           Caption = 'Leiaute:.'
           ParentColor = False
+        end
+        object btnExportar2: TButton
+          Left = 742
+          Height = 22
+          Top = 24
+          Width = 205
+          Caption = 'Gerar Executável do Cliente'
+          OnClick = btnExportar2Click
+          TabOrder = 9
         end
       end
     end

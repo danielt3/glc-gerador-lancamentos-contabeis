@@ -98,6 +98,8 @@ type
 
     property MascaraPlanoContas: String read fMascaraPlanoContas write fMascaraPlanoContas;
     property CamposLancamento: TCamposLancamento read fCamposLancamento;
+
+    function TipoCampo(pTabela, pCampo: String): String;
   end; 
 
 var
@@ -164,7 +166,7 @@ begin
   CampoExiste('EMPRESA', 'ANOTACOES', 'VARCHAR(1000)');
 
   TabelaExiste('PLANO_CONTAS');
-  CampoExiste('PLANO_CONTAS', 'EMPRESA', 'INT NOT NULL');
+  //CampoExiste('PLANO_CONTAS', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('PLANO_CONTAS', 'EMPRESA_OLD', 'INT');
   CampoExiste('PLANO_CONTAS', 'CODIGO_EXTERNO', 'VARCHAR(10) NOT NULL');
   CampoExiste('PLANO_CONTAS', 'CODIGO', 'VARCHAR(20) NOT NULL');
@@ -175,14 +177,14 @@ end;
 procedure TDataModule1.CriarTabelaVinculadores;
 begin
   TabelaExiste('VINCULADORES');
-  CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
+  //CampoExiste('VINCULADORES', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CODIGO', 'VARCHAR(10) NOT NULL');
   //CampoExiste('VINCULADORES', 'DATA', 'DATE');
   DeletarCampo('VINCULADORES', 'DATA');
   CampoExiste('VINCULADORES', 'DESCRICAO', 'VARCHAR(40) NOT NULL');
   CampoExiste('VINCULADORES', 'DEBITAR', 'INT NOT NULL');
   CampoExiste('VINCULADORES', 'CREDITAR', 'INT NOT NULL');
-  CampoExiste('VINCULADORES', 'HISTORICO', 'VARCHAR(100) NOT NULL');
+  CampoExiste('VINCULADORES', 'HISTORICO', 'VARCHAR(100)');
 end;
 
 procedure TDataModule1.CriarTabelaVinculadoresLayouts;
@@ -190,13 +192,13 @@ begin
   TabelaExiste('VINCULADORES_LAYOUT');
   CampoExiste('VINCULADORES_LAYOUT', 'VINCULADOR', 'INT NOT NULL');
   CampoExiste('VINCULADORES_LAYOUT', 'LAYOUT', 'INT NOT NULL');
-  CampoExiste('VINCULADORES_LAYOUT', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM VINCULADORES WHERE VINCULADORES.CHAVE = VINCULADORES_LAYOUT.LAYOUT');
+  //CampoExiste('VINCULADORES_LAYOUT', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM VINCULADORES WHERE VINCULADORES.CHAVE = VINCULADORES_LAYOUT.LAYOUT');
 end;
 
 procedure TDataModule1.CriarTabelaLayouts;
 begin
   TabelaExiste('LAYOUTS');
-  CampoExiste('LAYOUTS', 'EMPRESA', 'INT NOT NULL');
+  //CampoExiste('LAYOUTS', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('LAYOUTS', 'NOME', 'VARCHAR(100) NOT NULL');
 end;
 
@@ -205,7 +207,7 @@ begin
   TabelaExiste('LAYOUT_CAMPOS');
   CampoExiste('LAYOUT_CAMPOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LAYOUT_CAMPOS', 'NOME', 'VARCHAR(20) NOT NULL');
-  CampoExiste('LAYOUT_CAMPOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUTS WHERE LAYOUTS.CHAVE = LAYOUT_CAMPOS.LAYOUT');
+  //CampoExiste('LAYOUT_CAMPOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUTS WHERE LAYOUTS.CHAVE = LAYOUT_CAMPOS.LAYOUT');
 end;
 
 procedure TDataModule1.CriarListaDadosCampo;
@@ -214,13 +216,13 @@ begin
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'CAMPO', 'VARCHAR(20) NOT NULL');
   CampoExiste('LAYOUT_CAMPOS_DADOS', 'DADO', 'VARCHAR(100) NOT NULL');
-  CampoExiste('LAYOUT_CAMPOS_DADOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUT_CAMPOS WHERE LAYOUT_CAMPOS.LAYOUT = LAYOUT_CAMPOS_DADOS.LAYOUT AND LAYOUT_CAMPOS.NOME = LAYOUT_CAMPOS_DADOS.CAMPO');
+  //CampoExiste('LAYOUT_CAMPOS_DADOS', 'EMPRESA', 'INT', 'SELECT FIRST 1 CHAVE FROM LAYOUT_CAMPOS WHERE LAYOUT_CAMPOS.LAYOUT = LAYOUT_CAMPOS_DADOS.LAYOUT AND LAYOUT_CAMPOS.NOME = LAYOUT_CAMPOS_DADOS.CAMPO');
 end;
 
 procedure TDataModule1.CriarTabelaLancamentos;
 begin
   TabelaExiste('LANCAMENTOS');
-  CampoExiste('LANCAMENTOS', 'EMPRESA', 'INT NOT NULL');
+  //CampoExiste('LANCAMENTOS', 'EMPRESA', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'LAYOUT', 'INT NOT NULL');
   CampoExiste('LANCAMENTOS', 'DATA_LANC', 'DATE NOT NULL');
   CampoExiste('LANCAMENTOS', 'DATA_EDIT', 'DATE');
@@ -281,14 +283,24 @@ begin
 
   if lTabelasExistentes.IsEmpty then
   begin
-    lComandoSQL := 'CREATE TABLE ' + Trim(lNomeTabela) + ' (' + NewLine +
-                   '  CHAVE INTEGER NOT NULL)';
+    if (UpperCase(lNomeTabela) = 'EMPRESA') then
+      lComandoSQL := 'CREATE TABLE ' + Trim(lNomeTabela) + ' (' + NewLine +
+                     '  CHAVE INTEGER NOT NULL)'
+    else
+      lComandoSQL := 'CREATE TABLE ' + Trim(lNomeTabela) + ' (' + NewLine +
+                     '  CHAVE INTEGER NOT NULL,' + NewLine +
+                     '  EMPRESA INTEGER NOT NULL)';
 
     if Executar(lComandoSQL) then
     begin
-      lComandoSQL := 'ALTER TABLE ' + Trim(lNomeTabela) + NewLine +
-                     'ADD CONSTRAINT PK_' + Trim(lNomeTabela) + NewLine +
-                     'PRIMARY KEY (CHAVE)';
+      if (UpperCase(lNomeTabela) = 'EMPRESA') then
+        lComandoSQL := 'ALTER TABLE ' + Trim(lNomeTabela) + NewLine +
+                       'ADD CONSTRAINT PK_' + Trim(lNomeTabela) + NewLine +
+                       'PRIMARY KEY (CHAVE)'
+      else
+        lComandoSQL := 'ALTER TABLE ' + Trim(lNomeTabela) + NewLine +
+                       'ADD CONSTRAINT PK_' + Trim(lNomeTabela) + NewLine +
+                       'PRIMARY KEY (CHAVE, EMPRESA)';
 
       Executar(lComandoSQL);
 
@@ -731,6 +743,42 @@ begin
       FreeandNil(lLista);
     end;
   end;
+end;
+
+function TDataModule1.TipoCampo(pTabela, pCampo: String): String;
+const
+  lConsulta = 'ConsultarCampo';
+var
+  lComandoSQL: String;
+begin
+  lComandoSQL := 'SELECT' + NewLine +
+                 '  C.RDB$TYPE_NAME TIPO' + NewLine +
+                 'FROM' + NewLine +
+                 '  RDB$RELATION_FIELDS A,' + NewLine +
+                 '  RDB$FIELDS B,' + NewLine +
+                 '  RDB$TYPES C' + NewLine +
+                 'WHERE' + NewLine +
+                 '  B.RDB$FIELD_NAME = A.RDB$FIELD_SOURCE AND' + NewLine +
+                 '  C.RDB$TYPE = B.RDB$FIELD_TYPE AND' + NewLine +
+                 '  C.RDB$FIELD_NAME = ''RDB$FIELD_TYPE'' AND' + NewLine +
+                 '  A.RDB$RELATION_NAME = ' + QuotedStr(UpperCase(Trim(pTabela))) + ' AND' + NewLine +
+                 '  A.RDB$FIELD_NAME = ' + QuotedStr(UpperCase(Trim(pCampo))) + NewLine +
+                 'ORDER BY' + NewLine +
+                 '  RDB$FIELD_POSITION';
+
+  if NovaConsulta(lConsulta, lComandoSQL) > 0 then
+  begin
+    if getQuery(lConsulta).FieldByName('TIPO').AsString = 'LONG' then
+      result := 'INTEGER'
+    else if getQuery(lConsulta).FieldByName('TIPO').AsString = 'DATE' then
+      result := 'DATE'
+    else if getQuery(lConsulta).FieldByName('TIPO').AsString = 'INT64' then
+      result := 'DECIMAL'
+    else if getQuery(lConsulta).FieldByName('TIPO').AsString = 'VARYING' then
+      result := 'VARCHAR';
+  end
+  else
+    result := 'NONE';
 end;
 
 end.

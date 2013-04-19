@@ -10,7 +10,7 @@ uses
   EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
   PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
   unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
-  RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo,
+  RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo, ShellAPI,
   unConsultarPlanoContas, fpspreadsheet, fpsallformats, lclproc;
 
 type
@@ -28,6 +28,7 @@ type
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
     btnExportar: TButton;
+    btnExportar2: TButton;
     btnGravarEmpresa: TButton;
     btnGravarEmpresa1: TButton;
     btnGravarEmpresa2: TButton;
@@ -200,6 +201,7 @@ type
     procedure btnEditarEmpresa1Click(Sender: TObject);
     procedure btnEditarEmpresaClick(Sender: TObject);
     procedure btnEditarLayoutClick(Sender: TObject);
+    procedure btnExportar2Click(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
@@ -434,6 +436,8 @@ type
     function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     procedure TotalizarValores;
+    //Validação
+    procedure AtualizarArquivo(Tentativas: Integer);
   public
     { public declarations }
   end; 
@@ -688,6 +692,7 @@ begin
 
     if (DataModule1.Consultar(lComando) > 0) then
     begin
+      pPlanoContas.TabVisible := true;
       DataModule1.qConsulta.First;
       while not DataModule1.qConsulta.EOF do
       begin
@@ -706,6 +711,12 @@ begin
         cmbEmpresa.ItemIndex:= 0;
 
       cmbEmpresaChange(cmbEmpresa);
+    end
+    else
+    begin
+      pPlanoContas.TabVisible := false;
+      pLeiaute.TabVisible := false;
+      pVinculador.TabVisible := false;
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -878,6 +889,7 @@ begin
 
       // Close the file for the last time
       CloseFile(lArquivo);
+      CarregarPlanoDeContas(fEmpresaAtual);
       result := true;
     end;
   finally
@@ -3453,17 +3465,23 @@ begin
 end;
 
 function TfrmPrincipal.ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+const
+  lConsulta = 'ConsultaChave';
 var
   lComandoSQL: String;
   lComandoSQLParte: String;
   lNomeTabela: String;
   lArquivo: TStringList;
   lLinha: TStringList;
+  lCampos: TStringList;
   lTexto: String;
   i: Integer;
   y: Integer;
   lCampo: String;
+  lNomeCampo: String;
   lVirgula: String;
+
+  lChave: Integer;
 begin
   result := false;
 
@@ -3471,7 +3489,9 @@ begin
   begin
     lArquivo := TStringList.Create;
     lLinha := TStringList.Create;
+    lCampos := TStringList.Create;
     lLinha.Delimiter := '|';
+    lCampos.Delimiter := '|';
     Cursor := crHourGlass;
 
     try
@@ -3488,6 +3508,8 @@ begin
           begin
             lComandoSQLParte := 'INSERT INTO ' + lNomeTabela + ' (';
             QuebrarString(lLinha, lArquivo.Strings[i]);
+            lCampos.Clear;
+            lCampos.Add('-');
             //lLinha.DelimitedText := lArquivo.Strings[i];
             lVirgula := '';
 
@@ -3496,6 +3518,7 @@ begin
               if (lLinha.Strings[y] <> '02') then
               begin
                 lComandoSQLParte := lComandoSQLParte + lVirgula + NewLine + '  ' + lLinha.Strings[y];
+                lCampos.Add(lLinha.Strings[y]);
                 lVirgula := ',';
               end;
             end;
@@ -3508,20 +3531,32 @@ begin
             lTexto := lArquivo.Strings[i];
 
             QuebrarString(lLinha, lTexto);
-            //lLinha.Delimiter := '|';
-            //lLinha.DelimitedText := lTexto;
 
             lVirgula := '';
             lComandoSQL := lComandoSQLParte;
 
             for y := 0 to lLinha.Count - 1 do
             begin
+              lNomeCampo := lCampos.Strings[y];
               if (lLinha.Strings[y] <> '03') then
               begin
                 if (Vazio(Trim(lLinha.Strings[y]))) then
-                  lComandoSQL := lComandoSQL + lVirgula + NewLine + '  null'
+                begin
+                  lComandoSQL := lComandoSQL + lVirgula + NewLine + '  null';
+                end
                 else
-                  lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(Trim(lLinha.Strings[y]));
+                begin
+                  if (DataModule1.TipoCampo(lNomeTabela, lNomeCampo) = 'DATE') then
+                  begin
+                    lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(StringReplace(Trim(lLinha.Strings[y]), '/', '.', [rfReplaceAll]));
+                  end
+                  else if (DataModule1.TipoCampo(lNomeTabela, lNomeCampo) = 'DECIMAL') then
+                  begin
+                    lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(StringReplace(Trim(lLinha.Strings[y]), ',', '.', [rfReplaceAll]));
+                  end
+                  else
+                    lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(Trim(lLinha.Strings[y]));
+                end;
                 lVirgula := ',';
               end;
             end;
@@ -3529,10 +3564,18 @@ begin
             lComandoSQL := lComandoSQL + ')';
 
             DataModule1.Executar(lComandoSQL);
+
+            lComandoSQL := 'SELECT MAX(chave) AS chave FROM ' + lNomeTabela;
+            DataModule1.NovaConsulta(lConsulta, lComandoSQL);
+            lChave := DataModule1.getQuery(lConsulta).FieldByName('chave').AsInteger;
+            lComandoSQL := 'SET GENERATOR gen_' + lNomeTabela + ' TO ' + IntToStr(lChave);
+            DataModule1.Executar(lComandoSQL);
+
             Application.ProcessMessages;
           end;
         end;
 
+        CarregarListaEmpresa;
         MensagemSucesso('Tabelas importadas com sucesso!', 'Importação de tabelas');
       except on e:exception do
         MensagemErro(e.Message, 'Importar Tabelas');
@@ -3541,6 +3584,7 @@ begin
       Cursor := crDefault;
       FreeAndNil(lArquivo);
       FreeAndNil(lLinha);
+      FreeAndNil(lCampos);
     end;
   end;
 end;
@@ -3780,6 +3824,23 @@ begin
 
     if not DataModule1.qLancamentos.IsEmpty then
       DataModule1.qLancamentos.First;
+  end;
+end;
+
+procedure TfrmPrincipal.AtualizarArquivo(Tentativas: Integer);
+var
+  lArquivo: TStringList;
+begin
+  lArquivo := TStringList.Create;
+
+  try
+    try
+
+    except on e:exception do
+      MensagemErro(e.Message);
+    end;
+  finally
+    FreeAndNil(lArquivo);
   end;
 end;
 
@@ -4622,6 +4683,30 @@ end;
 procedure TfrmPrincipal.btnEditarLayoutClick(Sender: TObject);
 begin
   EditarLayout;
+end;
+
+procedure TfrmPrincipal.btnExportar2Click(Sender: TObject);
+var
+  lArquivoDados: String;
+  lSucesso: Boolean;
+begin
+  lArquivoDados := ExtractFilePath(Application.ExeName) + 'dados_cliente.txt';
+  if FileExists(lArquivoDados) then
+    DeleteFile(lArquivoDados);
+
+  lSucesso := true;
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', lArquivoDados, nil);
+
+  if lSucesso and (ShellExecute(0,nil, PChar('cmd'),PChar('/c build_cliente.bat'),nil,1) > 32) then;
+  //if ShellExecute(0,nil, PChar('cmd'),PChar('/c build_cliente.bat'),nil,1) > 32 then
+  //  MensagemSucesso('Arquivo gerado com sucesso em ' + ExtractFilePath(Application.ExeName) + '. Procure pelo arquivo GLC.rar!', 'Exportar dados');
 end;
 
 procedure TfrmPrincipal.btnExportarClick(Sender: TObject);

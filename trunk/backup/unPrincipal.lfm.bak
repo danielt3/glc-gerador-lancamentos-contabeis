@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pLeiaute
+        ActivePage = pVinculador
         Align = alClient
-        TabIndex = 2
+        TabIndex = 3
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Empresa'
@@ -1626,6 +1626,15 @@ object frmPrincipal: TfrmPrincipal
           Width = 45
           Caption = 'Leiaute:.'
           ParentColor = False
+        end
+        object btnExportar2: TButton
+          Left = 742
+          Height = 22
+          Top = 24
+          Width = 205
+          Caption = 'Gerar Executável do Cliente'
+          OnClick = btnExportar2Click
+          TabOrder = 9
         end
       end
     end

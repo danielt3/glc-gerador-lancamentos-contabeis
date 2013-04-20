@@ -56,6 +56,7 @@ type
     procedure CriarTabelaLayoutsCampos;
     procedure CriarListaDadosCampo;
     procedure CriarTabelaLancamentos;
+    procedure CriarTabelaSistema;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String; SQLDefault: String = '');
@@ -243,6 +244,12 @@ begin
 
     CampoLancamentoNext;
   end;
+end;
+
+procedure TDataModule1.CriarTabelaSistema;
+begin
+  TabelaExiste('SISTEMA');
+  CampoExiste('SISTEMA', 'CLIENTE', 'VARCHAR(10) NOT NULL DEFAULT ''''');
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;

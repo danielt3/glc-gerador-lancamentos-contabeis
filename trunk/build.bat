@@ -8,6 +8,7 @@ if exist "%CD%\DATABASE.FDB" xcopy "%CD%\DATABASE.FDB" "%CD%\GLC" /y
 xcopy "%CD%\firebird.msg" "%CD%\GLC" /y
 xcopy "%CD%\build.bat" "%CD%\GLC" /y
 xcopy "%CD%\build_cliente.bat" "%CD%\GLC" /y
+xcopy "%CD%\convert.bat" "%CD%\GLC" /y
 cd GLC
 rar a -r GLC.rar *.*
 cd..

@@ -1636,6 +1636,15 @@ object frmPrincipal: TfrmPrincipal
           OnClick = btnExportar2Click
           TabOrder = 9
         end
+        object Button4: TButton
+          Left = 741
+          Height = 25
+          Top = 103
+          Width = 75
+          Caption = 'Button4'
+          OnClick = Button4Click
+          TabOrder = 10
+        end
       end
     end
     object pAjuda: TTabSheet

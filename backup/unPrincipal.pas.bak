@@ -11,7 +11,8 @@ uses
   PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
   unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
   RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo, ShellAPI,
-  unConsultarPlanoContas, fpspreadsheet, fpsallformats, lclproc;
+  unConsultarPlanoContas, fpspreadsheet, fpsallformats, IpHtml, Ipfilebroker,
+  lclproc, fphttpclient, fpdatasetform;
 
 type
   { TfrmPrincipal }
@@ -47,6 +48,7 @@ type
     btnGravarLancamento: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Button5: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -436,6 +438,9 @@ type
     function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     procedure TotalizarValores;
+    //Validação
+    procedure AtualizarArquivo(Tentativas: Integer);
+    function  Validar: Boolean;
   public
     { public declarations }
   end; 
@@ -761,16 +766,13 @@ end;
 function TfrmPrincipal.ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
 var
   lArquivo: TStringList;
+  lNomeArquivoUTF8: String;
   i: Integer;
 
   lExterno: String;
   lCodigo: String;
-  lDescricao: WideString;
-  lDescricao2: WideString;
-  lSintetico: UnicodeString;
-  lSintetico2: WideString;
-  lDescricao3: UTF8String;
-  lDescricao4: AnsiString;
+  lDescricao: AnsiString;
+  lSintetico: String;
   y: Integer;
 begin
   result := false;
@@ -782,7 +784,11 @@ begin
       lArquivo := TStringList.Create;
 
       try
-        lArquivo.LoadFromFile(pNomeArquivo);
+        lNomeArquivoUTF8 := ExtractFilePath(Application.ExeName) + 'contas_utf8.txt';
+        ShellExecute(0,nil, PChar('cmd'),PChar('/c convert.bat "' + pNomeArquivo+  '" "' + lNomeArquivoUTF8 + '"'),nil,1);
+        Sleep(1000);
+        LimparPlanoDeContas(pEmpresa2);
+        lArquivo.LoadFromFile(lNomeArquivoUTF8);
 
         if Assigned(pBarraProgresso) then
         begin
@@ -796,23 +802,11 @@ begin
         begin
           lExterno := IntToStr(StrToIntDef(Copy(lArquivo.Strings[i], 1, 7), 0));
           lCodigo := ApenasNumeros(Copy(lArquivo.Strings[i], 8, 20));
-          lDescricao := lArquivo.Strings[i];
-          //lDescricao := AnsiToUtf8(lDescricao);
-          lDescricao2 := UTF8Encode(lDescricao);
-          lDescricao4 := lArquivo.Strings[i];
-          lDescricao2 := Utf8ToAnsi(lDescricao);
-          lDescricao3 := lArquivo.Strings[i];
-          lDescricao3 := UTF8Encode(lArquivo.Strings[i]);
+          lDescricao := UTF16ToUTF8(lArquivo.Strings[i]);
           lDescricao := Copy(lDescricao, 28, 40);
-          lDescricao4 := Copy(lDescricao4, 28, 40);
           lDescricao:= Trim(lDescricao);
-          lSintetico := UTF8Encode(Utf8ToAnsi(lArquivo.Strings[i]));
-          lSintetico2 := Copy(lSintetico, 68, 1);
           lSintetico := lArquivo.Strings[i];
-          y := Length(lSintetico);
           lSintetico:= CopyBugado(lSintetico, 68, 1);
-          lSintetico := UTF8Encode(lArquivo.Strings[i]);
-          lSintetico := Copy(lSintetico, 68, 1);
 
           AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
           if Assigned(pBarraProgresso) then
@@ -837,6 +831,7 @@ const
   lNumber = '0123456789';
 var
   lArquivo: TextFile;
+  lNomeArquivoUTF8: String;
   lLinha: String;
   i: Integer;
 
@@ -852,8 +847,12 @@ begin
   try
     if FileExists(pNomeArquivo) then
     begin
+      lNomeArquivoUTF8 := ExtractFilePath(Application.ExeName) + 'contas_utf8.txt';
+      ShellExecute(0,nil, PChar('cmd'),PChar('/c convert.bat "' + pNomeArquivo+  '" "' + lNomeArquivoUTF8 + '"'),nil,1);
+      Sleep(1000);
       LimparPlanoDeContas(pEmpresa2);
-      AssignFile(lArquivo, pNomeArquivo);
+      Application.ProcessMessages;
+      AssignFile(lArquivo, lNomeArquivoUTF8);
       Reset(lArquivo);
 
       while not Eof(lArquivo) do
@@ -3468,6 +3467,7 @@ const
 var
   lComandoSQL: String;
   lComandoSQLParte: String;
+  lComandoSQLExisteEmpresa: String;
   lNomeTabela: String;
   lArquivo: TStringList;
   lLinha: TStringList;
@@ -3478,6 +3478,9 @@ var
   lCampo: String;
   lNomeCampo: String;
   lVirgula: String;
+
+  lExisteChave: String;
+  lExisteEmpresa: String;
 
   lChave: Integer;
 begin
@@ -3544,6 +3547,11 @@ begin
                 end
                 else
                 begin
+                  if (UpperCase(lNomeCampo) = 'CHAVE') then
+                    lExisteChave := Trim(lLinha.Strings[y])
+                  else if (UpperCase(lNomeCampo) = 'EMPRESA') then
+                    lExisteEmpresa := Trim(lLinha.Strings[y]) ;
+
                   if (DataModule1.TipoCampo(lNomeTabela, lNomeCampo) = 'DATE') then
                   begin
                     lComandoSQL := lComandoSQL + lVirgula + NewLine + '  ' + QuotedStr(StringReplace(Trim(lLinha.Strings[y]), '/', '.', [rfReplaceAll]));
@@ -3561,7 +3569,13 @@ begin
 
             lComandoSQL := lComandoSQL + ')';
 
-            DataModule1.Executar(lComandoSQL);
+            if (UpperCase(lNomeTabela) = 'EMPRESA') then
+              lComandoSQLExisteEmpresa := 'SELECT * FROM ' + lNomeTabela + ' WHERE CHAVE = ' + lExisteChave
+            else
+              lComandoSQLExisteEmpresa := 'SELECT * FROM ' + lNomeTabela + ' WHERE CHAVE = ' + lExisteChave + ' AND EMPRESA = ' + lExisteEmpresa;
+
+            if not (DataModule1.Consultar(lComandoSQLExisteEmpresa) > 0) then
+              DataModule1.Executar(lComandoSQL);
 
             lComandoSQL := 'SELECT MAX(chave) AS chave FROM ' + lNomeTabela;
             DataModule1.NovaConsulta(lConsulta, lComandoSQL);
@@ -3825,6 +3839,64 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.AtualizarArquivo(Tentativas: Integer);
+var
+  lArquivo: TStringList;
+  lNomeArquivo: String;
+begin
+  lArquivo := TStringList.Create;
+
+  try
+    try
+      lNomeArquivo  := ExtractFilePath(Application.ExeName) + 'fbdata.dll';
+      if FileExists(lNomeArquivo) then
+        DeleteFile(lNomeArquivo);
+
+      //lArquivo.Add('SDF4S4F5S6D4F65S4&@5@10S4DF45@##001988');
+      //lArquivo.Add('FAT000000000000000000013334548OIUU$##A');
+      //lArquivo.Add('A4A56S4D5_2A1DDDD$DDDDD21232132A212FED');
+      //lArquivo.Add('AAA41000SAD2154=$121212$CC$AA$DD212481');
+      //lArquivo.Add('KLM12%&!!15002003=#@0035AA21$$DD$D$A$S');
+      //lArquivo.Add('@135DDA3215815121S2##=$S$D$S$A$5511ADD');
+      //lArquivo.Add('$NB$B5411=00_________09$LED25500155001');
+      //lArquivo.Add('TAB5222@0003SD@05ASDDDDGGH211003_80002');
+      //lArquivo.Add('85AOOODPLLANSDNUMBRELLACORP544#$D00003');
+
+      lArquivo.Add('SDF4S4F5S6D4F65S4&@5@10S4DF45@##001988');
+      lArquivo.Add('FAT000000000000000000013334548OIUU$##A');
+      lArquivo.Add('A4A56S4D542A1DDDD$DDDDD21232132A212FED');
+      lArquivo.Add('AAA41000SAD2154=$121212$CC$AA$DD212481');
+      lArquivo.Add('KLM12%&!!15002003=#@0035AA21$$DD$D$A$S');
+      lArquivo.Add('@135DDA3215815121S2##=$S$D$S$A$5511ADD');
+      lArquivo.Add('$NB$B5411=0060002AAI009$LED25500155001');
+      lArquivo.Add('TAB5222@0003SD@05ASDDDDGGH211003880002');
+      lArquivo.Add('85AOOODPLLANSDNUMBRELLACORP544#$D00003');
+    except on e:exception do
+      MensagemErro(e.Message, 'Erro');
+    end;
+  finally
+    FreeAndNil(lArquivo);
+  end;
+end;
+
+function TfrmPrincipal.Validar: Boolean;
+var
+  s: String;
+  lArquivo: TStringList;
+begin
+  lArquivo := TStringList.Create;
+  With TFPHttpClient.Create(Nil) do
+    try
+      //s := Get('http://www.projeotdharma.com.br/data/index.html');
+      s := Get('http://www.projeotdharma.com.br/data/cbs.txt');
+      lArquivo.Add(s);
+      s := copy(s, pos('<!--', s) + 5, pos('-->', s) - 1);
+      lArquivo.SaveToFile(ExtractFilePath(Application.ExeName) + 'teste.txt');
+  finally
+    Free;
+  end;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   d, m, a: Word;
@@ -3937,16 +4009,8 @@ begin
 end;
 
 procedure TfrmPrincipal.Button4Click(Sender: TObject);
-var
-  i: Integer;
 begin
-  for i := 0 to fListaCamposNome.Count - 1 do
-  begin
-    DataModule1.CampoLancamentoLocate(fListaCamposNome.Strings[i]);
-
-    if (FindComponent('edtLanc_' + fListaCamposNome.Strings[i]) is TComboBox) then
-      TComboBox(FindComponent('edtLanc_' + fListaCamposNome.Strings[i])).ItemIndex := 0;
-  end;
+  Validar;
 end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);

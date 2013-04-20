@@ -8,6 +8,7 @@ xcopy "%CD%\CLEAR_DATABASE.FDB" "%CD%\GLC" /y
 xcopy "%CD%\firebird.msg" "%CD%\GLC" /y
 xcopy "%CD%\dados_cliente.txt" "%CD%\GLC" /y
 xcopy "%CD%\Build.bat" "%CD%\GLC" /y
+xcopy "%CD%\convert.bat" "%CD%\GLC" /y
 cd GLC
 del utils.dll
 ren CLEAR_DATABASE.FDB DATABASE.FDB

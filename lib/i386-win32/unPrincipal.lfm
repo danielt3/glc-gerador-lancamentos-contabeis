@@ -1416,6 +1416,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 136
           Width = 25
           Caption = '...'
+          OnClick = Button5Click
           TabOrder = 2
         end
         object Label8: TLabel
@@ -1636,6 +1637,15 @@ object frmPrincipal: TfrmPrincipal
           OnClick = btnExportar2Click
           TabOrder = 9
         end
+        object Button4: TButton
+          Left = 741
+          Height = 25
+          Top = 103
+          Width = 75
+          Caption = 'Button4'
+          OnClick = Button4Click
+          TabOrder = 10
+        end
       end
     end
     object pAjuda: TTabSheet
@@ -1676,8 +1686,8 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 544
-    top = 552
+    left = 576
+    top = 472
   end
   object popEmpresa: TPopupMenu
     left = 648

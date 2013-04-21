@@ -4863,11 +4863,13 @@ begin
     if not (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) or not DataModule1.CampoLancamentoObrigatorio then
     begin
       i := TemCampoSelecionado(chkCamposUtilizados);
-      lSelected := chkCamposUtilizados.Selected[i + 1];
+      if (chkCamposDisponiveis.Count >= (i + 2)) then
+        lSelected := chkCamposUtilizados.Selected[i + 1];
 
       chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
       chkCamposUtilizados.Items.Delete(i);
-      chkCamposUtilizados.Selected[i] := lSelected;
+      if (chkCamposDisponiveis.Count >= (i + 1)) then
+        chkCamposUtilizados.Selected[i] := lSelected;
     end
     else
     begin

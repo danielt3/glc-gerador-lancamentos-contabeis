@@ -25,26 +25,31 @@ type
     Arrow4: TArrow;
     btnAdicionarDadosCampo: TButton;
     btnAdicionarDadosCampo1: TButton;
-    btnExcluirDadosCampo: TButton;
+    btnCancelarLayout: TButton;
+    btnCancelarLayout1: TButton;
     btnEditarEmpresa: TButton;
     btnEditarEmpresa1: TButton;
+    btnEditarLayout: TButton;
+    btnEditarLayout1: TButton;
+    btnExcluirDadosCampo: TButton;
     btnExportar: TButton;
     btnExportar2: TButton;
     btnGravarEmpresa: TButton;
     btnGravarEmpresa1: TButton;
     btnGravarEmpresa2: TButton;
     btnGravarEmpresa3: TButton;
+    btnGravarLayout: TButton;
+    btnGravarLayout1: TButton;
+    btnGravarLayout2: TButton;
+    btnGravarLayout3: TButton;
     btnImportar: TButton;
     btnNovaEmpresa: TButton;
     btnNovaEmpresa1: TButton;
+    btnNovoLayout: TButton;
     Button1: TButton;
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
-    btnGravarLayout: TButton;
-    btnCancelarLayout: TButton;
-    btnEditarLayout: TButton;
-    btnNovoLayout: TButton;
     btnGravarLancamento: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -61,6 +66,8 @@ type
     cmbExportacaoLayout: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
+    ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -68,26 +75,28 @@ type
     cmbConjuntoImportacao: TComboBox;
     cmbConjuntoExportacao: TComboBox;
     cmbTipoExportacao: TComboBox;
+    ComboBox5: TComboBox;
     Conexao: TZConnection;
+    dbgDadosCampos: TDBGrid;
+    dbgLayouts: TDBGrid;
+    dbgLayouts1: TDBGrid;
     dhInicio: TDateEdit;
     dhFim: TDateEdit;
-    dbgDadosCampos: TDBGrid;
     dbgPlano1: TDBGrid;
-    dbgLayouts: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
-    edtTabelas: TEdit;
+    Edit2: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
     edtClassificacaoCreditar: TEdit;
-    edtLote: TEdit;
     edtFormatoCampo: TEdit;
+    edtLote: TEdit;
     edtNomeDebitar: TEdit;
     edtNomeCreditar: TEdit;
-    edtNomeLayout: TEdit;
     dbgPlano: TDBGrid;
     cmbPlanoContasTipo: TDBLookupComboBox;
+    edtNomeLayout: TEdit;
     edtPlanoContasCodigo: TEdit;
     edtPlanoContasDescricao2: TEdit;
     edtPlanoContasClassificacao: TEdit;
@@ -102,20 +111,25 @@ type
     edtNomeEmpresa: TEdit;
     edtNomeVinculador: TEdit;
     edtHistorico: TEdit;
+    edtTabelas: TEdit;
     edtTamanhoCampo: TEdit;
     edtTipoCampo: TEdit;
+    gbInformacoes: TGroupBox;
+    gbNomeLayout: TGroupBox;
+    gbTabelasDisponiveis: TGroupBox;
+    gbTabelasUtilizadas: TGroupBox;
+    gdbCaracteristicas: TGroupBox;
+    gdbHistorico: TGroupBox;
+    gdbOpcao: TGroupBox;
     GroupBox1: TGroupBox;
     GroupBox10: TGroupBox;
     GroupBox11: TGroupBox;
     GroupBox12: TGroupBox;
-    gbTabelasUtilizadas: TGroupBox;
-    gdbOpcao: TGroupBox;
     GroupBox14: TGroupBox;
     GroupBox15: TGroupBox;
-    gbInformacoes: TGroupBox;
+    GroupBox16: TGroupBox;
     GroupBox17: TGroupBox;
     gbLancamentos: TGroupBox;
-    gbNomeLayout: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox20: TGroupBox;
     GroupBox21: TGroupBox;
@@ -125,9 +139,6 @@ type
     GroupBox5: TGroupBox;
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
-    gbTabelasDisponiveis: TGroupBox;
-    gdbCaracteristicas: TGroupBox;
-    gdbHistorico: TGroupBox;
     GroupBox9: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
@@ -161,15 +172,20 @@ type
     Label36: TLabel;
     Label37: TLabel;
     Label38: TLabel;
+    Label39: TLabel;
+    Label40: TLabel;
+    Label41: TLabel;
+    Label7: TLabel;
     lblTotalLancamento: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     memAnotacoes: TMemo;
     memConfHistorico: TMemo;
+    Memo1: TMemo;
+    Memo3: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -179,6 +195,7 @@ type
     PageControl: TPageControl;
     PageControl1: TPageControl;
     PageControl2: TPageControl;
+    PageControl3: TPageControl;
     pContador: TTabSheet;
     pClientes: TTabSheet;
     popEmpresa: TPopupMenu;
@@ -194,6 +211,10 @@ type
     Splitter1: TSplitter;
     pLancamentos: TTabSheet;
     pLeiaute: TTabSheet;
+    pLayoutCadastro: TTabSheet;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     procedure Arrow1Click(Sender: TObject);
     procedure Arrow2Click(Sender: TObject);
     procedure Arrow3Click(Sender: TObject);
@@ -854,41 +875,45 @@ begin
       LimparPlanoDeContas(pEmpresa2);
       Application.ProcessMessages;
       AssignFile(lArquivo, lNomeArquivoUTF8);
-      Reset(lArquivo);
 
-      while not Eof(lArquivo) do
-      begin
-        ReadLn(lArquivo, lLinha);
+      try
+        Reset(lArquivo);
 
-        while not (UTF8Pos(lLinha[1], lNumber) > 0) do
-          UTF8Delete(lLinha, 1, 1);
-
-        lExterno := IntToStr(StrToIntDef(UTF8Copy(lLinha, 1, 7), 0));
-        lCodigo := UTF8Copy(lLinha, 8, 20);
-        lCodigo := ApenasNumeros(lCodigo);
-        lDescricao := UTF8Encode(lLinha);
-        lDescricao := UTF8Copy(lLinha, 28, 40);
-
-        i := Length(lLinha);
-        lSintetico2 := UTF8Copy(lLinha, 68, 1);
-        for i := Length(lLinha) downto 1 do
+        while not Eof(lArquivo) do
         begin
-          lChar := lLinha[i];
-          if not Vazio(lChar) then
-          begin
-            lSintetico := lChar;
-            break;
-          end;
-        end;
-        AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
-        if Assigned(pBarraProgresso) then
-          pBarraProgresso.StepBy(1);
-      end;
+          ReadLn(lArquivo, lLinha);
 
-      // Close the file for the last time
-      CloseFile(lArquivo);
-      CarregarPlanoDeContas(fEmpresaAtual);
-      result := true;
+          while not (UTF8Pos(lLinha[1], lNumber) > 0) do
+            UTF8Delete(lLinha, 1, 1);
+
+          lExterno := IntToStr(StrToIntDef(UTF8Copy(lLinha, 1, 7), 0));
+          lCodigo := UTF8Copy(lLinha, 8, 20);
+          lCodigo := ApenasNumeros(lCodigo);
+          lDescricao := UTF8Encode(lLinha);
+          lDescricao := UTF8Copy(lLinha, 28, 40);
+
+          i := Length(lLinha);
+          lSintetico2 := UTF8Copy(lLinha, 68, 1);
+          for i := Length(lLinha) downto 1 do
+          begin
+            lChar := lLinha[i];
+            if not Vazio(lChar) then
+            begin
+              lSintetico := lChar;
+              break;
+            end;
+          end;
+          AdicionarPlanoDeContas(fEmpresaAtual, lExterno, lCodigo, lDescricao, lSintetico);
+          if Assigned(pBarraProgresso) then
+            pBarraProgresso.StepBy(1);
+        end;
+
+        result := true;
+      finally
+        // Close the file for the last time
+        CloseFile(lArquivo);
+        CarregarPlanoDeContas(fEmpresaAtual);
+      end;
     end;
   finally
   end;
@@ -4857,17 +4882,20 @@ procedure TfrmPrincipal.Arrow2Click(Sender: TObject);
 var
   i: Integer;
   lSelected: boolean;
+  lteste: Boolean;
 begin
   while TemCampoSelecionado(chkCamposUtilizados) > -1 do
   begin
-    if not (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) or not DataModule1.CampoLancamentoObrigatorio then
+    i := TemCampoSelecionado(chkCamposUtilizados);
+    if (i > -1) and not (DataModule1.CampoLancamentoLocateDescricao(chkCamposUtilizados.Items.Strings[i]) > -1) or not DataModule1.CampoLancamentoObrigatorio then
     begin
-      i := TemCampoSelecionado(chkCamposUtilizados);
-      lSelected := chkCamposUtilizados.Selected[i + 1];
+      if (chkCamposUtilizados.Count >= (i + 2)) then
+        lSelected := chkCamposUtilizados.Selected[i + 1];
 
       chkCamposDisponiveis.Items.Add(chkCamposUtilizados.Items.Strings[i]);
       chkCamposUtilizados.Items.Delete(i);
-      chkCamposUtilizados.Selected[i] := lSelected;
+      if (chkCamposUtilizados.Count >= (i + 1)) then
+        chkCamposUtilizados.Selected[i] := lSelected;
     end
     else
     begin

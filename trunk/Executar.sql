@@ -1,1 +1,14 @@
-INSERT INTO empresa (chave,codigo,nome,cnpj)VALUES (2,'100','EMPRESA TESTE','22222222222222')
+insert into PLANO_CONTAS (
+  EMPRESA,
+  EMPRESA_OLD,
+  CODIGO_EXTERNO,
+  CODIGO,
+  DESCRICAO,
+  SINTETICA)
+values (
+  2, 
+  0, 
+  '323', 
+  '32106004', 
+  'DESPESAS POSTAIS E TELEGRÁFICAS', 
+  'A')

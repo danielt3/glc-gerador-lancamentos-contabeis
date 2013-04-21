@@ -391,6 +391,7 @@ begin
   AddCampoLancamento('entrada', '*Entrada', 'Decimal', '####.####,##', 8, false, false);
   AddCampoLancamento('saida', '*Saída', 'Decimal', '####.####,##', 8, false, false);
   AddCampoLancamento('data_pag', ' Data de Pagamento', 'Data', 'DD/MM/AAAA', 10, false, false);
+  AddCampoLancamento('data_venc', ' Data de Vencimento', 'Data', 'DD/MM/AAAA', 10, false, false);
   AddCampoLancamento('forma_pag', '#Forma de Pagamento', 'Caractere', '', 32, false, true);
   AddCampoLancamento('fornecedor', ' Fornecedor', 'Caractere', '', 32, false, false);
   AddCampoLancamento('numero', ' Número do Doc.', 'Numeral', '##########', 10, false, false);
@@ -594,7 +595,7 @@ begin
     qExecutar.Close;
     qExecutar.SQL.Clear;
     qExecutar.SQL.Add(SQL);
-    qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Executar.sql');
+    //qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Executar.sql');
     qExecutar.Prepared:= true;
     qExecutar.ExecSQL;
 

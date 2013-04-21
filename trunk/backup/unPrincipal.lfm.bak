@@ -1416,6 +1416,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 136
           Width = 25
           Caption = '...'
+          OnClick = Button5Click
           TabOrder = 2
         end
         object Label8: TLabel
@@ -1685,8 +1686,8 @@ object frmPrincipal: TfrmPrincipal
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 544
-    top = 552
+    left = 576
+    top = 472
   end
   object popEmpresa: TPopupMenu
     left = 648

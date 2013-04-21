@@ -1,9 +1,34 @@
 SELECT
-  a.vinculador,
-  b.descricao
+  (1) as indice,
+  chave,
+  nome
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
+  layout_campos
 WHERE
-  a.layout = 2
+  layout = 0
+  AND empresa = 2
+  AND nome = 'data'
+UNION
+SELECT
+  (2) as indice,
+  chave,
+  nome
+FROM
+  layout_campos
+WHERE
+  layout = 0
+  AND empresa = 2
+  AND nome <> 'data'
+  AND nome <> 'vinculador'
+UNION
+SELECT
+  (3) as indice,
+  chave,
+  nome
+FROM
+  layout_campos
+WHERE
+  layout = 0
+  AND empresa = 2
+  AND nome = 'vinculador'
+ORDER BY 1, 2

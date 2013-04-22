@@ -9,6 +9,7 @@ uses
 
 
   function ApenasNumeros(Texto: String): String;
+  function ApenasDecimal(Texto: String): String;
   function Vazio(Texto: String): Boolean;
   function AlignLeft(Texto: String; Tamanho: Integer; Caractere: String = ' '): String;
   function AlignRight(Texto: String; Tamanho: Integer; Caractere: String = ' '): String;
@@ -20,6 +21,7 @@ uses
   function  MascararTexto(Texto, Mascara: String): String;
 
   function  ENumero(Caractere: Char): Boolean;
+  function  EDecimal(Caractere: Char): Boolean;
   function  ELetra(Caractere: Char): Boolean;
   function  ENumeroOuLetra(Caractere: Char): Boolean;
   function  iif(Validacao: Boolean; Valor1, Valor2: String): String;
@@ -49,6 +51,19 @@ begin
   for i := 1 to Length(Texto) do
   begin
     if ENumero(Texto[i]) then
+      result := result + Texto[i];
+  end;
+end;
+
+function ApenasDecimal(Texto: String): String;
+var
+  i: Integer;
+begin
+  result := '';
+
+  for i := 1 to Length(Texto) do
+  begin
+    if EDecimal(Texto[i]) then
       result := result + Texto[i];
   end;
 end;
@@ -163,6 +178,11 @@ end;
 function ENumero(Caractere: Char): Boolean;
 begin
   result := (Caractere in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+end;
+
+function EDecimal(Caractere: Char): Boolean;
+begin
+  result := ENumero(Caractere) or (Caractere = DecimalSeparator);
 end;
 
 function ELetra(Caractere: Char): Boolean;

@@ -6,7 +6,8 @@ object frmNovoCampo: TfrmNovoCampo
   Caption = 'Novo Tipo de Pagamento'
   ClientHeight = 100
   ClientWidth = 479
-  LCLVersion = '0.9.30.4'
+  OnShow = FormShow
+  LCLVersion = '1.0.8.0'
   object edtNomeCampo: TEdit
     Left = 62
     Height = 23

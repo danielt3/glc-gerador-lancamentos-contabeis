@@ -40,8 +40,8 @@ type
     btnGravarEmpresa3: TButton;
     btnGravarLayout: TButton;
     btnGravarLayout1: TButton;
-    btnGravarLayout2: TButton;
-    btnGravarLayout3: TButton;
+    btnGravarCondicao: TButton;
+    btnApagarCondicao: TButton;
     btnImportar: TButton;
     btnNovaEmpresa: TButton;
     btnNovaEmpresa1: TButton;
@@ -59,6 +59,7 @@ type
     Button8: TButton;
     Button9: TButton;
     chkCamposDisponiveis: TCheckListBox;
+    chkCamposProcessos: TCheckListBox;
     chkCamposUtilizados: TCheckListBox;
     chkLayoutsDisponiveis: TCheckListBox;
     chkLayoutsUtilizados: TCheckListBox;
@@ -66,8 +67,8 @@ type
     cmbExportacaoLayout: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
-    ComboBox1: TComboBox;
-    ComboBox2: TComboBox;
+    cmbLayoutFilho: TComboBox;
+    cmbLayoutPai: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     cmbLancamentoLayout: TComboBox;
@@ -79,13 +80,13 @@ type
     Conexao: TZConnection;
     dbgDadosCampos: TDBGrid;
     dbgLayouts: TDBGrid;
-    dbgLayouts1: TDBGrid;
+    dbgCondicoes: TDBGrid;
     dhInicio: TDateEdit;
     dhFim: TDateEdit;
     dbgPlano1: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
-    Edit2: TEdit;
+    edtValorCondicao: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
     edtClassificacaoDebitar: TEdit;
@@ -184,8 +185,7 @@ type
     Label9: TLabel;
     memAnotacoes: TMemo;
     memConfHistorico: TMemo;
-    Memo1: TMemo;
-    Memo3: TMemo;
+    memCondicoes: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -213,7 +213,7 @@ type
     pLeiaute: TTabSheet;
     pLayoutCadastro: TTabSheet;
     TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
+    pProcesso: TTabSheet;
     TabSheet3: TTabSheet;
     procedure Arrow1Click(Sender: TObject);
     procedure Arrow2Click(Sender: TObject);
@@ -226,6 +226,7 @@ type
     procedure btnEditarLayoutClick(Sender: TObject);
     procedure btnExportar2Click(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
+    procedure btnGravarCondicaoClick(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
@@ -248,9 +249,11 @@ type
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
     procedure chkCamposDisponiveisClick(Sender: TObject);
+    procedure chkCamposProcessosClick(Sender: TObject);
     procedure chkCamposUtilizadosClick(Sender: TObject);
     procedure cmbEmpresaChange(Sender: TObject);
     procedure cmbLancamentoLayoutChange(Sender: TObject);
+    procedure cmbLayoutPaiChange(Sender: TObject);
     procedure cmbTipoExportacaoChange(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
@@ -344,7 +347,12 @@ type
     fCampoEntrada: TEdit;
     fCampoSaida: TEdit;
     fModoContador: Boolean;
+    //Processos
+    fCamposProcessos: TStringList;
 
+    //Geral
+    function  FormatarDecimal(Valor: String): String;
+    function  FormatarData(Valor: String): String;
     //Empresa
     procedure NovaEmpresa;
     procedure EditarEmpresa;
@@ -463,6 +471,10 @@ type
     //Validação
     procedure AtualizarArquivo(Tentativas: Integer);
     function  Validar: Boolean;
+
+    //Processos
+    procedure CarregarCamposLayoutPai;
+    procedure SetarMascaraLayout(pCampo: String);
   public
     { public declarations }
   end; 
@@ -2350,6 +2362,8 @@ var
 begin
   cmbLancamentoLayout.Items.Clear;
   cmbExportacaoLayout.Items.Clear;
+  cmbLayoutPai.Items.Clear;
+  cmbLayoutFilho.Items.Clear;
   fLancamentoLayouts.Clear;
 
   lComandoSQL := 'SELECT' + NewLine +
@@ -2370,6 +2384,8 @@ begin
     begin
       cmbLancamentoLayout.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
       cmbExportacaoLayout.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      cmbLayoutPai.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      cmbLayoutFilho.Items.Add(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
 
       fLancamentoLayouts.Add(DataModule1.getQuery(lTabela).FieldByName('chave').AsString);
 
@@ -2378,8 +2394,11 @@ begin
 
     cmbLancamentoLayout.ItemIndex := 0;
     cmbExportacaoLayout.ItemIndex := 0;
+    cmbLayoutPai.ItemIndex := 0;
+    cmbLayoutFilho.ItemIndex := 0;
     fLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[0], 0);
     cmbLancamentoLayoutChange(cmbLancamentoLayout);
+    CarregarCamposLayoutPai;
   end
   else
   begin
@@ -2394,10 +2413,12 @@ const
 var
   lComandoSQL: String;
   i: Integer;
+  lListaCampos: String;
 begin
   fLeft := 16;
   fTop := 66;
   fLength := 1050;
+  lListaCampos := '';
 
   lComandoSQL := 'SELECT' + NewLine +
                  '  (1) as indice,' + NewLine +
@@ -2464,9 +2485,14 @@ begin
 
     DataModule1.getQuery(lTabela).First;
 
+    lListaCampos := '';
     while not DataModule1.getQuery(lTabela).EOF do
     begin
-      CriarCampoLancamento(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+      if (pos('|' + DataModule1.getQuery(lTabela).FieldByName('nome').AsString +  '|', lListaCampos) <1) then
+      begin
+        CriarCampoLancamento(DataModule1.getQuery(lTabela).FieldByName('nome').AsString);
+        lListaCampos := lListaCampos + '|' + DataModule1.getQuery(lTabela).FieldByName('nome').AsString +  '|';
+      end;
 
       DataModule1.getQuery(lTabela).Next;
     end;
@@ -3923,6 +3949,64 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.CarregarCamposLayoutPai;
+var
+  lComandoSQL: String;
+  i: Integer;
+  lCampo: String;
+begin
+  chkCamposProcessos.Items.Clear;
+
+  if not Assigned(fCamposProcessos) then
+    fCamposProcessos := TStringList.Create;
+
+  if (cmbLayoutPai.ItemIndex > -1) then
+  begin
+    lComandoSQL := 'SELECT' + NewLine +
+                   '  chave,' + NewLine +
+                   '  nome' + NewLine +
+                   'FROM' + NewLine +
+                   '  layout_campos' + NewLine +
+                   'WHERE' + NewLine +
+                   '  layout = ' + Trim(fLancamentoLayouts.Strings[cmbLayoutPai.ItemIndex]);
+
+    if DataModule1.NovaConsulta('CamposLayout', lComandoSQL) > 0 then
+    begin
+      DataModule1.getQuery('CamposLayout').First;
+
+      while not DataModule1.getQuery('CamposLayout').Eof do
+      begin
+        lCampo := DataModule1.getQuery('CamposLayout').FieldByName('nome').AsString;
+        chkCamposProcessos.Items.Add(lCampo);
+
+        DataModule1.getQuery('CamposLayout').Next;
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmPrincipal.SetarMascaraLayout(pCampo: String);
+begin
+  if (DataModule1.CampoLancamentoLocate(pCampo) > -1) then
+  begin
+    if DataModule1.CampoLancamentoTipo = 'Data' then
+    begin
+      edtValorCondicao.Text := FormatarData(edtValorCondicao.Text);
+      edtValorCondicao.OnKeyPress := @DateValidator
+    end
+    else if DataModule1.CampoLancamentoTipo = 'Decimal' then
+    begin
+      edtValorCondicao.Text := FormatarDecimal(edtValorCondicao.Text);
+      edtValorCondicao.OnKeyPress := @DecimalValidator
+    end
+    else if DataModule1.CampoLancamentoTipo = 'Numeral' then
+    begin
+      edtValorCondicao.Text := ApenasNumeros(edtValorCondicao.Text);
+      edtValorCondicao.OnKeyPress := @IntegerValidator;
+    end;
+  end;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   d, m, a: Word;
@@ -4015,6 +4099,8 @@ begin
   if not Assigned(frmNovoCampo) then
     Application.CreateForm(TfrmNovoCampo, frmNovoCampo);
 
+  frmNovoCampo.Caption := 'Novo(a) ' + Copy(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex], 2 , 100);
+  frmNovoCampo.edtNomeCampo.Text := '';
   frmNovoCampo.onGravarCampo := @GravarInserirCampo;
 
   if frmNovoCampo.ShowModal = mrOK then
@@ -4065,6 +4151,11 @@ begin
   MostrarDadosCampo(chkCamposDisponiveis.Items.Strings[chkCamposDisponiveis.ItemIndex], false);
 end;
 
+procedure TfrmPrincipal.chkCamposProcessosClick(Sender: TObject);
+begin
+  SetarMascaraLayout(chkCamposProcessos.Items.Strings[chkCamposProcessos.ItemIndex])
+end;
+
 procedure TfrmPrincipal.chkCamposUtilizadosClick(Sender: TObject);
 begin
   MostrarDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex], true);
@@ -4080,6 +4171,11 @@ procedure TfrmPrincipal.cmbLancamentoLayoutChange(Sender: TObject);
 begin
   fLancamentoLayoutAtual := StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0);
   MontarTelaLancamento;
+end;
+
+procedure TfrmPrincipal.cmbLayoutPaiChange(Sender: TObject);
+begin
+  CarregarCamposLayoutPai;
 end;
 
 procedure TfrmPrincipal.cmbTipoExportacaoChange(Sender: TObject);
@@ -4154,6 +4250,78 @@ begin
      CheckListBox1.Canvas.TextOut(Rect.Left, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
   end;
   }
+end;
+
+function TfrmPrincipal.FormatarDecimal(Valor: String): String;
+var
+  lValor: String;
+  lInteiro: String;
+  lInteiro2: String;
+  lDecimal: String;
+  lTam: Integer;
+  i: Integer;
+begin
+  result := '';
+
+  if not Vazio(Valor) then
+  begin
+    lValor := ApenasDecimal(Valor);
+
+    if (pos(DecimalSeparator, lValor) > 0) then
+    begin
+      lInteiro := lValor;
+      lInteiro := Copy(lInteiro, 1, pos(DecimalSeparator, lInteiro) - 1);
+      lInteiro := ApenasNumeros(lInteiro);
+      lInteiro := lInteiro;
+      lDecimal := lValor;
+      lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, 2);
+
+      while (Length(lDecimal) < 2) do
+        lDecimal := lDecimal + '0';
+
+      lInteiro2 := '';
+      lTam := Length(lInteiro);
+      for i := lTam downto 1 do
+      begin
+        if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
+          lInteiro2 := lInteiro[i] + '.' + lInteiro2
+        else
+          lInteiro2 := lInteiro[i] + lInteiro2
+      end;
+
+      result := lInteiro2 + DecimalSeparator + lDecimal;
+    end
+    else if not Vazio(ApenasNumeros(lValor)) then
+    begin
+      lInteiro := ApenasNumeros(lValor);
+
+      lInteiro2 := '';
+      lTam := Length(lInteiro);
+      for i := lTam downto 1 do
+      begin
+        if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
+          lInteiro2 := lInteiro[i] + '.' + lInteiro2
+        else
+          lInteiro2 := lInteiro[i] + lInteiro2
+      end;
+
+      result := lInteiro2 + ',00';
+    end;
+  end;
+end;
+
+function TfrmPrincipal.FormatarData(Valor: String): String;
+var
+  lValor: String;
+begin
+  result := '';
+
+  if not Vazio(Valor) then
+  begin
+    lValor := ApenasNumeros(Valor);
+    lValor := Copy(lValor, 1, 8);
+    lValor := ;
+  end;
 end;
 
 procedure TfrmPrincipal.MenuItem5Click(Sender: TObject);
@@ -4434,53 +4602,8 @@ begin
 end;
 
 procedure TfrmPrincipal.DecimalExit(Sender: TObject);
-var
-  lInteiro: String;
-  lInteiro2: String;
-  lDecimal: String;
-  lTam: Integer;
-  i: Integer;
 begin
-  if (pos(DecimalSeparator, TEdit(Sender).Text) > 0) then
-  begin
-    lInteiro := TEdit(Sender).Text;
-    lInteiro := Copy(lInteiro, 1, pos(DecimalSeparator, lInteiro) - 1);
-    lInteiro := ApenasNumeros(lInteiro);
-    lInteiro := lInteiro;
-    lDecimal := TEdit(Sender).Text;
-    lDecimal := Copy(lDecimal, pos(DecimalSeparator, lDecimal) + 1, 2);
-
-    while (Length(lDecimal) < 2) do
-      lDecimal := lDecimal + '0';
-
-    lInteiro2 := '';
-    lTam := Length(lInteiro);
-    for i := lTam downto 1 do
-    begin
-      if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
-        lInteiro2 := lInteiro[i] + '.' + lInteiro2
-      else
-        lInteiro2 := lInteiro[i] + lInteiro2
-    end;
-
-    TEdit(Sender).Text := lInteiro2 + DecimalSeparator + lDecimal;
-  end
-  else if not Vazio(ApenasNumeros(TEdit(Sender).Text)) then
-  begin
-    lInteiro := ApenasNumeros(TEdit(Sender).Text);
-
-    lInteiro2 := '';
-    lTam := Length(lInteiro);
-    for i := lTam downto 1 do
-    begin
-      if ((lTam - i) > 0) and ((lTam - i) mod 3 = 0) then
-        lInteiro2 := lInteiro[i] + '.' + lInteiro2
-      else
-        lInteiro2 := lInteiro[i] + lInteiro2
-    end;
-
-    TEdit(Sender).Text := lInteiro2 + ',00';
-  end
+  TEdit(Sender).Text := FormatarDecimal(TEdit(Sender).Text);
 end;
 
 procedure TfrmPrincipal.Edit2KeyPress(Sender: TObject; var Key: char);
@@ -4823,6 +4946,11 @@ begin
     if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text, nil) then
       MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end;
+end;
+
+procedure TfrmPrincipal.btnGravarCondicaoClick(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);

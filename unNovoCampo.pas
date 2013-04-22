@@ -19,6 +19,7 @@ type
     Label23: TLabel;
     procedure btnCancelarCampoClick(Sender: TObject);
     procedure btnGravarCampoClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     fonGravarCampo: TonGravarCampo;
     { private declarations }
@@ -46,6 +47,11 @@ begin
     fonGravarCampo(edtNomeCampo.Text);
 
   ModalResult := mrOK;
+end;
+
+procedure TfrmNovoCampo.FormShow(Sender: TObject);
+begin
+  edtNomeCampo.SetFocus;
 end;
 
 end.

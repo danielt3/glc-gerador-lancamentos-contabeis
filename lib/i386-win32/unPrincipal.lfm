@@ -522,9 +522,9 @@ object frmPrincipal: TfrmPrincipal
             Height = 475
             Top = 0
             Width = 1028
-            ActivePage = pLayoutCadastro
+            ActivePage = pProcesso
             Align = alClient
-            TabIndex = 0
+            TabIndex = 1
             TabOrder = 0
             object pLayoutCadastro: TTabSheet
               Caption = 'Cadastro'
@@ -565,7 +565,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 232
                 Top = 64
                 Width = 296
-                Caption = 'Tabelas Utlizadas'
+                Caption = 'Tabelas Utilizadas'
                 ClientHeight = 214
                 ClientWidth = 292
                 Enabled = False
@@ -816,26 +816,25 @@ object frmPrincipal: TfrmPrincipal
                 TabOrder = 10
               end
             end
-            object TabSheet2: TTabSheet
+            object pProcesso: TTabSheet
               Caption = 'Processo'
               ClientHeight = 447
               ClientWidth = 1020
-              TabVisible = False
-              object ComboBox1: TComboBox
+              object cmbLayoutFilho: TComboBox
                 Left = 12
                 Height = 23
-                Top = 65
+                Top = 71
                 Width = 488
                 ItemHeight = 15
                 TabOrder = 0
-                Text = 'ComboBox1'
+                Text = 'cmbLayoutFilho'
               end
               object Label39: TLabel
                 Left = 12
                 Height = 16
-                Top = 49
-                Width = 95
-                Caption = 'Leiaute Vinculado'
+                Top = 51
+                Width = 68
+                Caption = 'Leiaute Filho'
                 ParentColor = False
               end
               object Label40: TLabel
@@ -846,33 +845,20 @@ object frmPrincipal: TfrmPrincipal
                 Caption = 'Condição'
                 ParentColor = False
               end
-              object Memo1: TMemo
-                Left = 12
-                Height = 192
-                Top = 120
-                Width = 144
-                Lines.Strings = (
-                  'Data Vencimento'
-                  'Entrada'
-                  'Saída'
-                  'Valor'
-                  'Data Pagamento'
-                )
-                TabOrder = 1
-              end
-              object ComboBox2: TComboBox
+              object cmbLayoutPai: TComboBox
                 Left = 12
                 Height = 23
-                Top = 24
+                Top = 25
                 Width = 488
                 ItemHeight = 15
-                TabOrder = 2
-                Text = 'ComboBox2'
+                OnChange = cmbLayoutPaiChange
+                TabOrder = 1
+                Text = 'cmbLayoutPai'
               end
               object Label41: TLabel
                 Left = 12
                 Height = 16
-                Top = 8
+                Top = 6
                 Width = 58
                 Caption = 'Leiaute Pai'
                 ParentColor = False
@@ -885,8 +871,8 @@ object frmPrincipal: TfrmPrincipal
                 Caption = 'Vínculos'
                 ClientHeight = 406
                 ClientWidth = 494
-                TabOrder = 3
-                object dbgLayouts1: TDBGrid
+                TabOrder = 2
+                object dbgCondicoes: TDBGrid
                   Left = 6
                   Height = 386
                   Top = 14
@@ -916,7 +902,7 @@ object frmPrincipal: TfrmPrincipal
                 Width = 75
                 Caption = 'Gravar'
                 OnClick = btnGravarLayoutClick
-                TabOrder = 4
+                TabOrder = 3
               end
               object btnCancelarLayout1: TButton
                 Left = 100
@@ -925,7 +911,7 @@ object frmPrincipal: TfrmPrincipal
                 Width = 75
                 Caption = 'Cancelar'
                 OnClick = btnCancelarLayoutClick
-                TabOrder = 5
+                TabOrder = 4
               end
               object btnEditarLayout1: TButton
                 Left = 12
@@ -934,59 +920,73 @@ object frmPrincipal: TfrmPrincipal
                 Width = 75
                 Caption = 'Editar'
                 OnClick = btnEditarLayoutClick
-                TabOrder = 6
+                TabOrder = 5
               end
-              object Memo3: TMemo
-                Left = 380
+              object memCondicoes: TMemo
+                Left = 316
                 Height = 192
                 Top = 120
-                Width = 128
-                Lines.Strings = (
-                  'Memo1'
-                )
-                TabOrder = 7
+                Width = 184
+                TabOrder = 6
               end
               object ComboBox5: TComboBox
-                Left = 161
+                Left = 135
                 Height = 23
                 Top = 208
                 Width = 39
                 ItemHeight = 15
                 ItemIndex = 0
                 Items.Strings = (
-                  '='
-                  '>'
-                  '<'
-                  '>='
-                  '<='
+                  '  ='
+                  '  >'
+                  '  <'
+                  '  >='
+                  '  <='
                   'LIKE'
                 )
-                TabOrder = 8
-                Text = '='
+                TabOrder = 7
+                Text = '  ='
               end
-              object btnGravarLayout2: TButton
-                Left = 324
+              object btnGravarCondicao: TButton
+                Left = 266
                 Height = 25
-                Top = 176
+                Top = 190
                 Width = 43
                 Caption = 'Gravar'
-                OnClick = btnGravarLayoutClick
-                TabOrder = 9
+                OnClick = btnGravarCondicaoClick
+                TabOrder = 8
               end
-              object btnGravarLayout3: TButton
-                Left = 324
+              object btnApagarCondicao: TButton
+                Left = 266
                 Height = 25
-                Top = 208
+                Top = 222
                 Width = 43
                 Caption = 'Apagar'
-                OnClick = btnGravarLayoutClick
-                TabOrder = 10
+                TabOrder = 9
               end
-              object Edit2: TEdit
-                Left = 213
+              object edtValorCondicao: TEdit
+                Left = 181
                 Height = 23
                 Top = 208
                 Width = 80
+                TabOrder = 10
+              end
+              object chkCamposProcessos: TCheckListBox
+                Left = 12
+                Height = 204
+                Top = 120
+                Width = 116
+                Font.CharSet = ANSI_CHARSET
+                Font.Height = -12
+                Font.Name = 'Lucida Console'
+                Font.Pitch = fpFixed
+                Font.Quality = fqDraft
+                ItemHeight = 0
+                MultiSelect = True
+                OnClick = chkCamposProcessosClick
+                ParentFont = False
+                PopupMenu = popLayout
+                Style = lbOwnerDrawFixed
                 TabOrder = 11
               end
             end

@@ -16,6 +16,7 @@ type
     Conexao: TZConnection;
     Datasource1: TDatasource;
     dsLancamentos: TDatasource;
+    dsProcessos: TDatasource;
     dsPlanoContas: TDatasource;
     dsVinculadores: TDatasource;
     dsLayouts: TDatasource;
@@ -23,6 +24,7 @@ type
     qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
     qLancamentos2no_vinculador: TStringField;
+    qProcessos: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
     qVinculadores: TZQuery;
@@ -57,6 +59,7 @@ type
     procedure CriarListaDadosCampo;
     procedure CriarTabelaLancamentos;
     procedure CriarTabelaSistema;
+    procedure CriarTabelaProcessos;
     procedure AtualizarBaseDeDados;
     procedure TabelaExiste(lNomeTabela: String);
     procedure CampoExiste(lNomeTabela, lNomeCampo, lTipo: String; SQLDefault: String = '');
@@ -250,6 +253,20 @@ procedure TDataModule1.CriarTabelaSistema;
 begin
   TabelaExiste('SISTEMA');
   CampoExiste('SISTEMA', 'CLIENTE', 'VARCHAR(10) NOT NULL DEFAULT ''''');
+  CampoExiste('SISTEMA', 'TEXTO', 'VARCHAR(40) NOT NULL DEFAULT ''A02D1A0S0ASD02SDFGH1F2HK1I56LO497101A''');
+end;
+
+procedure TDataModule1.CriarTabelaProcessos;
+begin
+  TabelaExiste('PROCESSOS');
+  CampoExiste('PROCESSOS', 'PAI', 'INT');
+  CampoExiste('PROCESSOS', 'FILHO', 'INT');
+
+  TabelaExiste('CONDICOES');
+  CampoExiste('CONDICOES', 'PROCESSO', 'INT');
+  CampoExiste('CONDICOES', 'CAMPO', 'VARCHAR(20)');
+  CampoExiste('CONDICOES', 'CONDICAO', 'VARCHAR(5)');
+  CampoExiste('CONDICOES', 'VALOR', 'VARCHAR(200)');
 end;
 
 procedure TDataModule1.AtualizarBaseDeDados;
@@ -266,6 +283,7 @@ begin
   CriarTabelaLayoutsCampos;
   CriarListaDadosCampo;
   CriarTabelaLancamentos;
+  CriarTabelaProcessos;
 
   lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
   Executar(lComandoSQL);

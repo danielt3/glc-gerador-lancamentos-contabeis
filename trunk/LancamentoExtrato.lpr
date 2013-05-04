@@ -10,7 +10,7 @@ uses
   Forms, unPrincipal, zcomponent, unDataModule, unListaCodigo,
   unGarbageCollector, unUtilitario, lazcontrols, runtimetypeinfocontrols,
   lazutils, laz_fpspreadsheet, weblaz, unApresentacao, unNovoCampo, unConsultar,
-  unConsultarPlanoContas, MemoryTable;
+  unConsultarPlanoContas, MemoryTable, unStringGridController;
 
 {$R *.res}
 

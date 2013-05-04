@@ -817,14 +817,15 @@ object frmPrincipal: TfrmPrincipal
               end
             end
             object pProcesso: TTabSheet
-              Caption = 'Processo'
+              Caption = 'Processos'
               ClientHeight = 447
               ClientWidth = 1020
               object cmbLayoutFilho: TComboBox
                 Left = 12
                 Height = 23
                 Top = 71
-                Width = 488
+                Width = 496
+                Enabled = False
                 ItemHeight = 15
                 TabOrder = 0
                 Text = 'cmbLayoutFilho'
@@ -849,7 +850,8 @@ object frmPrincipal: TfrmPrincipal
                 Left = 12
                 Height = 23
                 Top = 25
-                Width = 488
+                Width = 496
+                Enabled = False
                 ItemHeight = 15
                 OnChange = cmbLayoutPaiChange
                 TabOrder = 1
@@ -872,68 +874,64 @@ object frmPrincipal: TfrmPrincipal
                 ClientHeight = 406
                 ClientWidth = 494
                 TabOrder = 2
-                object dbgCondicoes: TDBGrid
-                  Left = 6
+                object dbgProcessos: TDBGrid
+                  Left = 5
                   Height = 386
-                  Top = 14
+                  Top = 16
                   Width = 480
                   Color = clWindow
                   Columns = <                  
                     item
                       Title.Caption = 'Leiaute Pai'
                       Width = 230
-                      FieldName = 'Leiaute Pai'
+                      FieldName = 'nome_pai'
                     end                  
                     item
                       Title.Caption = 'Leiaute Filho'
                       Width = 240
-                      FieldName = 'Leiaute Filho'
+                      FieldName = 'nome_filho'
                     end>
+                  Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
                   PopupMenu = popLayout
                   ReadOnly = True
                   TabOrder = 0
+                  OnCellClick = dbgProcessosCellClick
                   OnMouseUp = dbgLayoutsMouseUp
                 end
               end
               object btnGravarLayout1: TButton
-                Left = 188
+                Left = 276
                 Height = 25
                 Top = 328
                 Width = 75
                 Caption = 'Gravar'
-                OnClick = btnGravarLayoutClick
+                OnClick = btnGravarLayout1Click
                 TabOrder = 3
               end
               object btnCancelarLayout1: TButton
-                Left = 100
+                Left = 188
                 Height = 25
                 Top = 328
                 Width = 75
                 Caption = 'Cancelar'
-                OnClick = btnCancelarLayoutClick
+                OnClick = btnCancelarLayout1Click
                 TabOrder = 4
               end
               object btnEditarLayout1: TButton
-                Left = 12
+                Left = 100
                 Height = 25
                 Top = 328
                 Width = 75
                 Caption = 'Editar'
-                OnClick = btnEditarLayoutClick
+                OnClick = btnEditarLayout1Click
                 TabOrder = 5
               end
-              object memCondicoes: TMemo
-                Left = 316
-                Height = 192
-                Top = 120
-                Width = 184
-                TabOrder = 6
-              end
-              object ComboBox5: TComboBox
+              object cmbCondicoes: TComboBox
                 Left = 135
                 Height = 23
                 Top = 208
                 Width = 39
+                Enabled = False
                 ItemHeight = 15
                 ItemIndex = 0
                 Items.Strings = (
@@ -944,7 +942,7 @@ object frmPrincipal: TfrmPrincipal
                   '  <='
                   'LIKE'
                 )
-                TabOrder = 7
+                TabOrder = 6
                 Text = '  ='
               end
               object btnGravarCondicao: TButton
@@ -953,8 +951,9 @@ object frmPrincipal: TfrmPrincipal
                 Top = 190
                 Width = 43
                 Caption = 'Gravar'
+                Enabled = False
                 OnClick = btnGravarCondicaoClick
-                TabOrder = 8
+                TabOrder = 7
               end
               object btnApagarCondicao: TButton
                 Left = 266
@@ -962,14 +961,17 @@ object frmPrincipal: TfrmPrincipal
                 Top = 222
                 Width = 43
                 Caption = 'Apagar'
-                TabOrder = 9
+                Enabled = False
+                OnClick = btnApagarCondicaoClick
+                TabOrder = 8
               end
               object edtValorCondicao: TEdit
                 Left = 181
                 Height = 23
                 Top = 208
                 Width = 80
-                TabOrder = 10
+                Enabled = False
+                TabOrder = 9
               end
               object chkCamposProcessos: TCheckListBox
                 Left = 12
@@ -987,7 +989,33 @@ object frmPrincipal: TfrmPrincipal
                 ParentFont = False
                 PopupMenu = popLayout
                 Style = lbOwnerDrawFixed
+                TabOrder = 10
+              end
+              object sgCondicoes: TStringGrid
+                Left = 314
+                Height = 204
+                Top = 120
+                Width = 194
+                ColCount = 3
+                FixedCols = 0
+                FixedRows = 0
+                Options = [goFixedVertLine, goFixedHorzLine, goRangeSelect, goRowSelect, goSmoothScroll]
+                ScrollBars = ssNone
                 TabOrder = 11
+                ColWidths = (
+                  75
+                  22
+                  94
+                )
+              end
+              object btnNovoProcesso: TButton
+                Left = 12
+                Height = 25
+                Top = 328
+                Width = 75
+                Caption = 'Novo'
+                OnClick = btnNovoProcessoClick
+                TabOrder = 12
               end
             end
             object TabSheet1: TTabSheet

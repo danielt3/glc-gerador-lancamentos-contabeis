@@ -156,7 +156,19 @@ object DataModule1: TDataModule1
     Connection = Conexao
     AutoCalcFields = False
     Params = <>
+    left = 224
+    top = 288
+  end
+  object qProcessos: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
     left = 360
+    top = 341
+  end
+  object dsProcessos: TDatasource
+    DataSet = qProcessos
+    left = 464
     top = 336
   end
 end

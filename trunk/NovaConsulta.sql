@@ -1,7 +1,9 @@
 SELECT
-  chave,
-  nome
+  campo,
+  condicao,
+  valor
 FROM
-  layout_campos
+  condicoes
 WHERE
-  layout = 1
+  empresa = 1
+  AND processo = 1

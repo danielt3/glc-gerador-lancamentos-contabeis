@@ -12,7 +12,7 @@ uses
   unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
   RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo, ShellAPI,
   unConsultarPlanoContas, fpspreadsheet, fpsallformats, IpHtml, Ipfilebroker,
-  lclproc, fphttpclient, fpdatasetform;
+  lclproc, fphttpclient, fpdatasetform, unStringGridController;
 
 type
   { TfrmPrincipal }
@@ -31,6 +31,7 @@ type
     btnEditarEmpresa1: TButton;
     btnEditarLayout: TButton;
     btnEditarLayout1: TButton;
+    btnNovoProcesso: TButton;
     btnExcluirDadosCampo: TButton;
     btnExportar: TButton;
     btnExportar2: TButton;
@@ -76,11 +77,11 @@ type
     cmbConjuntoImportacao: TComboBox;
     cmbConjuntoExportacao: TComboBox;
     cmbTipoExportacao: TComboBox;
-    ComboBox5: TComboBox;
+    cmbCondicoes: TComboBox;
     Conexao: TZConnection;
     dbgDadosCampos: TDBGrid;
     dbgLayouts: TDBGrid;
-    dbgCondicoes: TDBGrid;
+    dbgProcessos: TDBGrid;
     dhInicio: TDateEdit;
     dhFim: TDateEdit;
     dbgPlano1: TDBGrid;
@@ -185,7 +186,6 @@ type
     Label9: TLabel;
     memAnotacoes: TMemo;
     memConfHistorico: TMemo;
-    memCondicoes: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -212,6 +212,7 @@ type
     pLancamentos: TTabSheet;
     pLeiaute: TTabSheet;
     pLayoutCadastro: TTabSheet;
+    sgCondicoes: TStringGrid;
     TabSheet1: TTabSheet;
     pProcesso: TTabSheet;
     TabSheet3: TTabSheet;
@@ -219,6 +220,9 @@ type
     procedure Arrow2Click(Sender: TObject);
     procedure Arrow3Click(Sender: TObject);
     procedure Arrow4Click(Sender: TObject);
+    procedure btnApagarCondicaoClick(Sender: TObject);
+    procedure btnCancelarLayout1Click(Sender: TObject);
+    procedure btnEditarLayout1Click(Sender: TObject);
     procedure btnExcluirDadosCampoClick(Sender: TObject);
     procedure btnCancelarLayoutClick(Sender: TObject);
     procedure btnEditarEmpresa1Click(Sender: TObject);
@@ -232,10 +236,12 @@ type
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
     procedure btnGravarLancamentoClick(Sender: TObject);
+    procedure btnGravarLayout1Click(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnNovaEmpresa1Click(Sender: TObject);
     procedure btnNovaEmpresaClick(Sender: TObject);
     procedure btnNovoLayoutClick(Sender: TObject);
+    procedure btnNovoProcessoClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
@@ -268,6 +274,7 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure dbgProcessosCellClick(Column: TColumn);
     procedure Edit2KeyPress(Sender: TObject; var Key: char);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoCreditarExit(Sender: TObject);
@@ -348,7 +355,10 @@ type
     fCampoSaida: TEdit;
     fModoContador: Boolean;
     //Processos
+    fEstadoProcesso: TTipoAcao;
+    pProcessoAtual: Integer;
     fCamposProcessos: TStringList;
+    fCamposCondicoes: TStringGridController;
 
     //Geral
     function  FormatarDecimal(Valor: String): String;
@@ -470,11 +480,24 @@ type
     procedure TotalizarValores;
     //Validação
     procedure AtualizarArquivo(Tentativas: Integer);
+    procedure Contador;
     function  Validar: Boolean;
 
     //Processos
     procedure CarregarCamposLayoutPai;
     procedure SetarMascaraLayout(pCampo: String);
+    function  ValidarProcesso: Boolean;
+    procedure GravarProcesso;
+    procedure InserirProcesso;
+    procedure AlterarProcesso;
+    procedure GravarCondicoes;
+    procedure NovoProcesso;
+    procedure HabilitarCamposProcessos(Habilitar: Boolean);
+    procedure ConsultarProcessos(pEmpresa5: Integer);
+    procedure CarregarProcesso;
+
+    procedure ExecutarProcesso;
+    function  FieldToSQL(Campo: TField): String;
   public
     { public declarations }
   end; 
@@ -1830,6 +1853,7 @@ begin
   teste := DataModule1.qLayouts.RowsAffected;
   result := not DataModule1.qLayouts.IsEmpty;
   dbgLayouts.DataSource := DataModule1.dsLayouts;
+  ConsultarProcessos(pEmpresa4);
   CarregarLayout;
 end;
 
@@ -3931,6 +3955,23 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.Contador;
+var
+  lComandoSQL: String;
+  l1, l2, l3, lCliente: String;
+  i1, i2, i3: Integer;
+begin
+  lComandoSQL := 'SELECT TEXTO FROM SISTEMA';
+
+  if (DataModule1.Consultar(lComandoSQL) > 0) then
+  begin
+    lCliente := Trim(DataModule1.qConsulta.FieldByName('texto').AsString);
+    l1 := Copy(lCliente, 7, 1);
+    l2 := Copy(lCliente, 9, 1);
+    l3 := Copy(lCliente, 13, 1);
+  end;
+end;
+
 function TfrmPrincipal.Validar: Boolean;
 var
   s: String;
@@ -3956,6 +3997,7 @@ var
   lCampo: String;
 begin
   chkCamposProcessos.Items.Clear;
+  fCamposCondicoes.Clear;
 
   if not Assigned(fCamposProcessos) then
     fCamposProcessos := TStringList.Create;
@@ -4007,11 +4049,386 @@ begin
   end;
 end;
 
+function TfrmPrincipal.ValidarProcesso: Boolean;
+var
+  lMensagem: String;
+begin
+  result := true;
+  lMensagem :='';
+
+  if (cmbLayoutPai.ItemIndex = cmbLayoutFilho.ItemIndex) then
+  begin
+    result := false;
+    lMensagem := lMensagem + 'O leiaute filho não pode ser igual ao leiaute pai.' + NewLine;
+  end;
+
+  if (cmbLayoutPai.ItemIndex < 0) then
+  begin
+    result := false;
+    lMensagem := lMensagem + 'É obrigatório informar um leiaute pai.' + NewLine;
+  end;
+
+  if (cmbLayoutFilho.ItemIndex < 0) then
+  begin
+    result := false;
+    lMensagem := lMensagem + 'É obrigatório informar um leiaute filho.' + NewLine;
+  end;
+
+  if (fCamposCondicoes.RowCount <= 0) then
+  begin
+    result := false;
+    lMensagem := lMensagem + 'Não foi informado nenhuma condição para o processo.' + NewLine;
+  end;
+
+  if not result then
+    MensagemAlerta(lMensagem, 'Alerta');
+end;
+
+procedure TfrmPrincipal.GravarProcesso;
+begin
+  if ValidarProcesso then
+  begin
+    if (fEstadoProcesso = taInclusao) then
+      InserirProcesso
+    else if (fEstadoProcesso = taEdicao) then
+      AlterarProcesso;
+
+    ConsultarProcessos(fEmpresaAtual);
+    HabilitarCamposProcessos(false);
+  end;
+end;
+
+procedure TfrmPrincipal.InserirProcesso;
+var
+  lSQL: String;
+begin
+  pProcessoAtual := DataModule1.GerarChave('GEN_PROCESSOS');
+
+  lSQL := 'INSERT INTO PROCESSOS (' +
+          '  chave,' + NewLine +
+          '  empresa,' + NewLine +
+          '  pai,' + NewLine +
+          '  filho)' + NewLine +
+          'VALUES (' + NewLine +
+          '  ' + IntToStr(pProcessoAtual) + ',' + NewLine +
+          '  ' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+          '  ' + fLancamentoLayouts.Strings[cmbLayoutPai.ItemIndex] + ',' + NewLine +
+          '  ' + fLancamentoLayouts.Strings[cmbLayoutFilho.ItemIndex] + ')';
+
+  if DataModule1.Executar(lSQL) then
+    GravarCondicoes;
+end;
+
+procedure TfrmPrincipal.AlterarProcesso;
+var
+  lSQL: String;
+begin
+  lSQL := 'UPDATE' + NewLine +
+          '  processos' + NewLine +
+          'SET' + NewLine +
+          '  pai = ' + fLancamentoLayouts.Strings[cmbLayoutPai.ItemIndex] + ',' + NewLine +
+          '  filho = ' + fLancamentoLayouts.Strings[cmbLayoutFilho.ItemIndex] + NewLine +
+          'WHERE' + NewLine +
+          '  empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+          '  AND chave = ' + IntToStr(pProcessoAtual);
+
+  if DataModule1.Executar(lSQL) then
+    GravarCondicoes;
+end;
+
+procedure TfrmPrincipal.GravarCondicoes;
+var
+  lSQL: String;
+begin
+  lSQL := 'DELETE FROM' + NewLine +
+          '  condicoes' + NewLine +
+          'WHERE' + NewLine +
+          '  empresa = ' + IntToStr(fEmpresaAtual) + NewLine +
+          '  AND processo = ' + IntToStr(pProcessoAtual) + NewLine;
+  DataModule1.Executar(lSQL);
+
+  fCamposCondicoes.First;
+
+  while not fCamposCondicoes.Eof do
+  begin
+    if not Vazio(fCamposCondicoes.Strings(0)) then
+    begin
+      lSQL := 'INSERT INTO condicoes (' +
+              '  empresa,' + NewLine +
+              '  processo,' + NewLine +
+              '  campo,' + NewLine +
+              '  condicao,' + NewLine +
+              '  valor)' + NewLine +
+              'VALUES (' + NewLine +
+              '  ' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+              '  ' + IntToStr(pProcessoAtual) + ',' + NewLine +
+              '  ' + QuotedStr(fCamposCondicoes.Strings(0)) + ',' + NewLine +
+              '  ' + QuotedStr(fCamposCondicoes.Strings(1)) + ',' + NewLine +
+              '  ' + QuotedStr(fCamposCondicoes.Strings(2)) + ')';
+
+      DataModule1.Executar(lSQL);
+    end;
+
+    fCamposCondicoes.Next;
+  end;
+end;
+
+procedure TfrmPrincipal.NovoProcesso;
+begin
+  fEstadoProcesso := taInclusao;
+  cmbLayoutPai.ItemIndex := 0;
+  cmbLayoutFilho.ItemIndex := 0;
+
+  CarregarCamposLayoutPai;
+  fCamposCondicoes.Clear;
+
+  HabilitarCamposProcessos(true);
+end;
+
+procedure TfrmPrincipal.HabilitarCamposProcessos(Habilitar: Boolean);
+begin
+  cmbLayoutPai.Enabled := Habilitar;
+  cmbLayoutFilho.Enabled := Habilitar;
+  cmbCondicoes.Enabled := Habilitar;
+  edtValorCondicao.Enabled := Habilitar;
+  btnGravarCondicao.Enabled := Habilitar;
+  btnApagarCondicao.Enabled := Habilitar;
+end;
+
+procedure TfrmPrincipal.ConsultarProcessos(pEmpresa5: Integer);
+var
+  lSQL: String;
+begin
+  lSQL := 'SELECT' + NewLine +
+          '  a.empresa,' + NewLine +
+          '  a.chave,' + NewLine +
+          '  a.pai,' + NewLine +
+          '  b.nome AS nome_pai,' + NewLine +
+          '  a.filho,' + NewLine +
+          '  c.nome as nome_filho' + NewLine +
+          'FROM' + NewLine +
+          '  processos a' + NewLine +
+          '  JOIN layouts b ON (' + NewLine +
+          '    b.empresa = a.empresa' + NewLine +
+          '    AND b.chave = a.pai)' + NewLine +
+          '  JOIN layouts c ON (' + NewLine +
+          '    c.empresa = a.empresa' + NewLine +
+          '    AND c.chave = a.filho)' + NewLine +
+          'WHERE' + NewLine +
+          '  a.empresa = ' + IntToStr(pEmpresa5);
+
+  dbgProcessos.DataSource := DataModule1.dsProcessos;
+  DataModule1.qProcessos.SQL.Clear;
+  DataModule1.qProcessos.SQL.Add(lSQL);
+  DataModule1.qProcessos.Open;
+
+  CarregarProcesso;
+end;
+
+procedure TfrmPrincipal.CarregarProcesso;
+const
+  kConsulta = 'Consulta';
+var
+  lSQL: String;
+  i: Integer;
+  lValor: String;
+begin
+  fCamposCondicoes.Clear;
+
+  if not (DataModule1.qProcessos.IsEmpty) then
+  begin
+    pProcessoAtual := DataModule1.qProcessos.FieldByName('chave').AsInteger;
+
+    i := fLancamentoLayouts.Count;
+    lValor := DataModule1.qProcessos.FieldByName('pai').AsString;
+    i := fLancamentoLayouts.IndexOf(lValor);
+    cmbLayoutPai.ItemIndex := i;
+    lValor := DataModule1.qProcessos.FieldByName('filho').AsString;
+    i := fLancamentoLayouts.IndexOf(lValor);
+    cmbLayoutFilho.ItemIndex := i;
+
+    lSQL := 'SELECT' + NewLine +
+            '  campo,' + NewLine +
+            '  condicao,' + NewLine +
+            '  valor' + NewLine +
+            'FROM' + NewLine +
+            '  condicoes' + NewLine +
+            'WHERE' + NewLine +
+            '  empresa = ' + DataModule1.qProcessos.FieldByName('empresa').AsString + NewLine +
+            '  AND processo = ' + DataModule1.qProcessos.FieldByName('chave').AsString;
+
+    try
+      if (DataModule1.NovaConsulta(kConsulta, lSQL) > 0) then
+      begin
+        DataModule1.getQuery(kConsulta).First;
+
+        while not (DataModule1.getQuery(kConsulta).Eof) do
+        begin
+          fCamposCondicoes.Append;
+          fCamposCondicoes.Add(0, DataModule1.getQuery(kConsulta).FieldByName('campo').AsString);
+          fCamposCondicoes.Add(1, DataModule1.getQuery(kConsulta).FieldByName('condicao').AsString);
+          fCamposCondicoes.Add(2, DataModule1.getQuery(kConsulta).FieldByName('valor').AsString);
+
+          DataModule1.getQuery(kConsulta).Next;
+        end;
+      end;
+
+    except on e: exception  do
+      MensagemErro(e.Message, 'Erro!');
+    end;
+  end;
+end;
+
+procedure TfrmPrincipal.ExecutarProcesso;
+const
+  lProcessos = 'Processos';
+  lConsulta = 'Consulta';
+  lLancamento = 'Lancamento';
+var
+  lSQL: String;
+  lLayoutFilho: Integer;
+  lLayoutAtual: Integer;
+  lLancamentoAtual: Integer;
+  lEmpresaAtual: Integer;
+  lListaCamposPai: TStringList;
+
+  lCamposTransposicao: String;
+  lAND: String;
+begin
+  lLancamentoAtual := 1;
+  lEmpresaAtual := fEmpresaAtual;
+  lLayoutAtual := fLayoutAtual;
+  lListaCamposPai := TStringList.Create;
+
+  try
+    try
+      //Consultar os processos do layout
+      lSQL := 'SELECT' + NewLine +
+              '  processo,' + NewLine +
+              '  filho' + NewLine +
+              'FROM' + NewLine +
+              '  processos' + NewLine +
+              'WHERE' + NewLine +
+              '  empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+              '  AND pai = ' + IntToStr(lLayoutAtual);
+
+      if (DataModule1.NovaConsulta(lProcessos, lSQL) > 0) then
+      begin
+        //Consultar os campos e valores do layout
+        lSQL := 'SELECT' + NewLine +
+                '  b.nome AS campo' + NewLine +
+                'FROM' + NewLine +
+                '  layouts a' + NewLine +
+                '  JOIN layout_campos b ON (' + NewLine +
+                '    b.empresa = a.empresa AND' + NewLine +
+                '    b.layout = a.chave)' + NewLine +
+                'WHERE' + NewLine +
+                '  a.empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+                '  AND a.chave = ' + IntToStr(lLayoutAtual);
+
+        if DataModule1.NovaConsulta(lConsulta, lSQL) > 0 then
+        begin
+          //Montar query para os dados do lançamento
+          DataModule1.getQuery(lConsulta).First;
+
+          lSQL := 'SELECT' + NewLine;
+
+          while not DataModule1.getQuery(lConsulta).EOF do
+          begin
+            //
+            lSQL := lSQL + '  ' + Trim(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString);
+            lListaCamposPai.Add(Trim(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString));
+
+            DataModule1.getQuery(lConsulta).Next;
+
+            if DataModule1.getQuery(lConsulta).EOF then
+              lSQL := lSQL + NewLine
+            else
+              lSQL := lSQL + ',' + NewLine;
+          end;
+
+          lSQL := lSQL + 'FROM' + NewLine +
+                         '  lancamentos' + NewLine +
+                         'WHERE' + NewLine +
+                         '  empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+                         '  AND chave = ' + IntToStr(lLancamentoAtual);
+
+          if DataModule1.NovaConsulta(lLancamento, lSQL) > 0 then
+          begin
+            //Fazer um loop nos processos
+            DataModule1.getQuery(lProcessos).First;
+            while not DataModule1.getQuery(lProcessos).EOF do
+            begin
+              //Consultar os campos do layout filho que vão receber valores
+              lSQL := 'SELECT' + NewLine +
+                      '  b.nome AS campo' + NewLine +
+                      'FROM' + NewLine +
+                      '  layouts a' + NewLine +
+                      '  JOIN layout_campos b ON (' + NewLine +
+                      '    b.empresa = a.empresa AND' + NewLine +
+                      '    b.layout = a.chave)' + NewLine +
+                      'WHERE' + NewLine +
+                      '  a.empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+                      '  AND a.chave = ' + DataModule1.getQuery(lProcessos).FieldByName('filho').AsString;
+
+              lCamposTransposicao := '';
+              lAND := '';
+              if DataModule1.NovaConsulta(lConsulta, lSQL) > 0 then
+              begin
+                while not DataModule1.getQuery(lProcessos).EOF do
+                begin
+                  if (lListaCamposPai.IndexOf(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString) > -1) then
+                  begin
+                    lCamposTransposicao := lAND + lCamposTransposicao + '  ' + DataModule1.getQuery(lProcessos).FieldByName('campo').AsString + ' = ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString));
+                    lAND := ',' + NewLine;
+                  end;
+
+                  DataModule1.getQuery(lConsulta).Next;
+                end;
+              end;
+
+              //Se existirem campos semelhantes, preparar query de inserção
+              if not Vazio(lCamposTransposicao) then
+              begin
+
+              end;
+
+              DataModule1.getQuery(lProcessos).Next;
+            end;
+          end;
+        end;
+      end;
+    except on e:exception do
+      MensagemErro(e.Message, 'Erro!');
+    end;
+  finally
+    FreeAndNil(lListaCamposPai);
+  end;
+end;
+
+function TfrmPrincipal.FieldToSQL(Campo: TField): String;
+begin
+  case Campo.DataType of
+    ftString: result := QuotedStr(Trim(Campo.AsString));
+    ftFloat: result := StringReplace(StringReplace(Campo.AsString, DecimalSeparator, '', [rfReplaceAll]), DecimalSeparator, '.', [rfReplaceAll]);
+    ftInteger: result := Campo.AsString;
+  else
+    result := '';
+  end;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   d, m, a: Word;
 begin
   fGarbageCollector := TGarbageCollector.Create;
+
+  if not Assigned(fCamposCondicoes) then
+  begin
+    fCamposCondicoes := TStringGridController.Create;
+    fGarbageCollector.Add(fCamposCondicoes);
+    fCamposCondicoes.StringGrid := sgCondicoes;
+  end;
 
   fListaEmpresa := TListaCodigo.Create;
   fListaDebito := TStringList.Create;
@@ -4072,6 +4489,11 @@ end;
 procedure TfrmPrincipal.btnNovoLayoutClick(Sender: TObject);
 begin
   NovoLayout;
+end;
+
+procedure TfrmPrincipal.btnNovoProcessoClick(Sender: TObject);
+begin
+  NovoProcesso;
 end;
 
 procedure TfrmPrincipal.Button10Click(Sender: TObject);
@@ -4320,7 +4742,7 @@ begin
   begin
     lValor := ApenasNumeros(Valor);
     lValor := Copy(lValor, 1, 8);
-    lValor := ;
+    lValor := '';
   end;
 end;
 
@@ -4500,6 +4922,11 @@ procedure TfrmPrincipal.dbgPlanoMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   CarregarTelaPlanoDeContas;
+end;
+
+procedure TfrmPrincipal.dbgProcessosCellClick(Column: TColumn);
+begin
+  CarregarProcesso;
 end;
 
 procedure TfrmPrincipal.DecimalValidator(Sender: TObject; var Key: char);
@@ -4849,6 +5276,11 @@ begin
   GravarLancamento;
 end;
 
+procedure TfrmPrincipal.btnGravarLayout1Click(Sender: TObject);
+begin
+  GravarProcesso;
+end;
+
 procedure TfrmPrincipal.btnImportarClick(Sender: TObject);
 begin
   if FileExists(edtImportar.Text) then
@@ -4950,7 +5382,13 @@ end;
 
 procedure TfrmPrincipal.btnGravarCondicaoClick(Sender: TObject);
 begin
-
+  if not Vazio(edtValorCondicao.Text) then
+  begin
+    fCamposCondicoes.Append;
+    fCamposCondicoes.Add(0, chkCamposProcessos.Items.Strings[chkCamposProcessos.ItemIndex]);
+    fCamposCondicoes.Add(1, cmbCondicoes.Text);
+    fCamposCondicoes.Add(2, edtValorCondicao.Text);
+  end;
 end;
 
 procedure TfrmPrincipal.btnGravarEmpresa1Click(Sender: TObject);
@@ -5074,6 +5512,23 @@ begin
     if (chkLayoutsDisponiveis.Count >= (i + 1)) then
       chkLayoutsDisponiveis.Selected[i] := lSelected;
   end;
+end;
+
+procedure TfrmPrincipal.btnApagarCondicaoClick(Sender: TObject);
+begin
+  fCamposCondicoes.DeleteSelected;
+end;
+
+procedure TfrmPrincipal.btnCancelarLayout1Click(Sender: TObject);
+begin
+  CarregarProcesso;
+  HabilitarCamposProcessos(false);
+end;
+
+procedure TfrmPrincipal.btnEditarLayout1Click(Sender: TObject);
+begin
+  fEstadoProcesso := taEdicao;
+  HabilitarCamposProcessos(true);
 end;
 
 procedure TfrmPrincipal.btnExcluirDadosCampoClick(Sender: TObject);

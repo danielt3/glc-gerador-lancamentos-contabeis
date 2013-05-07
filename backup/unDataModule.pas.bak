@@ -16,6 +16,7 @@ type
     Conexao: TZConnection;
     Datasource1: TDatasource;
     dsLancamentos: TDatasource;
+    dsProcessos: TDatasource;
     dsPlanoContas: TDatasource;
     dsVinculadores: TDatasource;
     dsLayouts: TDatasource;
@@ -23,6 +24,7 @@ type
     qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
     qLancamentos2no_vinculador: TStringField;
+    qProcessos: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
     qVinculadores: TZQuery;
@@ -611,7 +613,7 @@ begin
     qExecutar.Close;
     qExecutar.SQL.Clear;
     qExecutar.SQL.Add(SQL);
-    //qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Executar.sql');
+    qExecutar.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Executar.sql');
     qExecutar.Prepared:= true;
     qExecutar.ExecSQL;
 

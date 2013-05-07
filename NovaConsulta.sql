@@ -1,9 +1,7 @@
 SELECT
-  campo,
-  condicao,
-  valor
+  dado
 FROM
-  condicoes
+  layout_campos_dados
 WHERE
-  empresa = 1
-  AND processo = 1
+  layout = 2 AND
+  campo = ' Forma de Pagamento'

@@ -440,6 +440,8 @@ type
     procedure CarregarTabelasHistorico;
     function  MontarDataSets: Boolean;
     function  TemOpcoesGravadas(pLayout: Integer; pNomeCampo: String): Boolean;
+
+    procedure CriarOpcoesFormaPagamento;
     //Cliente
     procedure CarregarLancamentoLayouts;
     procedure MontarTelaLancamento;
@@ -496,7 +498,7 @@ type
     procedure ConsultarProcessos(pEmpresa5: Integer);
     procedure CarregarProcesso;
 
-    procedure ExecutarProcesso;
+    procedure ExecutarProcesso(pEmpresa6, pLayout, pLancamento: Integer);
     function  FieldToSQL(Campo: TField): String;
   public
     { public declarations }
@@ -2378,6 +2380,61 @@ begin
   result := DataModule1.Consultar(lComandoSQL) > 0;
 end;
 
+procedure TfrmPrincipal.CriarOpcoesFormaPagamento;
+var
+  lComando: String;
+  i: Integer;
+  lCampoAtual: Integer;
+  lOpcoes: TStringList;
+begin
+  lOpcoes := TStringList.Create;
+
+  try
+    try
+      lOpcoes.Add('A VISTA');
+      lOpcoes.Add('A PRAZO');
+      lOpcoes.Add('OUTROS');
+
+      for i := 0 to lOpcoes.Count - 1 do
+      begin
+        lComando := 'SELECT' + NewLine +
+                    '  chave' + NewLine +
+                    'FROM' + NewLine +
+                    '  layout_campos_dados' + NewLine +
+                    'WHERE' + NewLine +
+                     '  layout = ' + IntToStr(fLayoutAtual) + ' AND' + NewLine +
+                     '  dado = ' + QuotedStr(lOpcoes.Strings[i]) + ' AND' + NewLine +
+                     '  campo = ' + QuotedStr(' Forma de Pagamento');
+
+        if DataModule1.NovaConsulta('Consulta', lComando) = 0 then
+        begin
+          lCampoAtual := DataModule1.GerarChave('GEN_LAYOUT_CAMPOS_DADOS');
+          lComando := 'INSERT INTO layout_campos_dados (' + NewLine +
+                      'chave,' + NewLine +
+                      'empresa,' + NewLine +
+                      'layout,' + NewLine +
+                      'campo,' + NewLine +
+                      'dado)' + NewLine +
+                      'VALUES (' + NewLine +
+                      '' + IntToStr(lCampoAtual) + ',' + NewLine +
+                      '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                      '' + IntToStr(fLayoutAtual) + ',' + NewLine +
+                      '' + QuotedStr(lOpcoes.Strings[i]) + ',' + NewLine +
+                      '' + QuotedStr(' Forma de Pagamento') + ')';
+
+          DataModule1.Executar(lComando);
+        end;
+      end;
+
+      CarregarListaDadosCampo(chkCamposUtilizados.Items.Strings[chkCamposUtilizados.ItemIndex]);
+    except on e:exception do
+      MensagemErro(e.Message, 'Inserir Dados Campos Layout.');
+    end;
+  finally
+    FreeAndNil(lOpcoes);
+  end;
+end;
+
 procedure TfrmPrincipal.CarregarLancamentoLayouts;
 const
   lTabela = 'LancamentoLayouts';
@@ -3150,7 +3207,8 @@ begin
 
   lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
 
-  DataModule1.Executar(lComandoSQL);
+  if DataModule1.Executar(lComandoSQL) then
+    ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual);
 end;
 
 procedure TfrmPrincipal.GravarLancamentoAlterar;
@@ -4279,11 +4337,13 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.ExecutarProcesso;
+procedure TfrmPrincipal.ExecutarProcesso(pEmpresa6, pLayout, pLancamento: Integer
+  );
 const
   lProcessos = 'Processos';
   lConsulta = 'Consulta';
   lLancamento = 'Lancamento';
+  lCondicao = 'Condicao';
 var
   lSQL: String;
   lLayoutFilho: Integer;
@@ -4291,20 +4351,27 @@ var
   lLancamentoAtual: Integer;
   lEmpresaAtual: Integer;
   lListaCamposPai: TStringList;
+  lNovoLancamento: Integer;
 
   lCamposTransposicao: String;
+  lValoresTransposicao: String;
   lAND: String;
+
+  lCondicaoCompleta: Boolean;
+  lCampo: String;
+  ltCondicao: String;
+  lValor: String;
 begin
-  lLancamentoAtual := 1;
-  lEmpresaAtual := fEmpresaAtual;
-  lLayoutAtual := fLayoutAtual;
+  lLancamentoAtual := pLancamento;
+  lEmpresaAtual := pEmpresa6;
+  lLayoutAtual := pLayout;
   lListaCamposPai := TStringList.Create;
 
   try
     try
       //Consultar os processos do layout
       lSQL := 'SELECT' + NewLine +
-              '  processo,' + NewLine +
+              '  chave,' + NewLine +
               '  filho' + NewLine +
               'FROM' + NewLine +
               '  processos' + NewLine +
@@ -4359,31 +4426,101 @@ begin
             DataModule1.getQuery(lProcessos).First;
             while not DataModule1.getQuery(lProcessos).EOF do
             begin
-              //Consultar os campos do layout filho que vão receber valores
+              //Consultar as condições do processo e ver se eles são válidos
               lSQL := 'SELECT' + NewLine +
-                      '  b.nome AS campo' + NewLine +
+                      '  campo,' + NewLine +
+                      '  condicao,' + NewLine +
+                      '  valor' + NewLine +
                       'FROM' + NewLine +
-                      '  layouts a' + NewLine +
-                      '  JOIN layout_campos b ON (' + NewLine +
-                      '    b.empresa = a.empresa AND' + NewLine +
-                      '    b.layout = a.chave)' + NewLine +
+                      '  condicoes' + NewLine +
                       'WHERE' + NewLine +
-                      '  a.empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
-                      '  AND a.chave = ' + DataModule1.getQuery(lProcessos).FieldByName('filho').AsString;
+                      '  empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+                      '  AND processo = ' + DataModule1.getQuery(lProcessos).FieldByName('chave').AsString;
 
-              lCamposTransposicao := '';
-              lAND := '';
-              if DataModule1.NovaConsulta(lConsulta, lSQL) > 0 then
+              lCondicaoCompleta := false;
+              if DataModule1.NovaConsulta(lCondicao, lSQL) > 0 then
               begin
-                while not DataModule1.getQuery(lProcessos).EOF do
+                DataModule1.getQuery(lCondicao).First;
+                while not DataModule1.getQuery(lCondicao).EOF do
                 begin
-                  if (lListaCamposPai.IndexOf(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString) > -1) then
+                  if (DataModule1.getQuery(lLancamento).FieldDefs.IndexOf(DataModule1.getQuery(lCondicao).FieldByName('campo').AsString) > -1) then
                   begin
-                    lCamposTransposicao := lAND + lCamposTransposicao + '  ' + DataModule1.getQuery(lProcessos).FieldByName('campo').AsString + ' = ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString));
-                    lAND := ',' + NewLine;
+                    lCampo := DataModule1.getQuery(lCondicao).FieldByName('campo').AsString;
+                    ltCondicao := Trim(DataModule1.getQuery(lCondicao).FieldByName('condicao').AsString);
+                    lCampo := DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lCondicao).FieldByName('campo').AsString).AsString;
+                    lValor := DataModule1.getQuery(lCondicao).FieldByName('valor').AsString;
+
+                    if (ltCondicao = '=') and (lCampo = lValor) then
+                      lCondicaoCompleta := true
+                    else if (ltCondicao = '>') and (lCampo > lValor) then
+                      lCondicaoCompleta := true
+                    else if (ltCondicao = '<') and (lCampo < lValor) then
+                      lCondicaoCompleta := true
+                    else if (ltCondicao = '>=') and (lCampo >= lValor) then
+                      lCondicaoCompleta := true
+                    else if (ltCondicao = '<=') and (lCampo <= lValor) then
+                      lCondicaoCompleta := true
+                    else if (ltCondicao = 'LIKE') and (lCampo = lValor) then
+                      lCondicaoCompleta := true;
                   end;
 
-                  DataModule1.getQuery(lConsulta).Next;
+                  DataModule1.getQuery(lCondicao).Next;
+                end;
+
+                if (lCondicaoCompleta) then
+                begin
+                  //Consultar os campos do layout filho que vão receber valores
+                  lSQL := 'SELECT' + NewLine +
+                          '  b.nome AS campo' + NewLine +
+                          'FROM' + NewLine +
+                          '  layouts a' + NewLine +
+                          '  JOIN layout_campos b ON (' + NewLine +
+                          '    b.empresa = a.empresa AND' + NewLine +
+                          '    b.layout = a.chave)' + NewLine +
+                          'WHERE' + NewLine +
+                          '  a.empresa = ' + IntToStr(lEmpresaAtual) + NewLine +
+                          '  AND a.chave = ' + DataModule1.getQuery(lProcessos).FieldByName('filho').AsString;
+
+                  lCamposTransposicao := '';
+                  lValoresTransposicao := '';
+                  lAND := '';
+                  if DataModule1.NovaConsulta(lConsulta, lSQL) > 0 then
+                  begin
+                    DataModule1.getQuery(lConsulta).First;
+                    while not DataModule1.getQuery(lConsulta).EOF do
+                    begin
+                      if (lListaCamposPai.IndexOf(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString) > -1) then
+                      begin
+                        lCamposTransposicao := lCamposTransposicao + lAND + '  ' + DataModule1.getQuery(lConsulta).FieldByName('campo').AsString;// + ' = ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString));
+                        lValoresTransposicao := lValoresTransposicao + lAND + '  ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString));
+                        lAND := ',' + NewLine;
+                      end;
+
+                      DataModule1.getQuery(lConsulta).Next;
+                    end;
+                  end;
+
+                  //Se existirem campos semelhantes, fazer inserção
+                  if not Vazio(lCamposTransposicao) then
+                  begin
+                    lNovoLancamento := DataModule1.GerarChave('GEN_LANCAMENTOS');
+
+                    lSQL := 'INSERT INTO lancamentos (' + NewLine +
+                            '  chave,' +NewLine +
+                            '  empresa,' +NewLine +
+                            '  layout,' +NewLine +
+                            '  data_lanc,' +NewLine +
+                            lCamposTransposicao + ')' + NewLine +
+                            'VALUES (' + NewLine +
+                            '  ' + IntToStr(lNovoLancamento) + ',' +NewLine +
+                            '  ' + IntToStr(lEmpresaAtual) + ',' +NewLine +
+                            '  ' + DataModule1.getQuery(lProcessos).FieldByName('filho').AsString + ',' +NewLine +
+                            '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ',' +NewLine +
+                            lValoresTransposicao + ')';
+
+                    if DataModule1.Executar(lSQL) then
+                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento);
+                  end;
                 end;
               end;
 
@@ -4406,6 +4543,8 @@ begin
     ftString: result := QuotedStr(Trim(Campo.AsString));
     ftFloat: result := StringReplace(StringReplace(Campo.AsString, DecimalSeparator, '', [rfReplaceAll]), DecimalSeparator, '.', [rfReplaceAll]);
     ftInteger: result := Campo.AsString;
+    ftDate: result := QuotedStr(StringReplace(Campo.AsString, '/', '.', [rfReplaceAll]));
+    ftDatetime: result := QuotedStr(FormatDateTime('dd.mm.yyyy', Campo.AsDateTime));
   else
     result := '';
   end;
@@ -5418,6 +5557,7 @@ procedure TfrmPrincipal.Arrow1Click(Sender: TObject);
 var
   i: Integer;
   lSelected: boolean;
+  lTeste: String;
 begin
   while TemCampoSelecionado(chkCamposDisponiveis) > -1 do
   begin
@@ -5428,6 +5568,11 @@ begin
     if PodeAdicionarCampo(i) then
     begin
       chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
+
+      lTeste := chkCamposDisponiveis.Items.Strings[i];
+      if (chkCamposDisponiveis.Items.Strings[i] = ' Forma de Pagamento') then
+        CriarOpcoesFormaPagamento;
+
       chkCamposDisponiveis.Items.Delete(i);
     end;
 

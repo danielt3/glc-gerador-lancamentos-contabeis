@@ -1,7 +1,7 @@
 SELECT
-  dado
+  chave,
+  nome
 FROM
-  layout_campos_dados
+  layout_campos
 WHERE
-  layout = 2 AND
-  campo = ' Forma de Pagamento'
+  layout = 2

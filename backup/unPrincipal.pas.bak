@@ -66,6 +66,7 @@ type
     chkLayoutsUtilizados: TCheckListBox;
     cmbEmpresa: TComboBox;
     cmbExportacaoLayout: TComboBox;
+    cmbValorCondicao: TComboBox;
     cmbPlanoContasTipo2: TDBLookupComboBox;
     cmbTabelas: TComboBox;
     cmbLayoutFilho: TComboBox;
@@ -2419,8 +2420,8 @@ begin
                       '' + IntToStr(lCampoAtual) + ',' + NewLine +
                       '' + IntToStr(fEmpresaAtual) + ',' + NewLine +
                       '' + IntToStr(fLayoutAtual) + ',' + NewLine +
-                      '' + QuotedStr(lOpcoes.Strings[i]) + ',' + NewLine +
-                      '' + QuotedStr(' Forma de Pagamento') + ')';
+                      '' + QuotedStr(' Forma de Pagamento') + ',' + NewLine +
+                      '' + QuotedStr(lOpcoes.Strings[i]) + ')';
 
           DataModule1.Executar(lComando);
         end;
@@ -2642,7 +2643,7 @@ begin
 
   if (DataModule1.CampoLancamentoNome = 'vinculador') then
     CreateVinculadorField(fLeft, fTop, fLength)
-  else if (DataModule1.CampoLancamentoDados) then
+  else if (DataModule1.CampoLancamentoDados) or (DataModule1.CampoLancamentoNome = 'forma_pag') then
     CreateComboField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftString) then
     CreateStringField(fLeft, fTop, fLength)
@@ -4089,20 +4090,35 @@ procedure TfrmPrincipal.SetarMascaraLayout(pCampo: String);
 begin
   if (DataModule1.CampoLancamentoLocate(pCampo) > -1) then
   begin
-    if DataModule1.CampoLancamentoTipo = 'Data' then
+    if DataModule1.CampoLancamentoNome = 'forma_pag' then
     begin
-      edtValorCondicao.Text := FormatarData(edtValorCondicao.Text);
-      edtValorCondicao.OnKeyPress := @DateValidator
+      edtValorCondicao.Visible := false;
+      edtValorCondicao.Enabled := false;
+      cmbValorCondicao.Visible := true;
+      cmbValorCondicao.Enabled := true;
     end
-    else if DataModule1.CampoLancamentoTipo = 'Decimal' then
+    else
     begin
-      edtValorCondicao.Text := FormatarDecimal(edtValorCondicao.Text);
-      edtValorCondicao.OnKeyPress := @DecimalValidator
-    end
-    else if DataModule1.CampoLancamentoTipo = 'Numeral' then
-    begin
-      edtValorCondicao.Text := ApenasNumeros(edtValorCondicao.Text);
-      edtValorCondicao.OnKeyPress := @IntegerValidator;
+      edtValorCondicao.Visible := true;
+      edtValorCondicao.Enabled := true;
+      cmbValorCondicao.Visible := false;
+      cmbValorCondicao.Enabled := false;
+
+      if DataModule1.CampoLancamentoTipo = 'Data' then
+      begin
+        edtValorCondicao.Text := FormatarData(edtValorCondicao.Text);
+        edtValorCondicao.OnKeyPress := @DateValidator
+      end
+      else if DataModule1.CampoLancamentoTipo = 'Decimal' then
+      begin
+        edtValorCondicao.Text := FormatarDecimal(edtValorCondicao.Text);
+        edtValorCondicao.OnKeyPress := @DecimalValidator
+      end
+      else if DataModule1.CampoLancamentoTipo = 'Numeral' then
+      begin
+        edtValorCondicao.Text := ApenasNumeros(edtValorCondicao.Text);
+        edtValorCondicao.OnKeyPress := @IntegerValidator;
+      end;
     end;
   end;
 end;
@@ -5514,13 +5530,21 @@ begin
 end;
 
 procedure TfrmPrincipal.btnGravarCondicaoClick(Sender: TObject);
+var
+  lValorCondicao: String;
 begin
-  if not Vazio(edtValorCondicao.Text) then
+  if cmbValorCondicao.Visible then
+    lValorCondicao := cmbValorCondicao.Text
+  else
+    lValorCondicao := edtValorCondicao.Text
+
+  if not Vazio(lValorCondicao) then
   begin
     fCamposCondicoes.Append;
     fCamposCondicoes.Add(0, chkCamposProcessos.Items.Strings[chkCamposProcessos.ItemIndex]);
     fCamposCondicoes.Add(1, cmbCondicoes.Text);
-    fCamposCondicoes.Add(2, edtValorCondicao.Text);
+
+    fCamposCondicoes.Add(2, lValorCondicao);
   end;
 end;
 

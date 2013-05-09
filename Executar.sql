@@ -1,4 +1,1 @@
-UPDATE layouts SET
-  nome = 'DIARIO DE CAIXA'
-WHERE
-  chave = 2
+DELETE FROM layout_campos_dados WHERE layout = 0

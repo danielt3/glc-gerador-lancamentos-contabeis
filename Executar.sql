@@ -1,1 +1,1 @@
-DELETE FROM layout_campos_dados WHERE layout = 0
+UPDATE sistema SET texto = 'TAB5203@0003SD@009ASDDDGGH091003882013'

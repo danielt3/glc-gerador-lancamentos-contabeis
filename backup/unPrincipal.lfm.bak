@@ -1,9 +1,9 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 200
+  Left = 356
   Height = 592
-  Top = 75
+  Top = 211
   Width = 1044
-  Caption = 'C+C - Contador Cliente'
+  Caption = 'Soleil'
   ClientHeight = 592
   ClientWidth = 1044
   FormStyle = fsMDIForm
@@ -21,7 +21,7 @@ object frmPrincipal: TfrmPrincipal
     TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
-      Caption = 'Contador'
+      Caption = 'Administrador'
       ClientHeight = 503
       ClientWidth = 1036
       object PageControl2: TPageControl
@@ -29,12 +29,12 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pLeiaute
+        ActivePage = pEmpresa
         Align = alClient
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 0
         object pEmpresa: TTabSheet
-          Caption = 'Empresa'
+          Caption = 'Cadastro'
           ClientHeight = 475
           ClientWidth = 1028
           object GroupBox6: TGroupBox
@@ -42,7 +42,7 @@ object frmPrincipal: TfrmPrincipal
             Height = 455
             Top = 4
             Width = 456
-            Caption = 'Cadastro'
+            Caption = 'Empresa'
             ClientHeight = 437
             ClientWidth = 452
             PopupMenu = popEmpresa
@@ -196,28 +196,219 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 1
             object GroupBox10: TGroupBox
               Left = 14
-              Height = 104
+              Height = 160
               Top = 8
               Width = 441
               Caption = 'Fornecedores'
+              ClientHeight = 142
+              ClientWidth = 437
               TabOrder = 0
+              object Label42: TLabel
+                Left = 9
+                Height = 16
+                Top = 11
+                Width = 75
+                Caption = 'Classificação:.'
+                ParentColor = False
+              end
+              object edtFornecedorClassificacao: TEdit
+                Left = 81
+                Height = 23
+                Top = 4
+                Width = 128
+                OnKeyDown = edtFornecedorClassificacaoKeyDown
+                TabOrder = 0
+              end
+              object Label43: TLabel
+                Left = 9
+                Height = 16
+                Top = 43
+                Width = 58
+                Caption = 'Descrição:.'
+                ParentColor = False
+              end
+              object edtFornecedorDescricao: TEdit
+                Left = 81
+                Height = 23
+                Top = 35
+                Width = 256
+                CharCase = ecUppercase
+                Enabled = False
+                TabOrder = 1
+              end
+              object edtFornecedorCodigo: TEdit
+                Left = 81
+                Height = 23
+                Top = 68
+                Width = 128
+                Enabled = False
+                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                TabOrder = 2
+              end
+              object Label44: TLabel
+                Left = 9
+                Height = 16
+                Top = 75
+                Width = 43
+                Caption = 'Código:'
+                ParentColor = False
+              end
+              object btnFornecedorNovo: TButton
+                Left = 6
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Novo'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 3
+              end
+              object btnFornecedorPrior: TButton
+                Left = 230
+                Height = 19
+                Top = 8
+                Width = 36
+                Caption = '<<'
+                OnClick = EmpresaAnterior
+                PopupMenu = popEmpresa
+                TabOrder = 4
+              end
+              object btnFornecedorNext: TButton
+                Left = 286
+                Height = 19
+                Top = 8
+                Width = 40
+                Caption = '>>'
+                OnClick = EmpresaProxima
+                PopupMenu = popEmpresa
+                TabOrder = 5
+              end
+              object btnFornecedorEditar: TButton
+                Left = 94
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Editar'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 6
+              end
+              object btnFornecedorGravar: TButton
+                Left = 182
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Gravar'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 7
+              end
             end
             object GroupBox11: TGroupBox
               Left = 14
-              Height = 104
-              Top = 246
+              Height = 160
+              Top = 222
               Width = 441
               Caption = 'Clientes'
-              ClientHeight = 86
+              ClientHeight = 142
               ClientWidth = 437
               TabOrder = 1
-              object Label19: TLabel
-                Left = 70
+              OnClick = GroupBox11Click
+              object Label45: TLabel
+                Left = 9
                 Height = 16
-                Top = 32
-                Width = 267
-                Caption = 'Mostrar a lista de fornecedores a serm cadastrados'
+                Top = 11
+                Width = 75
+                Caption = 'Classificação:.'
                 ParentColor = False
+              end
+              object edtClienteClassificacao: TEdit
+                Left = 81
+                Height = 23
+                Top = 4
+                Width = 128
+                Enabled = False
+                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                TabOrder = 0
+              end
+              object Label46: TLabel
+                Left = 9
+                Height = 16
+                Top = 43
+                Width = 58
+                Caption = 'Descrição:.'
+                ParentColor = False
+              end
+              object edtClienteDescricao: TEdit
+                Left = 81
+                Height = 23
+                Top = 35
+                Width = 256
+                CharCase = ecUppercase
+                Enabled = False
+                OnChange = edtClienteDescricaoChange
+                TabOrder = 1
+              end
+              object Label47: TLabel
+                Left = 9
+                Height = 16
+                Top = 75
+                Width = 43
+                Caption = 'Código:'
+                ParentColor = False
+              end
+              object edtClienteCodigo: TEdit
+                Left = 81
+                Height = 23
+                Top = 68
+                Width = 128
+                Enabled = False
+                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                TabOrder = 2
+              end
+              object btnClienteNovo: TButton
+                Left = 6
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Novo'
+                OnClick = btnClienteNovoClick
+                TabOrder = 3
+              end
+              object btnClientePrior: TButton
+                Left = 230
+                Height = 19
+                Top = 8
+                Width = 36
+                Caption = '<<'
+                OnClick = EmpresaAnterior
+                PopupMenu = popEmpresa
+                TabOrder = 4
+              end
+              object btnClienteNext: TButton
+                Left = 286
+                Height = 19
+                Top = 8
+                Width = 40
+                Caption = '>>'
+                OnClick = EmpresaProxima
+                PopupMenu = popEmpresa
+                TabOrder = 5
+              end
+              object btnClienteEditar: TButton
+                Left = 94
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Editar'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 6
+              end
+              object btnClienteGravar: TButton
+                Left = 182
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Gravar'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 7
               end
             end
           end
@@ -522,9 +713,9 @@ object frmPrincipal: TfrmPrincipal
             Height = 475
             Top = 0
             Width = 1028
-            ActivePage = pProcesso
+            ActivePage = TabSheet1
             Align = alClient
-            TabIndex = 1
+            TabIndex = 2
             TabOrder = 0
             object pLayoutCadastro: TTabSheet
               Caption = 'Cadastro'
@@ -1881,13 +2072,14 @@ object frmPrincipal: TfrmPrincipal
           TabOrder = 9
         end
         object Button4: TButton
-          Left = 741
+          Left = 910
           Height = 25
-          Top = 103
+          Top = 132
           Width = 75
-          Caption = 'Button4'
+          Caption = 'Gerar Chave'
           OnClick = Button4Click
           TabOrder = 10
+          Visible = False
         end
       end
     end
@@ -1971,5 +2163,12 @@ object frmPrincipal: TfrmPrincipal
   object OpenDialog1: TOpenDialog
     left = 604
     top = 500
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 2000
+    OnTimer = Timer1Timer
+    left = 465
+    top = 102
   end
 end

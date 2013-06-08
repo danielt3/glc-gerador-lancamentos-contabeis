@@ -15,6 +15,7 @@ uses
 {$R *.res}
 
 begin
+  Application.Title:='Soleil';
   Application.Initialize;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.CreateForm(TDataModule1, DataModule1);

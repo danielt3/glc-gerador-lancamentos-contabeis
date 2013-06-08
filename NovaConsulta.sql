@@ -1,7 +1,13 @@
 SELECT
-  chave,
-  nome
+  a.chave,
+  a.codigo_externo,
+  a.codigo,
+  a.descricao,
+  a.sintetica
 FROM
-  layout_campos
+  plano_contas a
 WHERE
-  layout = 2
+  a.empresa = 1
+  AND a.codigo >= '213'
+ORDER BY
+  a.codigo

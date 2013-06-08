@@ -31,9 +31,10 @@ type
     procedure edtConsultarPlanoDescricaoChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    fMascara: String;
     function ValidarPlano: Boolean;
   public
+    fMascara: String;
+    procedure AtivarValidacao(Value: Boolean);
     procedure Consultar(PClassificacao: String = ''; pDescricao: String = '');
     property Mascara: String read fMascara write fMascara;
   end; 
@@ -171,6 +172,14 @@ begin
       result := false;
     end;
   end;
+end;
+
+procedure TfrmConsultarPlanoContas.AtivarValidacao(Value: Boolean);
+begin
+  if Value then
+    onValidade := @ValidarPlano
+  else
+    onValidade := nil;
 end;
 
 end.

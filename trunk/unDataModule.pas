@@ -252,8 +252,8 @@ end;
 procedure TDataModule1.CriarTabelaSistema;
 begin
   TabelaExiste('SISTEMA');
-  CampoExiste('SISTEMA', 'CLIENTE', 'VARCHAR(10) NOT NULL DEFAULT ''''');
-  CampoExiste('SISTEMA', 'TEXTO', 'VARCHAR(40) NOT NULL DEFAULT ''A02D1A0S0ASD02SDFGH1F2HK1I56LO497101A''');
+  CampoExiste('SISTEMA', 'USUARIO', 'VARCHAR(10)');
+  CampoExiste('SISTEMA', 'TEXTO', 'VARCHAR(40)');
 end;
 
 procedure TDataModule1.CriarTabelaProcessos;
@@ -284,6 +284,7 @@ begin
   CriarListaDadosCampo;
   CriarTabelaLancamentos;
   CriarTabelaProcessos;
+  CriarTabelaSistema;
 
   lComandoSQL := 'UPDATE layout_campos SET empresa = (SELECT FIRST 1 empresa FROM layouts WHERE layouts.chave = layout_campos.layout)';
   Executar(lComandoSQL);

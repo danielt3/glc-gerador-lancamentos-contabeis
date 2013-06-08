@@ -31,6 +31,12 @@ type
     btnEditarEmpresa1: TButton;
     btnEditarLayout: TButton;
     btnEditarLayout1: TButton;
+    btnClienteEditar: TButton;
+    btnClienteGravar: TButton;
+    btnFornecedorNovo: TButton;
+    btnClienteNovo: TButton;
+    btnFornecedorEditar: TButton;
+    btnFornecedorGravar: TButton;
     btnNovoProcesso: TButton;
     btnExcluirDadosCampo: TButton;
     btnExportar: TButton;
@@ -52,10 +58,14 @@ type
     Button11: TButton;
     Button12: TButton;
     btnGravarLancamento: TButton;
+    btnFornecedorNext: TButton;
+    btnClientePrior: TButton;
+    btnClienteNext: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    btnFornecedorPrior: TButton;
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
@@ -88,6 +98,12 @@ type
     dbgPlano1: TDBGrid;
     dbgLancamento: TDBGrid;
     Edit1: TEdit;
+    edtFornecedorClassificacao: TEdit;
+    edtFornecedorCodigo: TEdit;
+    edtClienteClassificacao: TEdit;
+    edtClienteCodigo: TEdit;
+    edtFornecedorDescricao: TEdit;
+    edtClienteDescricao: TEdit;
     edtValorCondicao: TEdit;
     edtCodigoDebitar: TEdit;
     edtCodigoCreditar: TEdit;
@@ -153,7 +169,6 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
-    Label19: TLabel;
     Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
@@ -178,6 +193,12 @@ type
     Label39: TLabel;
     Label40: TLabel;
     Label41: TLabel;
+    Label42: TLabel;
+    Label43: TLabel;
+    Label44: TLabel;
+    Label45: TLabel;
+    Label46: TLabel;
+    Label47: TLabel;
     Label7: TLabel;
     lblTotalLancamento: TLabel;
     Label4: TLabel;
@@ -217,6 +238,7 @@ type
     TabSheet1: TTabSheet;
     pProcesso: TTabSheet;
     TabSheet3: TTabSheet;
+    Timer1: TTimer;
     procedure Arrow1Click(Sender: TObject);
     procedure Arrow2Click(Sender: TObject);
     procedure Arrow3Click(Sender: TObject);
@@ -231,11 +253,13 @@ type
     procedure btnEditarLayoutClick(Sender: TObject);
     procedure btnExportar2Click(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
+    procedure btnClienteNovoClick(Sender: TObject);
     procedure btnGravarCondicaoClick(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
     procedure btnGravarEmpresa3Click(Sender: TObject);
     procedure btnGravarEmpresaClick(Sender: TObject);
+    procedure btnFornecedorNovoClick(Sender: TObject);
     procedure btnGravarLancamentoClick(Sender: TObject);
     procedure btnGravarLayout1Click(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
@@ -277,6 +301,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure dbgProcessosCellClick(Column: TColumn);
     procedure Edit2KeyPress(Sender: TObject; var Key: char);
+    procedure edtClienteDescricaoChange(Sender: TObject);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoCreditarExit(Sender: TObject);
     procedure edtCodigoCreditarKeyDown(Sender: TObject; var Key: Word;
@@ -286,6 +311,8 @@ type
     procedure edtCodigoDebitarKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure edtCodigoDebitarKeyPress(Sender: TObject; var Key: char);
+    procedure edtFornecedorClassificacaoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure edtLoteKeyPress(Sender: TObject; var Key: char);
     procedure edtMascaraPlanoContasChange(Sender: TObject);
     procedure edtPlanoContasClassificacao2Change(Sender: TObject);
@@ -297,6 +324,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GroupBox11Click(Sender: TObject);
     procedure memAnotacoesExit(Sender: TObject);
     procedure cmbLookupKeyPress(Sender: TObject; var Key: char);
     procedure MenuItem1Click(Sender: TObject);
@@ -314,6 +342,7 @@ type
     procedure DecimalExit(Sender: TObject);
     procedure ComboValidator(Sender: TObject; var Key: char);
     procedure CheckboxDrawItem(Control: TWinControl; Index: Integer; ARect: TRect; State: TOwnerDrawState);
+    procedure Timer1Timer(Sender: TObject);
   private
     //Geral
     fGarbageCollector: TGarbageCollector;
@@ -484,7 +513,11 @@ type
     //Validação
     procedure AtualizarArquivo(Tentativas: Integer);
     procedure Contador;
+    procedure GerarChave;
     function  Validar: Boolean;
+    function  ValidarAtivacao: Boolean;
+    function Encrypt(const s: string; Key: Word):String;
+    function Decrypt(const s: string; Key: Word):String;
 
     //Processos
     procedure CarregarCamposLayoutPai;
@@ -504,6 +537,11 @@ type
   public
     { public declarations }
   end; 
+
+const
+  c1 = 53641;
+  c2 = 25519;
+  ChaveGeral = 255;
 
 var
   frmPrincipal: TfrmPrincipal;
@@ -3319,7 +3357,10 @@ begin
       lChave := Trim(lLeitura.Strings[0]);
 
       if (lChave = '&5oO_p946') then
-        fModoContador := true
+      begin
+        fModoContador := true;
+        Timer1.Enabled := true;
+      end
       else
       begin
         cmbEmpresa.ItemIndex := fListaEmpresa.IndexOf(StrToIntDef(ApenasNumeros(lChave), 0));
@@ -4031,21 +4072,194 @@ begin
   end;
 end;
 
-function TfrmPrincipal.Validar: Boolean;
+procedure TfrmPrincipal.GerarChave;
 var
-  s: String;
+  Linha1, Linha2, Linha3: String;
+  dia, mes, ano: word;
+  ldia, lmes, lano: String;
   lArquivo: TStringList;
 begin
   lArquivo := TStringList.Create;
-  With TFPHttpClient.Create(Nil) do
-    try
-      //s := Get('http://www.projeotdharma.com.br/data/index.html');
-      s := Get('http://www.projeotdharma.com.br/data/cbs.txt');
-      lArquivo.Add(s);
-      s := copy(s, pos('<!--', s) + 5, pos('-->', s) - 1);
-      lArquivo.SaveToFile(ExtractFilePath(Application.ExeName) + 'teste.txt');
+
+  try
+    DecodeDate(Now, ano, mes, dia);
+    lDia := AlignRight(IntToStr(dia), 2, '0');
+    lMes := AlignRight(IntToStr(mes), 2, '0');
+
+    if (ano - 2000 < 0) then
+      lAno := '00'
+    else
+      lAno := AlignRight(IntToStr(ano - 2000), 2, '0');
+
+    //lDia := '05';
+    //lMes := '05';
+
+    ///////////123456789112345678921234567893123456789412345678
+    Linha1 := 'FAT000000000000000000' + lDia + '3334548OIUU$##A';
+    Linha2 := 'A4A56S4D542A1DDDD$DDDDD21232132A2' + lMes + 'FED';
+    Linha3 := '@135DDA32158' + lAno + '#21S2##=$S$D$S$A$5511ADD';
+
+    lArquivo.Add(Encrypt('SDF4S4F5S6D4F65S4&@5@10S4DF45@##001988', ChaveGeral));
+    lArquivo.Add(Encrypt(Linha1, ChaveGeral));
+    lArquivo.Add(Encrypt(Linha2, ChaveGeral));
+    lArquivo.Add(Encrypt('AAA41000SAD2154=$121212$CC$AA$DD212481', ChaveGeral));
+    lArquivo.Add(Encrypt('KLM12%[!!15002003=#@0035AA21$$DD$D$A$S', ChaveGeral));
+    lArquivo.Add(Encrypt(Linha3, ChaveGeral));
+    lArquivo.Add(Encrypt('$NB$B5411=0060002AAI009$LED25500155001', ChaveGeral));
+    lArquivo.Add(Encrypt('TAB5222@0003SD@05ASDDDDGGH211003880002', ChaveGeral));
+    lArquivo.Add(Encrypt('85AOOODPLLANSDNUMBRELLACORP544#$D00003', ChaveGeral));
+
+    lArquivo.SaveToFile(ExtractFilePath(Application.ExeName) + 'fbdata.dll');
   finally
-    Free;
+    FreeAndNil(lArquivo);
+  end;
+end;
+
+function TfrmPrincipal.Validar: Boolean;
+const
+  lConsulta = 'Ativacao';
+var
+  lSQL: String;
+  lTexto: String;
+  lContador: Integer;
+  lData: TDateTime;
+  dia, mes, ano: Word;
+  ldia, lmes, lano: String;
+begin
+  result := false;
+
+  lSQL := 'SELECT FIRST 1' + NewLine +
+          '  texto' + NewLine +
+          'FROM' + NewLine +
+          '  sistema';
+
+  if (DataModule1.NovaConsulta(lConsulta, lSQL) > 0) then
+  begin
+    lTexto := DataModule1.getQuery(lConsulta).FieldByName('texto').AsString;
+
+    lContador := StrToIntDef(Copy(lTexto, 16, 3), 60);
+    dia := StrToIntDef(Copy(lTexto, 6, 2), 1);
+    mes := StrToIntDef(Copy(lTexto, 27, 2), 1);
+    ano := StrToIntDef(Copy(lTexto, 35, 4), 1950);
+    lData := EncodeDate(ano, mes, dia);
+
+    if (lContador < 61) and (Now < lData) then
+    begin
+      result := true;
+
+      DecodeDate(lData, ano, mes, dia);
+      lDia := AlignRight(IntToStr(dia), 2, '0');
+      lMes := AlignRight(IntToStr(mes), 2, '0');
+      lAno := AlignRight(IntToStr(ano), 4, '0');
+
+      lContador := lContador + 1;
+      lTexto  := 'TAB52' + lDia + '@0003SD@' + AlignRight(IntToStr(lContador), 3, '0') + 'ASDDDGGH' + lMes + '100388' + lAno;
+      lSQL := 'UPDATE sistema SET texto = ' + QuotedStr(lTexto);
+      DataModule1.Executar(lSQL);
+    end
+    else if ValidarAtivacao then
+    begin;
+      DecodeDate(Now + 90, ano, mes, dia);
+      lDia := AlignRight(IntToStr(dia), 2, '0');
+      lMes := AlignRight(IntToStr(mes), 2, '0');
+      lAno := AlignRight(IntToStr(ano), 4, '0');
+
+      //lTexto  := 'TAB5222@0003SD@05ASDDDDGGH211003880002';
+      //lTexto  := '12345678911234567892123456789312345678';
+      lTexto  := 'TAB52' + lDia + '@0003SD@' + AlignRight('1', 3, '0') + 'ASDDDGGH' + lMes + '100388' + lAno;
+      lSQL := 'UPDATE sistema SET texto = ' + QuotedStr(lTexto);
+      DataModule1.Executar(lSQL);
+      DeleteFile(ExtractFilePath(Application.ExeName) + 'fbdata.dll');
+      result := true;
+    end;
+  end
+  else if ValidarAtivacao then
+  begin;
+    DecodeDate(Now + 90, ano, mes, dia);
+    lDia := AlignRight(IntToStr(dia), 2, '0');
+    lMes := AlignRight(IntToStr(mes), 2, '0');
+    lAno := AlignRight(IntToStr(ano), 4, '0');
+
+    //lTexto  := 'TAB5222@0003SD@05ASDDDDGGH211003880002';
+    //lTexto  := '12345678911234567892123456789312345678';
+    lTexto  := 'TAB52' + lDia + '@0003SD@' + AlignRight('1', 3, '0') + 'ASDDDGGH' + lMes + '100388' + lAno;
+    lSQL := 'INSERT INTO sistema (empresa, texto) VALUES (0, ' + QuotedStr(lTexto) + ')';
+    DataModule1.Executar(lSQL);
+    DeleteFile(ExtractFilePath(Application.ExeName) + 'fbdata.dll');
+    result := true;
+  end;
+end;
+
+function TfrmPrincipal.ValidarAtivacao: Boolean;
+var
+  i: Integer;
+  lNome: String;
+  dia1, dia2, mes1, mes2, ano1, ano2: Word;
+  Validade: TDateTime;
+  lArquivo: TStringList;
+  lArquivo2: TStringList;
+  Linha1, Linha2, Linha3: String;
+begin
+  result := false;
+  lNome := ExtractFilePath(Application.ExeName) + 'fbdata.dll';
+
+  if FileExists(lNome) then
+  begin
+    lArquivo := TStringList.Create;
+    lArquivo2 := TStringList.Create;
+
+    try
+      lArquivo.LoadFromFile(lNome);
+
+      //for i := 0 to lArquivo.Count - 1 do
+      //  lArquivo2.Add(Decrypt(lArquivo.Strings[i], ChaveGeral));
+
+      Linha1 := Decrypt(lArquivo.Strings[1], ChaveGeral);
+      Linha2 := Decrypt(lArquivo.Strings[2], ChaveGeral);
+      Linha3 := Decrypt(lArquivo.Strings[5], ChaveGeral);
+
+      //DecodeDate(Now, ano1, mes1, dia1);
+      dia2 := StrToIntDef(Copy(Linha1, 22, 2), 0);
+      mes2 := StrToIntDef(Copy(Linha2, 34, 2), 0);
+      ano2 := StrToIntDef(Copy(Linha3, 13, 2), 0) + 2000;
+      Validade := EncodeDate(ano2, mes2, dia2);
+
+      result := (Now <= Validade + 2) and (Now > Validade - 5);
+
+      //lArquivo2.SaveToFile(ExtractFilePath(Application.ExeName) + 'teste.txt');
+    finally
+      FreeAndnil(lArquivo);
+      FreeAndnil(lArquivo2);
+    end;
+  end;
+end;
+
+function TfrmPrincipal.Encrypt(const s: string; Key: Word): String;
+var
+  i : byte;
+  ResultStr : string;
+begin
+  Result:=s;
+
+  {Result[0] := s[0]; }
+  for i := 0 to (length (s)) do
+  begin
+    Result[i] := Char (byte (s[i]) xor (Key shr 8));
+    Key := (byte (Result[i]) + Key) * c1 + c2;
+  end;
+end;
+
+function TfrmPrincipal.Decrypt(const s: string; Key: Word): String;
+var
+  i : byte;
+begin
+  {Result[0] := s[0];}
+  Result:=s;
+
+  for i := 0 to (length (s)) do
+  begin
+    Result[i] := Char (byte (s[i]) xor (Key shr 8));
+    Key := (byte (s[i]) + Key) * c1 + c2;
   end;
 end;
 
@@ -4570,47 +4784,52 @@ procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   d, m, a: Word;
 begin
-  fGarbageCollector := TGarbageCollector.Create;
+  //if Validar then
+  //begin
+    fGarbageCollector := TGarbageCollector.Create;
 
-  if not Assigned(fCamposCondicoes) then
-  begin
-    fCamposCondicoes := TStringGridController.Create;
-    fGarbageCollector.Add(fCamposCondicoes);
-    fCamposCondicoes.StringGrid := sgCondicoes;
-  end;
+    if not Assigned(fCamposCondicoes) then
+    begin
+      fCamposCondicoes := TStringGridController.Create;
+      fGarbageCollector.Add(fCamposCondicoes);
+      fCamposCondicoes.StringGrid := sgCondicoes;
+    end;
 
-  fListaEmpresa := TListaCodigo.Create;
-  fListaDebito := TStringList.Create;
-  fListaDebito2 := TStringList.Create;
-  fListaDebito3 := TStringList.Create;
-  fListaDebito4 := TStringList.Create;
-  fListaCredito := TStringList.Create;
-  fListaCredito2 := TStringList.Create;
-  fListaCredito3 := TStringList.Create;
-  fListaCredito4 := TStringList.Create;
-  fLayoutsDisponiveis := TStringList.Create;
-  fLayoutsUtilizados := TStringList.Create;
-  fLancamentoLayouts := TStringList.Create;
-  fGarbageCollector.Add(fListaEmpresa);
-  fGarbageCollector.Add(fListaDebito);
-  fGarbageCollector.Add(fListaDebito2);
-  fGarbageCollector.Add(fListaDebito3);
-  fGarbageCollector.Add(fListaDebito4);
-  fGarbageCollector.Add(fListaCredito);
-  fGarbageCollector.Add(fListaCredito2);
-  fGarbageCollector.Add(fListaCredito3);
-  fGarbageCollector.Add(fListaCredito4);
-  fGarbageCollector.Add(fLayoutsDisponiveis);
-  fGarbageCollector.Add(fLayoutsUtilizados);
-  fGarbageCollector.Add(fLancamentoLayouts);
+    fListaEmpresa := TListaCodigo.Create;
+    fListaDebito := TStringList.Create;
+    fListaDebito2 := TStringList.Create;
+    fListaDebito3 := TStringList.Create;
+    fListaDebito4 := TStringList.Create;
+    fListaCredito := TStringList.Create;
+    fListaCredito2 := TStringList.Create;
+    fListaCredito3 := TStringList.Create;
+    fListaCredito4 := TStringList.Create;
+    fLayoutsDisponiveis := TStringList.Create;
+    fLayoutsUtilizados := TStringList.Create;
+    fLancamentoLayouts := TStringList.Create;
+    fGarbageCollector.Add(fListaEmpresa);
+    fGarbageCollector.Add(fListaDebito);
+    fGarbageCollector.Add(fListaDebito2);
+    fGarbageCollector.Add(fListaDebito3);
+    fGarbageCollector.Add(fListaDebito4);
+    fGarbageCollector.Add(fListaCredito);
+    fGarbageCollector.Add(fListaCredito2);
+    fGarbageCollector.Add(fListaCredito3);
+    fGarbageCollector.Add(fListaCredito4);
+    fGarbageCollector.Add(fLayoutsDisponiveis);
+    fGarbageCollector.Add(fLayoutsUtilizados);
+    fGarbageCollector.Add(fLancamentoLayouts);
 
-  DecodeDate(Now, a, m, d);
-  dhInicio.Date := EncodeDate(a, m, 1);
-  dhFim.Date := Now;
+    DecodeDate(Now, a, m, d);
+    dhInicio.Date := EncodeDate(a, m, 1);
+    dhFim.Date := Now;
 
-  AtivarModoContador;
+    AtivarModoContador;
 
-  PrepararComboTipoPlanoContas;
+    PrepararComboTipoPlanoContas;
+  //end
+  //else
+  //  Application.Terminate;
 end;
 
 procedure TfrmPrincipal.FormDestroy(Sender: TObject);
@@ -4624,6 +4843,10 @@ procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   CarregarListaEmpresa;
 end;
+
+procedure TfrmPrincipal.GroupBox11Click(Sender: TObject);
+begin
+  end;
 
 procedure TfrmPrincipal.memAnotacoesExit(Sender: TObject);
 begin
@@ -4693,7 +4916,8 @@ end;
 
 procedure TfrmPrincipal.Button4Click(Sender: TObject);
 begin
-  Validar;
+  GerarChave;
+  //Validar;
 end;
 
 procedure TfrmPrincipal.Button5Click(Sender: TObject);
@@ -4821,6 +5045,16 @@ begin
      CheckListBox1.Canvas.TextOut(Rect.Left, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
   end;
   }
+end;
+
+procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := false;
+  if not Validar then
+  begin
+    MensagemAlerta('Sistema não validado. Por favor entre em contato com suporte@projetodharma.com.br.', 'Alerta');
+    Application.Terminate;
+  end;
 end;
 
 function TfrmPrincipal.FormatarDecimal(Valor: String): String;
@@ -5270,6 +5504,11 @@ begin
   key := #0;
 end;
 
+procedure TfrmPrincipal.edtClienteDescricaoChange(Sender: TObject);
+begin
+
+end;
+
 
 procedure TfrmPrincipal.edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
 var
@@ -5379,6 +5618,36 @@ begin
     Key := #0;
 end;
 
+procedure TfrmPrincipal.edtFornecedorClassificacaoKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+var
+  lConsultarPlano: TfrmConsultarPlanoContas;
+begin
+  if (Key = 113) then
+  begin
+    lConsultarPlano := TfrmConsultarPlanoContas.Create(nil);
+
+    try
+      try
+        lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
+        //lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
+        lConsultarPlano.AtivarValidacao(false);
+        lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
+        lConsultarPlano.Consultar;
+
+        if lConsultarPlano.ShowModal = mrOK then
+        begin
+          edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
+        end;
+      except on e:exception do
+        MensagemErro(e.Message, 'Vinculador');
+      end;
+    finally
+      FreeAndNil(lConsultarPlano)
+    end;
+  end;
+end;
+
 procedure TfrmPrincipal.edtLoteKeyPress(Sender: TObject; var Key: char);
 begin
   if (Key <> #8) and not (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
@@ -5418,6 +5687,11 @@ procedure TfrmPrincipal.btnGravarEmpresaClick(Sender: TObject);
 begin
   if GravarEmpresa then
     CarregarListaEmpresa;
+end;
+
+procedure TfrmPrincipal.btnFornecedorNovoClick(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.btnGravarLancamentoClick(Sender: TObject);
@@ -5527,6 +5801,11 @@ begin
     if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text, nil) then
       MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end;
+end;
+
+procedure TfrmPrincipal.btnClienteNovoClick(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmPrincipal.btnGravarCondicaoClick(Sender: TObject);

@@ -49,8 +49,6 @@ type
     function AddStringField(Name, Description: String): Boolean;
     function AddIntegerField(Name, Description: String): Boolean;
 
-    procedure Append;
-
     property CurrentIndex: Integer read fCurrentIndex;
   end;
 
@@ -83,6 +81,8 @@ function TMemoryTable.AddStringField(Name, Description: String): Boolean;
 var
   lStringField: TStringField;
 begin
+  result := false;
+
   if not Assigned(fFieldList) then
   begin
     fFieldList := TList.Create;
@@ -93,12 +93,16 @@ begin
   lStringField.Description := Description;
   lStringField.Name := Name;
   fFieldList.Add(lStringField);
+
+  result := true;
 end;
 
 function TMemoryTable.AddIntegerField(Name, Description: String): Boolean;
 var
   lIntegerField: TIntegerField;
 begin
+  result := false;
+
   if not Assigned(fFieldList) then
   begin
     fFieldList := TList.Create;
@@ -109,14 +113,8 @@ begin
   lIntegerField.Description := Description;
   lIntegerField.Name := Name;
   fFieldList.Add(lIntegerField);
-end;
 
-procedure TMemoryTable.Append;
-var
-  lNewData: Integer;
-begin
-
-  //lNewData := Length(fFieldList.Items[0]);
+  result := true;
 end;
 
 end.

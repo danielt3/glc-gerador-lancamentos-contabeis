@@ -6,13 +6,12 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst, FileCtrl,
-  EditBtn, ActnList, ExtCtrls, PairSplitter, ShellCtrls, ColorBox,
-  PopupNotifier, Calendar, Arrow, MaskEdit, ZConnection, unDataModule,
-  unListaCodigo, unGarbageCollector, unUtilitario, db, ExtendedNotebook,
-  RTTICtrls, types, ZAbstractRODataset, ZDataset, unNovoCampo, ShellAPI,
-  unConsultarPlanoContas, fpspreadsheet, fpsallformats, IpHtml, Ipfilebroker,
-  lclproc, fphttpclient, fpdatasetform, unStringGridController;
+  ComCtrls, StdCtrls, DBGrids, DbCtrls, Buttons, Grids, CheckLst,
+  EditBtn, ActnList, ExtCtrls, Arrow, ZConnection, unDataModule,
+  unListaCodigo, unGarbageCollector, unUtilitario, db,
+  RTTICtrls, types, ZAbstractRODataset, unNovoCampo, ShellAPI,
+  unConsultarPlanoContas, fpspreadsheet, IpHtml, Ipfilebroker,
+  lclproc, unStringGridController;
 
 type
   { TfrmPrincipal }
@@ -253,7 +252,8 @@ type
     procedure btnEditarLayoutClick(Sender: TObject);
     procedure btnExportar2Click(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
-    procedure btnClienteNovoClick(Sender: TObject);
+    procedure btnFornecedorNextClick(Sender: TObject);
+    procedure btnFornecedorPriorClick(Sender: TObject);
     procedure btnGravarCondicaoClick(Sender: TObject);
     procedure btnGravarEmpresa1Click(Sender: TObject);
     procedure btnGravarEmpresa2Click(Sender: TObject);
@@ -350,6 +350,10 @@ type
     fEstadoEmpresa: TTipoAcao;
     fEmpresaAtual: Integer;
     fListaEmpresa: TListaCodigo;
+    fEstadoFornecedor: TTipoAcao;
+    fEstadoCliente: TTipoAcao;
+    fCodigoFornecedores: String;
+    fCodigoClientes: String;
     //Plano de Contas
     fEstadoPlano: TTipoAcao;
     fPlanoAtual: Integer;
@@ -404,11 +408,13 @@ type
     procedure CarregarEmpresa(Empresa: Integer);
     procedure CarregarListaEmpresa;
     procedure GravarAnotacoes;
+
+    procedure ConsultarFornecedores(Empresa: Integer; Classificacao: String);
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
     function  ImportarPlanoDeContas2(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
-    function  ExportarPlanoDeContas(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ExportarPlanoDeContas(pNomeArquivo: String): Boolean;
     function  AdicionarPlanoDeContas(pEmpresa3: Integer; pExterno, pCodigo, pDescricao, pSintetico: String): Boolean;
     function  CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
     procedure HabilitarAbasAdicionais(Habilitar: Boolean);
@@ -468,7 +474,6 @@ type
     function  PodeAdicionarCampo(i: Integer): Boolean;
     function  CampoSendoUtilizado(pNomeCampo: String): Boolean;
     procedure CarregarTabelasHistorico;
-    function  MontarDataSets: Boolean;
     function  TemOpcoesGravadas(pLayout: Integer; pNomeCampo: String): Boolean;
 
     procedure CriarOpcoesFormaPagamento;
@@ -502,17 +507,16 @@ type
     function  LerEmpresaPadrao: Integer;
     procedure GravarEmpresaPadrao(pEmpresaAtual: Integer);
     //Integração
-    function  ExportarDominio(Empresa: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
-    function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
-    function  ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
-    function  ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+    function  ExportarDominio(pNomeArquivo: String): Boolean;
+    function  ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String): Boolean;
+    function  ImportarTabelas(pNomeArquivo: String): Boolean;
+    function  ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String): Boolean;
     procedure QuebrarString(var pLista: TStringList; pString: String);
     function  AlignLeft(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     function  AlignRight(Texto: String; Tamanho: Integer; Caractere: Char = ' '): String;
     procedure TotalizarValores;
     //Validação
-    procedure AtualizarArquivo(Tentativas: Integer);
-    procedure Contador;
+    procedure AtualizarArquivo;
     procedure GerarChave;
     function  Validar: Boolean;
     function  ValidarAtivacao: Boolean;
@@ -693,7 +697,9 @@ begin
                 '  chave,' +
                 '  codigo,' +
                 '  nome,' +
-                '  cnpj ' +
+                '  cnpj,' +
+                '  fornecedores,' +
+                '  clientes ' +
                 'FROM' +
                 '  empresa ' +
                 'WHERE' +
@@ -712,6 +718,7 @@ begin
       CarregarLayouts(fEmpresaAtual);
       CarregarLancamentoLayouts;
       GravarEmpresaPadrao(Empresa);
+      ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString)
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -742,11 +749,7 @@ begin
 end;
 
 procedure TfrmPrincipal.cmbLookupKeyPress(Sender: TObject; var Key: char);
-var
-  teste: String;
 begin
-  teste := TComboBox(Sender).Text;
-
   if (Key <> #8) and (TComboBox(Sender).Text <> '') and (TComboBox(Sender).Items.IndexOf(TComboBox(Sender).Text + Key) = -1) then
     Key := #0;
 
@@ -838,6 +841,50 @@ begin
   DataModule1.Executar(lComandoSQL);
 end;
 
+procedure TfrmPrincipal.ConsultarFornecedores(Empresa: Integer; Classificacao: String);
+var
+  lComandoSQL: String;
+begin
+  try
+    lComandoSQL := 'SELECT' + NewLine +
+                   '  codigo,' + NewLine +
+                   '  codigo_externo,' + NewLine +
+                   '  descricao' + NewLine +
+                   'FROM' + NewLine +
+                   '  plano_contas' + NewLine +
+                   'WHERE' + NewLine +
+                   '  empresa = ' + IntToStr(Empresa) + NewLine +
+                   '  AND codigo LIKE ' + QuotedStr(Classificacao + '%') + NewLine +
+                   'ORDER BY' + NewLine +
+                   '  codigo';
+
+    DataModule1.qFornecedores.Close;
+    DataModule1.qFornecedores.SQL.Add(lComandoSQL);
+    DataModule1.qFornecedores.Open;
+
+    if not (DataModule1.qFornecedores.IsEmpty) then
+    begin
+      DataModule1.qFornecedores.Last;
+      fCodigoFornecedores := Classificacao;
+      DataModule1.qFornecedores.First;
+      edtFornecedorClassificacao.Text := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+      edtFornecedorDescricao.Text := DataModule1.qFornecedores.FieldByName('descricao').AsString;
+      edtFornecedorCodigo.Text := DataModule1.qFornecedores.FieldByName('codigo_externo').AsString;
+
+      lComandoSQL := 'UPDATE' + NewLine +
+                     '  empresa' + NewLine +
+                     'SET' + NewLine +
+                     '  fornecedores = ' + QuotedStr(Classificacao) + NewLine +
+                     'WHERE' + NewLine +
+                     '  chave = ' + IntToStr(fEmpresaAtual);
+
+      DataModule1.Executar(lComandoSQL);
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Erro');
+  end;
+end;
+
 function TfrmPrincipal.LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
 var
   lComandoSQL: String;
@@ -871,7 +918,6 @@ var
   lCodigo: String;
   lDescricao: AnsiString;
   lSintetico: String;
-  y: Integer;
 begin
   result := false;
   try
@@ -925,7 +971,7 @@ end;
 
 function TfrmPrincipal.ImportarPlanoDeContas2(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
 const
-  LegalChar = '0123456789ABCDEFGHIJKLMNOPQRSTUVWYZ? ';
+  //LegalChar = '0123456789ABCDEFGHIJKLMNOPQRSTUVWYZ? ';
   lNumber = '0123456789';
 var
   lArquivo: TextFile;
@@ -936,9 +982,7 @@ var
   lExterno: String;
   lCodigo: String;
   lDescricao: String;
-  lDescricao2: String;
   lSintetico: String;
-  lSintetico2: String;
   lChar: String;
 begin
   result := false;
@@ -969,7 +1013,6 @@ begin
           lDescricao := UTF8Copy(lLinha, 28, 40);
 
           i := Length(lLinha);
-          lSintetico2 := UTF8Copy(lLinha, 68, 1);
           for i := Length(lLinha) downto 1 do
           begin
             lChar := lLinha[i];
@@ -995,11 +1038,10 @@ begin
   end;
 end;
 
-function TfrmPrincipal.ExportarPlanoDeContas(Empresa: Integer;pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+function TfrmPrincipal.ExportarPlanoDeContas(pNomeArquivo: String): Boolean;
 const
   lNomeConsulta = 'Integracao';
 var
-  i: Integer;
   lArquivo: TStringList;
   lLinha: String;
   pComandoSQL: String;
@@ -1075,7 +1117,6 @@ end;
 function TfrmPrincipal.CarregarPlanoDeContas(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
 
@@ -1109,7 +1150,6 @@ begin
 
   CarregarCombosPlano;
 
-  teste := DataModule1.qPlanoContas.RowsAffected;
   result := not DataModule1.qPlanoContas.IsEmpty;
   dbgPlano.DataSource := DataModule1.dsPlanoContas;
   CarregarTelaPlanoDeContas;
@@ -1125,6 +1165,8 @@ end;
 
 function TfrmPrincipal.CarregarTelaPlanoDeContas: Boolean;
 begin
+  result := false;
+
   if not (DataModule1.qPlanoContas.IsEmpty) then
   begin
     fPlanoAtual := DataModule1.qPlanoContas.FieldByName('chave').AsInteger;
@@ -1144,6 +1186,8 @@ begin
     cmbPlanoContasTipo.ItemIndex := 0;
     edtPlanoContasDescricao.Text := '';
   end;
+
+  result := true;
 end;
 
 procedure TfrmPrincipal.PrepararComboTipoPlanoContas;
@@ -1280,7 +1324,6 @@ end;
 
 function TfrmPrincipal.GravarPlanoContas: boolean;
 var
-  lComandoSQL: String;
   lPlanoAtual: Integer;
 begin
   result := false;
@@ -1337,7 +1380,6 @@ end;
 function TfrmPrincipal.GravarAlterarPlanoContas: Boolean;
 var
   lComando: String;
-  lTipo: String;
 begin
   result := false;
 
@@ -1373,11 +1415,8 @@ begin
 end;
 
 procedure TfrmPrincipal.ConsultarVinculadorDebito(pRegistro: Integer);
-var
-  Teste: String;
 begin
   edtCodigoDebitar.Text := fListaDebito2.Strings[fListaDebito.IndexOf(IntToStr(pRegistro))];
-  Teste := edtCodigoDebitar.Text;
   edtCodigoDebitarExit(edtCodigoDebitar);
 end;
 
@@ -1405,7 +1444,6 @@ end;
 
 function TfrmPrincipal.CopyBugado(pTexto: UTF8String; Inicio, Contador: Integer): UTF8String;
 var
-  Tamanho: Integer;
   i: Integer;
   lTeste: AnsiString;
 begin
@@ -1426,7 +1464,6 @@ end;
 function TfrmPrincipal.CarregarVinculadores(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
 
@@ -1459,7 +1496,6 @@ begin
   DataModule1.qVinculadores.SQL.Add(lComandoSQL);
   DataModule1.qVinculadores.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Vinculadores.sql');
   DataModule1.qVinculadores.Open;
-  teste := DataModule1.qVinculadores.RowsAffected;
   result := not DataModule1.qVinculadores.IsEmpty;
   dbgPlano1.DataSource := DataModule1.dsVinculadores;
   CarregarVinculador;
@@ -1584,6 +1620,8 @@ end;
 
 function TfrmPrincipal.CarregarVinculador: Boolean;
 begin
+  result := false;
+
   if not (DataModule1.qVinculadores.IsEmpty) then
   begin
     fVinculadorAtual := DataModule1.qVinculadores.FieldByName('chave').AsInteger;
@@ -1629,6 +1667,8 @@ begin
     CarregarLayoutsDisponiveis;
     CarregarLayoutsUtilizados;
   end;
+
+  result := true;
 end;
 
 function TfrmPrincipal.ProximoCodigoVinculador: String;
@@ -1648,7 +1688,6 @@ end;
 
 function TfrmPrincipal.GravarVinculador: Boolean;
 var
-  lComandoSQL: String;
   lVinculadorAtual: Integer;
 begin
   result := false;
@@ -1759,8 +1798,8 @@ const
   lTabela = 'Vinculadores';
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
+  result := false;
   chkLayoutsDisponiveis.Items.Clear;
   fLayoutsDisponiveis.Clear;
 
@@ -1795,6 +1834,8 @@ begin
       DataModule1.getQuery(lTabela).Next;
     end;
   end;
+
+  result := true;
 end;
 
 function TfrmPrincipal.CarregarLayoutsUtilizados: Boolean;
@@ -1802,8 +1843,8 @@ const
   lTabela = 'Vinculadores';
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
+  result := false;
   chkLayoutsUtilizados.Items.Clear;
   fLayoutsUtilizados.Clear;
 
@@ -1832,6 +1873,8 @@ begin
       DataModule1.getQuery(lTabela).Next;
     end;
   end;
+
+  result := true;
 end;
 
 function TfrmPrincipal.GravarLayoutsUtilizados: Boolean;
@@ -1874,7 +1917,6 @@ end;
 function TfrmPrincipal.CarregarLayouts(pEmpresa4: Integer): Boolean;
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   DataModule1.MascaraPlanoContas := edtMascaraPlanoContas.Text;
 
@@ -1891,7 +1933,6 @@ begin
   DataModule1.qLayouts.SQL.Add(lComandoSQL);
   DataModule1.qLayouts.SQL.SaveToFile(ExtractFilePath(ApplicationName) + 'Layouts.sql');
   DataModule1.qLayouts.Open;
-  teste := DataModule1.qLayouts.RowsAffected;
   result := not DataModule1.qLayouts.IsEmpty;
   dbgLayouts.DataSource := DataModule1.dsLayouts;
   ConsultarProcessos(pEmpresa4);
@@ -1920,7 +1961,6 @@ end;
 procedure TfrmPrincipal.CarregarCamposLayout;
 var
   lComandoSQL: String;
-  i: Integer;
   lCampo: String;
 begin
   DataModule1.CarregarCamposDisponiveis(chkCamposDisponiveis);
@@ -1954,8 +1994,6 @@ begin
 end;
 
 procedure TfrmPrincipal.LimparTelaLayouts;
-var
-  i: Integer;
 begin
   edtNomeLayout.Text := '';
 
@@ -2080,7 +2118,6 @@ end;
 
 function TfrmPrincipal.GravarLayout: Boolean;
 var
-  lComandoSQL: String;
   lLayoutAtual: Integer;
 begin
   result := false;
@@ -2275,7 +2312,6 @@ end;
 procedure TfrmPrincipal.GravarInserirCampo(pNomeCampo: String);
 var
   lComando: String;
-  i: Integer;
   lCampoAtual: Integer;
 begin
   try
@@ -2342,7 +2378,6 @@ const
   lTabela = 'DadosCampos';
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 
@@ -2396,11 +2431,6 @@ begin
 
   for i := 0 to chkCamposUtilizados.Items.Count - 1 do
     cmbTabelas.Items.Add(Copy(chkCamposUtilizados.Items.Strings[i], 2, 100));
-end;
-
-function TfrmPrincipal.MontarDataSets: Boolean;
-begin
-
 end;
 
 function TfrmPrincipal.TemOpcoesGravadas(pLayout: Integer; pNomeCampo: String): Boolean;
@@ -2532,7 +2562,6 @@ const
   lTabela = 'MontarLancamento';
 var
   lComandoSQL: String;
-  i: Integer;
   lListaCampos: String;
 begin
   fLeft := 16;
@@ -2653,7 +2682,6 @@ end;
 
 procedure TfrmPrincipal.CriarCampoLancamento(pNomeCampo: String);
 var
-  lNovoCampo: TFieldDef;
   lColumn: TColumn;
   lFormat: String;
 begin
@@ -2757,7 +2785,6 @@ const
   lTabela = 'DadosCampos';
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   dbgDadosCampos.DataSource := DataModule1.getDataSource(lTabela);
 
@@ -2785,7 +2812,6 @@ const
   lTabela2 = 'DadosCampos2';
 var
   lComandoSQL: String;
-  teste: Integer;
 begin
   if not Assigned(fVinculadoresLayout) then
   begin
@@ -3132,7 +3158,6 @@ var
   lCombo: TcomboBox;
   lLabel: TLabel;
   lWidth: Integer;
-  i: Integer;
 begin
   lWidth := 208;
   if ((pLeft + lWidth + 12) > pLength) then
@@ -3164,14 +3189,11 @@ begin
   lCombo.Visible := true;
   CarregarListaDadosCampoLancamento(lCombo, DataModule1.CampoLancamentoDescricao);
 
-  i := lCombo.Items.Count;
   if lCombo.Items.Count > 0 then
   begin
     lCombo.ItemIndex := 1;
     lCombo.Text := lCombo.Items.Strings[1];
   end;
-
-  i := lCombo.ItemIndex;
 
   lCombo.OnKeyPress := @ComboValidator;
   fListaCampos.Add(lCombo);
@@ -3412,12 +3434,10 @@ begin
   end;
 end;
 
-function TfrmPrincipal.ExportarDominio(Empresa: Integer; pNomeArquivo: String;
-  pBarraProgresso: TProgressBar): Boolean;
+function TfrmPrincipal.ExportarDominio(pNomeArquivo: String): Boolean;
 const
   lNomeConsulta = 'Integracao';
 var
-  i: Integer;
   iSequencial: Integer;
   lArquivo: TStringList;
   lLinha: String;
@@ -3557,7 +3577,7 @@ begin
   end;
 end;
 
-function TfrmPrincipal.ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+function TfrmPrincipal.ExportarTabela(Empresa: Integer; pNomeTabela, pNomeArquivo: String): Boolean;
 const
   lNomeConsulta = 'Integracao';
 var
@@ -3637,7 +3657,7 @@ begin
   end;
 end;
 
-function TfrmPrincipal.ImportarTabelas(pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+function TfrmPrincipal.ImportarTabelas(pNomeArquivo: String): Boolean;
 const
   lConsulta = 'ConsultaChave';
 var
@@ -3777,7 +3797,7 @@ begin
   end;
 end;
 
-function TfrmPrincipal.ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
+function TfrmPrincipal.ExportarLancamentosExcel(Empresa, Layout: Integer; pNomeArquivo: String): Boolean;
 const
   lNomeConsulta2 = 'CamposExcel';
   lNomeConsulta = 'GerarExcel';
@@ -3788,7 +3808,7 @@ var
   lColuna: Integer;
   MyWorkbook: TsWorkbook;
   MyWorksheet: TsWorksheet;
-  MyFormula: TsRPNFormula;
+  //MyFormula: TsRPNFormula;
 begin
   result := false;
 
@@ -4015,7 +4035,7 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.AtualizarArquivo(Tentativas: Integer);
+procedure TfrmPrincipal.AtualizarArquivo;
 var
   lArquivo: TStringList;
   lNomeArquivo: String;
@@ -4052,23 +4072,6 @@ begin
     end;
   finally
     FreeAndNil(lArquivo);
-  end;
-end;
-
-procedure TfrmPrincipal.Contador;
-var
-  lComandoSQL: String;
-  l1, l2, l3, lCliente: String;
-  i1, i2, i3: Integer;
-begin
-  lComandoSQL := 'SELECT TEXTO FROM SISTEMA';
-
-  if (DataModule1.Consultar(lComandoSQL) > 0) then
-  begin
-    lCliente := Trim(DataModule1.qConsulta.FieldByName('texto').AsString);
-    l1 := Copy(lCliente, 7, 1);
-    l2 := Copy(lCliente, 9, 1);
-    l3 := Copy(lCliente, 13, 1);
   end;
 end;
 
@@ -4192,9 +4195,8 @@ end;
 
 function TfrmPrincipal.ValidarAtivacao: Boolean;
 var
-  i: Integer;
   lNome: String;
-  dia1, dia2, mes1, mes2, ano1, ano2: Word;
+  dia2, mes2, ano2: Word;
   Validade: TDateTime;
   lArquivo: TStringList;
   lArquivo2: TStringList;
@@ -4237,7 +4239,6 @@ end;
 function TfrmPrincipal.Encrypt(const s: string; Key: Word): String;
 var
   i : byte;
-  ResultStr : string;
 begin
   Result:=s;
 
@@ -4266,7 +4267,6 @@ end;
 procedure TfrmPrincipal.CarregarCamposLayoutPai;
 var
   lComandoSQL: String;
-  i: Integer;
   lCampo: String;
 begin
   chkCamposProcessos.Items.Clear;
@@ -4576,7 +4576,6 @@ const
   lCondicao = 'Condicao';
 var
   lSQL: String;
-  lLayoutFilho: Integer;
   lLayoutAtual: Integer;
   lLancamentoAtual: Integer;
   lEmpresaAtual: Integer;
@@ -5033,18 +5032,6 @@ begin
      (Control as TCheckListBox).Canvas.FillRect(ARect);       { clear the rectangle }
      (Control as TCheckListBox).Canvas.TextOut(ARect.Left, ARect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
   end;
-  {
-  if Index in [1,2] then
-  begin
-     Dec(Rect.Left,13);
-     CheckListBox1.Canvas.FillRect(Rect);       { clear the rectangle }
-     CheckListBox1.Canvas.TextOut(Rect.Left+13, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
-  end else
-  begin
-     CheckListBox1.Canvas.FillRect(Rect);       { clear the rectangle }
-     CheckListBox1.Canvas.TextOut(Rect.Left, Rect.Top, (Control as TCheckListBox).Items[Index])  { display the text }
-  end;
-  }
 end;
 
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
@@ -5184,7 +5171,6 @@ end;
 
 procedure TfrmPrincipal.DateValidator(Sender: TObject; var Key: char);
 var
-  IsDecimal: Boolean;
   IsNumber: Boolean;
   IsBackspace: Boolean;
   lNumbers: String;
@@ -5196,7 +5182,6 @@ var
   lAno: Integer;
   lDia1: String;
   lMes1: String;
-  lAno1: String;
 begin
   IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   IsBackspace := Key = #8;
@@ -5418,7 +5403,6 @@ end;
 
 procedure TfrmPrincipal.Edit2KeyPress(Sender: TObject; var Key: char);
 var
-  IsDecimal: Boolean;
   IsNumber: Boolean;
   IsBackspace: Boolean;
   lNumbers: String;
@@ -5430,7 +5414,6 @@ var
   lAno: Integer;
   lDia1: String;
   lMes1: String;
-  lAno1: String;
 begin
   IsNumber := Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   IsBackspace := Key = #8;
@@ -5630,14 +5613,15 @@ begin
     try
       try
         lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
-        lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
+        //lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
         lConsultarPlano.AtivarValidacao(false);
         lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
         lConsultarPlano.Consultar;
 
         if lConsultarPlano.ShowModal = mrOK then
         begin
-          edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
+          //edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
+          ConsultarFornecedores(fEmpresaAtual, lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString);
         end;
       except on e:exception do
         MensagemErro(e.Message, 'Vinculador');
@@ -5645,7 +5629,9 @@ begin
     finally
       FreeAndNil(lConsultarPlano)
     end;
-  end;
+  end
+  else
+    key := 0;
 end;
 
 procedure TfrmPrincipal.edtLoteKeyPress(Sender: TObject; var Key: char);
@@ -5690,7 +5676,19 @@ begin
 end;
 
 procedure TfrmPrincipal.btnFornecedorNovoClick(Sender: TObject);
+var
+  lCodigoFornecedores: Integer;
+  lTamanho: Integer;
+  lInicio: Integer;
+  lFormatado: String;
 begin
+  fEstadoFornecedor := taInclusao;
+
+  lFormatado := MascararTexto(pCodigoFornecedores, edtMascaraPlanoContas.Text);
+
+  lnicio := Length(lFormato);
+
+  lFormatado
 
 end;
 
@@ -5717,7 +5715,7 @@ begin
     end
     else if (cmbConjuntoImportacao.ItemIndex = 1) then
     begin
-      if ImportarTabelas(edtImportar.Text, nil) then
+      if ImportarTabelas(edtImportar.Text) then
       begin
         MensagemSucesso('Dados da empresa importados com sucesso!', 'Sucesso');
       end;
@@ -5750,14 +5748,14 @@ begin
     DeleteFile(lArquivoDados);
 
   lSucesso := true;
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', lArquivoDados, nil);
-  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', lArquivoDados, nil);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', lArquivoDados);
+  lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', lArquivoDados);
 
   if lSucesso and (ShellExecute(0,nil, PChar('cmd'),PChar('/c build_cliente.bat'),nil,1) > 32) then;
   //if ShellExecute(0,nil, PChar('cmd'),PChar('/c build_cliente.bat'),nil,1) > 32 then
@@ -5770,7 +5768,7 @@ var
 begin
   if (cmbConjuntoExportacao.ItemIndex = 0) and (cmbTipoExportacao.ItemIndex = 0) then
   begin
-    if ExportarDominio(fEmpresaAtual, edtExportar.Text, nil) then
+    if ExportarDominio(edtExportar.Text) then
       MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end
   else if (cmbConjuntoExportacao.ItemIndex = 1) then
@@ -5779,33 +5777,50 @@ begin
       DeleteFile(edtExportar.Text);
 
     lSucesso := true;
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', edtExportar.Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text, nil);
-    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', edtExportar.Text, nil);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'empresa', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'plano_contas', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layouts', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'layout_campos_dados', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores', edtExportar.Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'vinculadores_layout', TEdit(Sender).Text);
+    lSucesso := lSucesso and ExportarTabela(fEmpresaAtual, 'lancamentos', edtExportar.Text);
 
     if (lSucesso) then
       MensagemSucesso('Dados exportados com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end
   else if (cmbConjuntoExportacao.ItemIndex = 2) then
   begin
-    if ExportarPlanoDeContas(fEmpresaAtual, edtExportar.Text, nil) then
+    if ExportarPlanoDeContas(edtExportar.Text) then
       MensagemSucesso('Plano de contas exportado com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end
   else if (cmbConjuntoExportacao.ItemIndex = 0) and (cmbTipoExportacao.ItemIndex = 1) then
   begin
-    if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text, nil) then
+    if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text) then
       MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end;
 end;
 
-procedure TfrmPrincipal.btnClienteNovoClick(Sender: TObject);
+procedure TfrmPrincipal.btnFornecedorNextClick(Sender: TObject);
 begin
+  if (DataModule1.qFornecedores.Active) and not (DataModule1.qFornecedores.IsEmpty) then
+  begin
+    DataModule1.qFornecedores.Next;
+    edtFornecedorClassificacao.Text := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtFornecedorDescricao.Text := DataModule1.qFornecedores.FieldByName('descricao').AsString;
+    edtFornecedorCodigo.Text := DataModule1.qFornecedores.FieldByName('codigo_externo').AsString;
+  end;
+end;
 
+procedure TfrmPrincipal.btnFornecedorPriorClick(Sender: TObject);
+begin
+  if (DataModule1.qFornecedores.Active) and not (DataModule1.qFornecedores.IsEmpty) then
+  begin
+    DataModule1.qFornecedores.Prior;
+    edtFornecedorClassificacao.Text := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtFornecedorDescricao.Text := DataModule1.qFornecedores.FieldByName('descricao').AsString;
+    edtFornecedorCodigo.Text := DataModule1.qFornecedores.FieldByName('codigo_externo').AsString;
+  end;
 end;
 
 procedure TfrmPrincipal.btnGravarCondicaoClick(Sender: TObject);
@@ -5860,7 +5875,6 @@ procedure TfrmPrincipal.Arrow1Click(Sender: TObject);
 var
   i: Integer;
   lSelected: boolean;
-  lTeste: String;
 begin
   while TemCampoSelecionado(chkCamposDisponiveis) > -1 do
   begin
@@ -5872,7 +5886,6 @@ begin
     begin
       chkCamposUtilizados.Items.Add(chkCamposDisponiveis.Items.Strings[i]);
 
-      lTeste := chkCamposDisponiveis.Items.Strings[i];
       if (chkCamposDisponiveis.Items.Strings[i] = ' Forma de Pagamento') then
         CriarOpcoesFormaPagamento;
 
@@ -5890,7 +5903,6 @@ procedure TfrmPrincipal.Arrow2Click(Sender: TObject);
 var
   i: Integer;
   lSelected: boolean;
-  lteste: Boolean;
 begin
   while TemCampoSelecionado(chkCamposUtilizados) > -1 do
   begin
@@ -5978,8 +5990,6 @@ const
   lTabela = 'DadosCampos';
 var
   lComando: String;
-  i: Integer;
-  lCampoAtual: Integer;
 begin
   try
     if (chkCamposUtilizados.Items.Count > 0) and (chkCamposUtilizados.ItemIndex > -1) and Assigned(DataModule1.getQuery(lTabela)) and not (DataModule1.getQuery(lTabela).IsEmpty) then

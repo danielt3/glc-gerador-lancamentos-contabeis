@@ -7,7 +7,7 @@ object frmConsultar: TfrmConsultar
   Caption = 'Consultar XXX'
   ClientHeight = 405
   ClientWidth = 561
-  LCLVersion = '0.9.30.4'
+  LCLVersion = '1.0.8.0'
   object edtConsultarPlanoClassificacao: TEdit
     Left = 8
     Height = 23

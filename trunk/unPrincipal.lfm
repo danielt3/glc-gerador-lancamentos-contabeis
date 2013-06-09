@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 356
+  Left = 171
   Height = 592
-  Top = 211
+  Top = 76
   Width = 1044
   Caption = 'Soleil'
   ClientHeight = 592
@@ -268,7 +268,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 36
                 Caption = '<<'
-                OnClick = EmpresaAnterior
+                OnClick = btnFornecedorPriorClick
                 PopupMenu = popEmpresa
                 TabOrder = 4
               end
@@ -278,7 +278,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 40
                 Caption = '>>'
-                OnClick = EmpresaProxima
+                OnClick = btnFornecedorNextClick
                 PopupMenu = popEmpresa
                 TabOrder = 5
               end
@@ -369,7 +369,6 @@ object frmPrincipal: TfrmPrincipal
                 Top = 102
                 Width = 84
                 Caption = 'Novo'
-                OnClick = btnClienteNovoClick
                 TabOrder = 3
               end
               object btnClientePrior: TButton
@@ -378,7 +377,6 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 36
                 Caption = '<<'
-                OnClick = EmpresaAnterior
                 PopupMenu = popEmpresa
                 TabOrder = 4
               end
@@ -388,7 +386,6 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 40
                 Caption = '>>'
-                OnClick = EmpresaProxima
                 PopupMenu = popEmpresa
                 TabOrder = 5
               end

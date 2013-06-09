@@ -1,7 +1,7 @@
 object frmNovoCampo: TfrmNovoCampo
-  Left = 681
+  Left = 206
   Height = 100
-  Top = 304
+  Top = 397
   Width = 479
   Caption = 'Novo Tipo de Pagamento'
   ClientHeight = 100

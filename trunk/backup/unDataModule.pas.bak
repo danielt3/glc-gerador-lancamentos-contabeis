@@ -16,6 +16,7 @@ type
     Conexao: TZConnection;
     Datasource1: TDatasource;
     dsLancamentos: TDatasource;
+    dsFornecedores: TDatasource;
     dsProcessos: TDatasource;
     dsPlanoContas: TDatasource;
     dsVinculadores: TDatasource;
@@ -24,6 +25,7 @@ type
     qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
     qLancamentos2no_vinculador: TStringField;
+    qFornecedores: TZQuery;
     qProcessos: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
@@ -253,7 +255,7 @@ procedure TDataModule1.CriarTabelaSistema;
 begin
   TabelaExiste('SISTEMA');
   CampoExiste('SISTEMA', 'USUARIO', 'VARCHAR(10)');
-  CampoExiste('SISTEMA', 'TEXTO', 'VARCHAR(40) NOT NULL DEFAULT ' + QuotedStr('A02D1A0S0ASD02SDFGH1F2HK1I56LO497101A'));
+  CampoExiste('SISTEMA', 'TEXTO', 'VARCHAR(40)');
 end;
 
 procedure TDataModule1.CriarTabelaProcessos;

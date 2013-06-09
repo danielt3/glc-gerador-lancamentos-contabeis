@@ -132,8 +132,6 @@ begin
 end;
 
 function TStringGridController.Eof: Boolean;
-var
-  i: Integer;
 begin
   result := (RowCount = fIndexAtual);
   if (RowCount < fIndexAtual + 1) then

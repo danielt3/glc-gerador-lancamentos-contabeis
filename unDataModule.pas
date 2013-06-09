@@ -16,6 +16,7 @@ type
     Conexao: TZConnection;
     Datasource1: TDatasource;
     dsLancamentos: TDatasource;
+    dsFornecedores: TDatasource;
     dsProcessos: TDatasource;
     dsPlanoContas: TDatasource;
     dsVinculadores: TDatasource;
@@ -24,6 +25,7 @@ type
     qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
     qLancamentos2no_vinculador: TStringField;
+    qFornecedores: TZQuery;
     qProcessos: TZQuery;
     qPlanoContas: TZQuery;
     qExecutar: TZQuery;
@@ -167,6 +169,8 @@ begin
   CampoExiste('EMPRESA', 'CODIGO', 'VARCHAR(7) NOT NULL');
   CampoExiste('EMPRESA', 'NOME', 'VARCHAR(100) NOT NULL');
   CampoExiste('EMPRESA', 'CNPJ', 'VARCHAR(14) NOT NULL');
+  CampoExiste('EMPRESA', 'FORNECEDORES', 'VARCHAR(20)');
+  CampoExiste('EMPRESA', 'CLIENTES', 'VARCHAR(20)');
   CampoExiste('EMPRESA', 'ANOTACOES', 'VARCHAR(1000)');
 
   TabelaExiste('PLANO_CONTAS');

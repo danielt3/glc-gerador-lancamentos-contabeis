@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  DBGrids, unConsultar, unDataModule, unListaCodigo, ZAbstractRODataset,
-  unGarbageCollector, unUtilitario, Grids, DbCtrls, Windows;
+  DBGrids, unConsultar, unDataModule, ZAbstractRODataset,
+  unUtilitario, Grids, DbCtrls, Windows;
 
 type
 

@@ -2,9 +2,9 @@ object DataModule1: TDataModule1
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
-  Height = 440
-  HorizontalOffset = 527
-  VerticalOffset = 278
+  Height = 404
+  HorizontalOffset = 364
+  VerticalOffset = 157
   Width = 750
   object Conexao: TZConnection
     ControlsCodePage = cCP_UTF8
@@ -41,15 +41,15 @@ object DataModule1: TDataModule1
   end
   object dsPlanoContas: TDatasource
     DataSet = qPlanoContas
-    left = 464
+    left = 304
     top = 51
   end
   object qPlanoContas: TZQuery
     Connection = Conexao
     AutoCalcFields = False
     Params = <>
-    left = 360
-    top = 56
+    left = 208
+    top = 51
     object qPlanoContascodigo1: TStringField
       DisplayWidth = 10
       FieldKind = fkData
@@ -109,24 +109,24 @@ object DataModule1: TDataModule1
     Connection = Conexao
     AutoCalcFields = False
     Params = <>
-    left = 360
+    left = 200
     top = 117
   end
   object dsVinculadores: TDatasource
     DataSet = qVinculadores
-    left = 464
+    left = 304
     top = 112
   end
   object qLayouts: TZQuery
     Connection = Conexao
     AutoCalcFields = False
     Params = <>
-    left = 360
+    left = 200
     top = 181
   end
   object dsLayouts: TDatasource
     DataSet = qLayouts
-    left = 464
+    left = 304
     top = 176
   end
   object qLancamentos2: TZQuery
@@ -170,5 +170,17 @@ object DataModule1: TDataModule1
     DataSet = qProcessos
     left = 464
     top = 336
+  end
+  object qFornecedores: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 432
+    top = 51
+  end
+  object dsFornecedores: TDatasource
+    DataSet = qFornecedores
+    left = 536
+    top = 51
   end
 end

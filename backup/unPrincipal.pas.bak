@@ -32,6 +32,7 @@ type
     btnEditarLayout1: TButton;
     btnClienteEditar: TButton;
     btnClienteGravar: TButton;
+    btnFornecedorCancelar: TButton;
     btnFornecedorNovo: TButton;
     btnClienteNovo: TButton;
     btnFornecedorEditar: TButton;
@@ -252,6 +253,8 @@ type
     procedure btnEditarLayoutClick(Sender: TObject);
     procedure btnExportar2Click(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
+    procedure btnFornecedorCancelarClick(Sender: TObject);
+    procedure btnFornecedorGravarClick(Sender: TObject);
     procedure btnFornecedorNextClick(Sender: TObject);
     procedure btnFornecedorPriorClick(Sender: TObject);
     procedure btnGravarCondicaoClick(Sender: TObject);
@@ -409,7 +412,9 @@ type
     procedure CarregarListaEmpresa;
     procedure GravarAnotacoes;
 
-    procedure ConsultarFornecedores(Empresa: Integer; Classificacao: String);
+    procedure ConsultarFornecedores(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
+    function  GerarClassificacaoFornecedor: String;
+    function  GravarInserirFornecedor: Boolean;
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
@@ -718,6 +723,7 @@ begin
       CarregarLayouts(fEmpresaAtual);
       CarregarLancamentoLayouts;
       GravarEmpresaPadrao(Empresa);
+      lComando := DataModule1.qConsulta.FieldByName('fornecedores').AsString;
       ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString)
     end;
   except on e:exception do
@@ -841,24 +847,41 @@ begin
   DataModule1.Executar(lComandoSQL);
 end;
 
-procedure TfrmPrincipal.ConsultarFornecedores(Empresa: Integer; Classificacao: String);
+procedure TfrmPrincipal.ConsultarFornecedores(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
 var
   lComandoSQL: String;
 begin
   try
-    lComandoSQL := 'SELECT' + NewLine +
-                   '  codigo,' + NewLine +
-                   '  codigo_externo,' + NewLine +
-                   '  descricao' + NewLine +
-                   'FROM' + NewLine +
-                   '  plano_contas' + NewLine +
-                   'WHERE' + NewLine +
-                   '  empresa = ' + IntToStr(Empresa) + NewLine +
-                   '  AND codigo LIKE ' + QuotedStr(Classificacao + '%') + NewLine +
-                   'ORDER BY' + NewLine +
-                   '  codigo';
+    if Vazio(Classificacao) then
+      lComandoSQL := 'SELECT' + NewLine +
+                     '  chave,' + NewLine +
+                     '  codigo,' + NewLine +
+                     '  codigo_externo,' + NewLine +
+                     '  descricao' + NewLine +
+                     'FROM' + NewLine +
+                     '  plano_contas' + NewLine +
+                     'WHERE' + NewLine +
+                     '  empresa = ' + IntToStr(Empresa) + NewLine +
+                     '  AND chave < 0' + NewLine +
+                     'ORDER BY' + NewLine +
+                     '  codigo'
+    else
+      lComandoSQL := 'SELECT' + NewLine +
+                     '  chave,' + NewLine +
+                     '  codigo,' + NewLine +
+                     '  codigo_externo,' + NewLine +
+                     '  descricao' + NewLine +
+                     'FROM' + NewLine +
+                     '  plano_contas' + NewLine +
+                     'WHERE' + NewLine +
+                     '  empresa = ' + IntToStr(Empresa) + NewLine +
+                     '  AND codigo LIKE ' + QuotedStr(Classificacao + '%') + NewLine +
+                     '  AND codigo > ' + QuotedStr(Classificacao) + NewLine +
+                     'ORDER BY' + NewLine +
+                     '  codigo';
 
     DataModule1.qFornecedores.Close;
+    DataModule1.qFornecedores.SQL.Clear;
     DataModule1.qFornecedores.SQL.Add(lComandoSQL);
     DataModule1.qFornecedores.Open;
 
@@ -866,7 +889,12 @@ begin
     begin
       DataModule1.qFornecedores.Last;
       fCodigoFornecedores := Classificacao;
-      DataModule1.qFornecedores.First;
+
+      if (PlanoAtual = 0) then
+        DataModule1.qFornecedores.First
+      else if not (DataModule1.qFornecedores.Locate('chave', fPlanoAtual, [])) then
+        DataModule1.qFornecedores.First;
+
       edtFornecedorClassificacao.Text := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
       edtFornecedorDescricao.Text := DataModule1.qFornecedores.FieldByName('descricao').AsString;
       edtFornecedorCodigo.Text := DataModule1.qFornecedores.FieldByName('codigo_externo').AsString;
@@ -879,9 +907,95 @@ begin
                      '  chave = ' + IntToStr(fEmpresaAtual);
 
       DataModule1.Executar(lComandoSQL);
+    end
+    else
+    begin
+      fCodigoFornecedores := '';
+      edtFornecedorClassificacao.Text := '';
+      edtFornecedorDescricao.Text := '';
+      edtFornecedorCodigo.Text := '';
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Erro');
+  end;
+end;
+
+function TfrmPrincipal.GerarClassificacaoFornecedor: String;
+var
+  lCodigoFornecedores: Integer;
+  lTamanho: Integer;
+  lInicio: Integer;
+  lTexto: String;
+  lFormatado: String;
+  i: Integer;
+begin
+  result := '';
+  lCodigoFornecedores := 0;
+
+  if not (DataModule1.qFornecedores.IsEmpty) then
+  begin
+    lFormatado := MascararTexto(fCodigoFornecedores, edtMascaraPlanoContas.Text);
+
+    lInicio := Length(lFormatado) + 1;
+
+    DataModule1.qFornecedores.Last;
+    lFormatado := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    lFormatado := Copy(lFormatado, lInicio, Length(lFormatado));
+
+    while not ENumero(lFormatado[1]) and (lFormatado[1] <> 'X') do
+      lFormatado := Copy(lFormatado, 2, Length(lFormatado));
+
+    if not Vazio(lFormatado) then
+    begin
+      lTexto := '';
+
+      for i := 1 to Length(lFormatado) do
+      begin
+        if ENumero(lFormatado[i]) or (lFormatado[i] = 'X') then
+          lTexto := lTexto + lFormatado[i]
+        else
+          Break;
+      end;
+
+      lTamanho := Length(lTexto);
+
+      i := StrToIntDef(lTexto, 0);
+      i := i + 1;
+
+      result := MascararTexto(fCodigoFornecedores + AlignRight(IntToStr(i), lTamanho, '0'), edtMascaraPlanoContas.Text);;
+    end;
+  end;
+end;
+
+function TfrmPrincipal.GravarInserirFornecedor: Boolean;
+begin
+  result := false;
+
+  if not Vazio(edtFornecedorDescricao.Text) then
+  begin
+    fPlanoAtual := DataModule1.GerarChave('GEN_PLANO_CONTAS');
+
+    DataModule1.SQLBuilder.Clear;
+    DataModule1.SQLBuilder.Add('INSERT INTO plano_contas (');
+    DataModule1.SQLBuilder.Add('chave,');
+    DataModule1.SQLBuilder.Add('empresa,');
+    DataModule1.SQLBuilder.Add('codigo_externo,');
+    DataModule1.SQLBuilder.Add('codigo,');
+    DataModule1.SQLBuilder.Add('descricao,');
+    DataModule1.SQLBuilder.Add('sintetica)');
+    DataModule1.SQLBuilder.Add('VALUES (');
+    DataModule1.SQLBuilder.Add('' + IntToStr(fPlanoAtual) + ',');
+    DataModule1.SQLBuilder.Add('' + IntToStr(fEmpresaAtual) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtFornecedorCodigo.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtFornecedorClassificacao.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(Trim(edtFornecedorDescricao.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr('S') + ')');
+    DataModule1.SQLBuilder.Add('');
+    result := DataModule1.Executar();
+
+    fEstadoFornecedor := taNada;
+    edtFornecedorDescricao.Enabled := false;
+    ConsultarFornecedores(fEmpresaAtual, fCodigoFornecedores, fPlanoAtual);
   end;
 end;
 
@@ -5676,20 +5790,20 @@ begin
 end;
 
 procedure TfrmPrincipal.btnFornecedorNovoClick(Sender: TObject);
-var
-  lCodigoFornecedores: Integer;
-  lTamanho: Integer;
-  lInicio: Integer;
-  lFormatado: String;
 begin
   fEstadoFornecedor := taInclusao;
 
-  lFormatado := MascararTexto(pCodigoFornecedores, edtMascaraPlanoContas.Text);
+  if Vazio(fCodigoFornecedores) then
+    MensagemAlerta('Por favor, escolha uma conta base antes.', 'Alerta')
+  else
+  begin
+    edtFornecedorClassificacao.Text := GerarClassificacaoFornecedor();
+    edtFornecedorDescricao.Text := '';
+    edtFornecedorCodigo.Text := ProximoCodigoPlanoConta();
 
-  lnicio := Length(lFormato);
-
-  lFormatado
-
+    edtFornecedorDescricao.Enabled := true;
+    edtFornecedorDescricao.SetFocus;
+  end;
 end;
 
 procedure TfrmPrincipal.btnGravarLancamentoClick(Sender: TObject);
@@ -5799,6 +5913,25 @@ begin
     if ExportarLancamentosExcel(fEmpresaAtual, StrToIntDef(fLancamentoLayouts.Strings[cmbLancamentoLayout.ItemIndex], 0), edtExportar.Text) then
       MensagemSucesso('Planilha excel gerada com sucesso em ' + edtExportar.Text, 'Exportar dados');
   end;
+end;
+
+procedure TfrmPrincipal.btnFornecedorCancelarClick(Sender: TObject);
+begin
+  fEstadoFornecedor := taNada;
+  edtFornecedorDescricao.Enabled := false;
+
+  if not DataModule1.qFornecedores.IsEmpty then
+  begin
+    edtFornecedorClassificacao.Text := MascararTexto(DataModule1.qFornecedores.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtFornecedorDescricao.Text := DataModule1.qFornecedores.FieldByName('descricao').AsString;
+    edtFornecedorCodigo.Text := DataModule1.qFornecedores.FieldByName('codigo_externo').AsString;
+  end;
+end;
+
+procedure TfrmPrincipal.btnFornecedorGravarClick(Sender: TObject);
+begin
+  if (fEstadoFornecedor = taInclusao) then
+    GravarInserirFornecedor();
 end;
 
 procedure TfrmPrincipal.btnFornecedorNextClick(Sender: TObject);

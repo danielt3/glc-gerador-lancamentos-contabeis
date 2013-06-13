@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 171
+  Left = 302
   Height = 592
-  Top = 76
+  Top = 88
   Width = 1044
   Caption = 'Soleil'
   ClientHeight = 592
@@ -288,17 +288,25 @@ object frmPrincipal: TfrmPrincipal
                 Top = 108
                 Width = 84
                 Caption = 'Editar'
-                OnClick = btnFornecedorNovoClick
                 TabOrder = 6
               end
               object btnFornecedorGravar: TButton
-                Left = 182
+                Left = 270
                 Height = 25
                 Top = 108
                 Width = 84
                 Caption = 'Gravar'
-                OnClick = btnFornecedorNovoClick
+                OnClick = btnFornecedorGravarClick
                 TabOrder = 7
+              end
+              object btnFornecedorCancelar: TButton
+                Left = 182
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Cancelar'
+                OnClick = btnFornecedorCancelarClick
+                TabOrder = 8
               end
             end
             object GroupBox11: TGroupBox
@@ -702,7 +710,7 @@ object frmPrincipal: TfrmPrincipal
           end
         end
         object pLeiaute: TTabSheet
-          Caption = 'Leiaute'
+          Caption = 'Mondes'
           ClientHeight = 475
           ClientWidth = 1028
           object PageControl3: TPageControl
@@ -710,9 +718,9 @@ object frmPrincipal: TfrmPrincipal
             Height = 475
             Top = 0
             Width = 1028
-            ActivePage = TabSheet1
+            ActivePage = pLayoutCadastro
             Align = alClient
-            TabIndex = 2
+            TabIndex = 0
             TabOrder = 0
             object pLayoutCadastro: TTabSheet
               Caption = 'Cadastro'

@@ -1,1 +1,6 @@
-UPDATE sistema SET texto = 'TAB5203@0003SD@027ASDDDGGH091003882013'
+UPDATE
+  empresa
+SET
+  fornecedores = '21301'
+WHERE
+  chave = 3

@@ -50,6 +50,7 @@ type
 
     fMascaraPlanoContas: String;
     fCampoLancamentoAtual: Integer;
+    fSQLBuilder: TStringList;
 
     function Conectar: Boolean;
 
@@ -72,12 +73,15 @@ type
 
     function  getDataSetType(Nome: String): TFieldType;
   public
-    function Executar(SQL: String): Boolean;
+    function Executar(SQL: String): Boolean; Overload;
     function Consultar(SQL: String): Integer;
-    function getQuery(NomeConsulta: String): TZQuery;
+    function getQuery(NomeConsulta: String): TZQuery; Overload;
+    function getQuery(): TZQuery; Overload;
     function getDataSource(NomeConsulta: String): TDataSource;
     function NovaConsulta(SQL: String): TZQuery; Overload;
-    function NovaConsulta(NomeConsulta: String; SQL: String): Integer;
+    function NovaConsulta(NomeConsulta: String; SQL: String): Integer; Overload;
+    function NovaConsulta(): Integer; Overload;
+    function Executar(): Boolean; Overload;
     function GerarChave(NomeGenerator: String; Testar: Boolean = false): Integer;
 
 
@@ -104,6 +108,7 @@ type
 
     property MascaraPlanoContas: String read fMascaraPlanoContas write fMascaraPlanoContas;
     property CamposLancamento: TCamposLancamento read fCamposLancamento;
+    property SQLBuilder: TStringList  read fSQLBuilder write fSQLBuilder;
 
     function TipoCampo(pTabela, pCampo: String): String;
   end; 
@@ -126,11 +131,13 @@ begin
   fQueriesConsultas := TList.Create;
   fSourceConsultas := TList.Create;
   fNomesConsultas := TStringList.Create;
+  SQLBuilder := TStringList.Create;
 
   try
     fGarbageCollector.Add(fQueriesConsultas);
     fGarbageCollector.Add(fSourceConsultas);
     fGarbageCollector.Add(fNomesConsultas);
+    fGarbageCollector.Add(SQLBuilder);
 
     lConf := TStringList.Create;
     lConf.Add('RootDirectory = ' + ExtractFileDir(ApplicationName));
@@ -654,6 +661,11 @@ begin
     result := nil;
 end;
 
+function TDataModule1.getQuery: TZQuery;
+begin
+  result := getQuery('Consulta');
+end;
+
 function TDataModule1.getDataSource(NomeConsulta: String): TDataSource;
 begin
   if (fNomesConsultas.IndexOf(NomeConsulta) > -1) then
@@ -713,6 +725,16 @@ begin
   except
     RaiseLastOSError;
   end;
+end;
+
+function TDataModule1.NovaConsulta: Integer;
+begin
+  NovaConsulta('Consulta', SQLBuilder.Text);
+end;
+
+function TDataModule1.Executar: Boolean;
+begin
+  Executar(SQLBuilder.Text);
 end;
 
 function TDataModule1.GerarChave(NomeGenerator: String; Testar: Boolean): Integer;

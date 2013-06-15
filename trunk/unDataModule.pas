@@ -15,6 +15,7 @@ type
   TDataModule1 = class(TDataModule)
     Conexao: TZConnection;
     Datasource1: TDatasource;
+    dsClientes: TDatasource;
     dsLancamentos: TDatasource;
     dsFornecedores: TDatasource;
     dsProcessos: TDatasource;
@@ -22,6 +23,7 @@ type
     dsVinculadores: TDatasource;
     dsLayouts: TDatasource;
     qConsulta: TZQuery;
+    qClientes: TZQuery;
     qLancamentos2: TZQuery;
     qLancamentos: TZQuery;
     qLancamentos2no_vinculador: TStringField;

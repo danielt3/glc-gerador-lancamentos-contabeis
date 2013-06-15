@@ -663,7 +663,7 @@ end;
 
 function TDataModule1.getQuery: TZQuery;
 begin
-  getQuery('Consulta');
+  result := getQuery('Consulta');
 end;
 
 function TDataModule1.getDataSource(NomeConsulta: String): TDataSource;

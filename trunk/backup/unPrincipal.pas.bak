@@ -30,12 +30,11 @@ type
     btnEditarEmpresa1: TButton;
     btnEditarLayout: TButton;
     btnEditarLayout1: TButton;
-    btnClienteEditar: TButton;
     btnClienteGravar: TButton;
     btnFornecedorCancelar: TButton;
+    btnClienteCancelar: TButton;
     btnFornecedorNovo: TButton;
     btnClienteNovo: TButton;
-    btnFornecedorEditar: TButton;
     btnFornecedorGravar: TButton;
     btnNovoProcesso: TButton;
     btnExcluirDadosCampo: TButton;
@@ -245,6 +244,11 @@ type
     procedure Arrow4Click(Sender: TObject);
     procedure btnApagarCondicaoClick(Sender: TObject);
     procedure btnCancelarLayout1Click(Sender: TObject);
+    procedure btnClienteCancelarClick(Sender: TObject);
+    procedure btnClienteGravarClick(Sender: TObject);
+    procedure btnClienteNextClick(Sender: TObject);
+    procedure btnClienteNovoClick(Sender: TObject);
+    procedure btnClientePriorClick(Sender: TObject);
     procedure btnEditarLayout1Click(Sender: TObject);
     procedure btnExcluirDadosCampoClick(Sender: TObject);
     procedure btnCancelarLayoutClick(Sender: TObject);
@@ -304,7 +308,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure dbgProcessosCellClick(Column: TColumn);
     procedure Edit2KeyPress(Sender: TObject; var Key: char);
-    procedure edtClienteDescricaoChange(Sender: TObject);
+    procedure edtClienteClassificacaoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
     procedure edtCodigoCreditarExit(Sender: TObject);
     procedure edtCodigoCreditarKeyDown(Sender: TObject; var Key: Word;
@@ -415,6 +420,9 @@ type
     procedure ConsultarFornecedores(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
     function  GerarClassificacaoFornecedor: String;
     function  GravarInserirFornecedor: Boolean;
+    procedure ConsultarClientes(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
+    function  GerarClassificacaoCliente: String;
+    function  GravarInserirCliente: Boolean;
     //Plano de Contas
     function  LimparPlanoDeContas(pEmpresa1: Integer): Boolean;
     function  ImportarPlanoDeContas(pEmpresa2: Integer; pNomeArquivo: String; pBarraProgresso: TProgressBar): Boolean;
@@ -996,6 +1004,158 @@ begin
     fEstadoFornecedor := taNada;
     edtFornecedorDescricao.Enabled := false;
     ConsultarFornecedores(fEmpresaAtual, fCodigoFornecedores, fPlanoAtual);
+  end;
+end;
+
+procedure TfrmPrincipal.ConsultarClientes(Empresa: Integer; Classificacao: String; PlanoAtual: Integer);
+var
+  lComandoSQL: String;
+begin
+  try
+    if Vazio(Classificacao) then
+      lComandoSQL := 'SELECT' + NewLine +
+                     '  chave,' + NewLine +
+                     '  codigo,' + NewLine +
+                     '  codigo_externo,' + NewLine +
+                     '  descricao' + NewLine +
+                     'FROM' + NewLine +
+                     '  plano_contas' + NewLine +
+                     'WHERE' + NewLine +
+                     '  empresa = ' + IntToStr(Empresa) + NewLine +
+                     '  AND chave < 0' + NewLine +
+                     'ORDER BY' + NewLine +
+                     '  codigo'
+    else
+      lComandoSQL := 'SELECT' + NewLine +
+                     '  chave,' + NewLine +
+                     '  codigo,' + NewLine +
+                     '  codigo_externo,' + NewLine +
+                     '  descricao' + NewLine +
+                     'FROM' + NewLine +
+                     '  plano_contas' + NewLine +
+                     'WHERE' + NewLine +
+                     '  empresa = ' + IntToStr(Empresa) + NewLine +
+                     '  AND codigo LIKE ' + QuotedStr(Classificacao + '%') + NewLine +
+                     '  AND codigo > ' + QuotedStr(Classificacao) + NewLine +
+                     'ORDER BY' + NewLine +
+                     '  codigo';
+
+    DataModule1.qClientes.Close;
+    DataModule1.qClientes.SQL.Clear;
+    DataModule1.qClientes.SQL.Add(lComandoSQL);
+    DataModule1.qClientes.Open;
+
+    if not (DataModule1.qClientes.IsEmpty) then
+    begin
+      DataModule1.qClientes.Last;
+      fCodigoClientes := Classificacao;
+
+      if (PlanoAtual = 0) then
+        DataModule1.qClientes.First
+      else if not (DataModule1.qClientes.Locate('chave', fPlanoAtual, [])) then
+        DataModule1.qClientes.First;
+
+      edtClienteClassificacao.Text := MascararTexto(DataModule1.qClientes.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+      edtClienteDescricao.Text := DataModule1.qClientes.FieldByName('descricao').AsString;
+      edtClienteCodigo.Text := DataModule1.qClientes.FieldByName('codigo_externo').AsString;
+
+      lComandoSQL := 'UPDATE' + NewLine +
+                     '  empresa' + NewLine +
+                     'SET' + NewLine +
+                     '  clientes = ' + QuotedStr(Classificacao) + NewLine +
+                     'WHERE' + NewLine +
+                     '  chave = ' + IntToStr(fEmpresaAtual);
+
+      DataModule1.Executar(lComandoSQL);
+    end
+    else
+    begin
+      fCodigoClientes := '';
+      edtClienteClassificacao.Text := '';
+      edtClienteDescricao.Text := '';
+      edtClienteCodigo.Text := '';
+    end;
+  except on e:exception do
+    MensagemErro(e.Message, 'Erro');
+  end;
+end;
+
+function TfrmPrincipal.GerarClassificacaoCliente: String;
+var
+  lCodigoClientes: Integer;
+  lTamanho: Integer;
+  lInicio: Integer;
+  lTexto: String;
+  lFormatado: String;
+  i: Integer;
+begin
+  result := '';
+  lCodigoClientes := 0;
+
+  if not (DataModule1.qClientes.IsEmpty) then
+  begin
+    lFormatado := MascararTexto(fCodigoClientes, edtMascaraPlanoContas.Text);
+
+    lInicio := Length(lFormatado) + 1;
+
+    DataModule1.qClientes.Last;
+    lFormatado := MascararTexto(DataModule1.qClientes.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    lFormatado := Copy(lFormatado, lInicio, Length(lFormatado));
+
+    while not ENumero(lFormatado[1]) and (lFormatado[1] <> 'X') do
+      lFormatado := Copy(lFormatado, 2, Length(lFormatado));
+
+    if not Vazio(lFormatado) then
+    begin
+      lTexto := '';
+
+      for i := 1 to Length(lFormatado) do
+      begin
+        if ENumero(lFormatado[i]) or (lFormatado[i] = 'X') then
+          lTexto := lTexto + lFormatado[i]
+        else
+          Break;
+      end;
+
+      lTamanho := Length(lTexto);
+
+      i := StrToIntDef(lTexto, 0);
+      i := i + 1;
+
+      result := MascararTexto(fCodigoClientes + AlignRight(IntToStr(i), lTamanho, '0'), edtMascaraPlanoContas.Text);;
+    end;
+  end;
+end;
+
+function TfrmPrincipal.GravarInserirCliente: Boolean;
+begin
+  result := false;
+
+  if not Vazio(edtClienteDescricao.Text) then
+  begin
+    fPlanoAtual := DataModule1.GerarChave('GEN_PLANO_CONTAS');
+
+    DataModule1.SQLBuilder.Clear;
+    DataModule1.SQLBuilder.Add('INSERT INTO plano_contas (');
+    DataModule1.SQLBuilder.Add('chave,');
+    DataModule1.SQLBuilder.Add('empresa,');
+    DataModule1.SQLBuilder.Add('codigo_externo,');
+    DataModule1.SQLBuilder.Add('codigo,');
+    DataModule1.SQLBuilder.Add('descricao,');
+    DataModule1.SQLBuilder.Add('sintetica)');
+    DataModule1.SQLBuilder.Add('VALUES (');
+    DataModule1.SQLBuilder.Add('' + IntToStr(fPlanoAtual) + ',');
+    DataModule1.SQLBuilder.Add('' + IntToStr(fEmpresaAtual) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtClienteCodigo.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtClienteClassificacao.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr(Trim(edtClienteDescricao.Text)) + ',');
+    DataModule1.SQLBuilder.Add('' + QuotedStr('S') + ')');
+    DataModule1.SQLBuilder.Add('');
+    result := DataModule1.Executar();
+
+    fEstadoCliente := taNada;
+    edtClienteDescricao.Enabled := false;
+    ConsultarClientes(fEmpresaAtual, fCodigoClientes, fPlanoAtual);
   end;
 end;
 
@@ -5601,11 +5761,38 @@ begin
   key := #0;
 end;
 
-procedure TfrmPrincipal.edtClienteDescricaoChange(Sender: TObject);
+procedure TfrmPrincipal.edtClienteClassificacaoKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+var
+  lConsultarPlano: TfrmConsultarPlanoContas;
 begin
+  if (Key = 113) then
+  begin
+    lConsultarPlano := TfrmConsultarPlanoContas.Create(nil);
 
+    try
+      try
+        lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
+        //lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
+        lConsultarPlano.AtivarValidacao(false);
+        lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
+        lConsultarPlano.Consultar;
+
+        if lConsultarPlano.ShowModal = mrOK then
+        begin
+          //edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
+          ConsultarClientes(fEmpresaAtual, lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString);
+        end;
+      except on e:exception do
+        MensagemErro(e.Message, 'Vinculador');
+      end;
+    finally
+      FreeAndNil(lConsultarPlano)
+    end;
+  end
+  else
+    key := 0;
 end;
-
 
 procedure TfrmPrincipal.edtCNPJEmpresaKeyPress(Sender: TObject; var Key: char);
 var
@@ -6110,6 +6297,64 @@ procedure TfrmPrincipal.btnCancelarLayout1Click(Sender: TObject);
 begin
   CarregarProcesso;
   HabilitarCamposProcessos(false);
+end;
+
+procedure TfrmPrincipal.btnClienteCancelarClick(Sender: TObject);
+begin
+  fEstadoCliente := taNada;
+  edtClienteDescricao.Enabled := false;
+
+  if not DataModule1.qClientes.IsEmpty then
+  begin
+    edtClienteClassificacao.Text := MascararTexto(DataModule1.qClientes.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtClienteDescricao.Text := DataModule1.qClientes.FieldByName('descricao').AsString;
+    edtClienteCodigo.Text := DataModule1.qClientes.FieldByName('codigo_externo').AsString;
+  end;
+end;
+
+procedure TfrmPrincipal.btnClienteGravarClick(Sender: TObject);
+begin
+  if (fEstadoCliente = taInclusao) then
+    GravarInserirCliente();
+end;
+
+procedure TfrmPrincipal.btnClienteNextClick(Sender: TObject);
+begin
+  if (DataModule1.qClientes.Active) and not (DataModule1.qClientes.IsEmpty) then
+  begin
+    DataModule1.qClientes.Next;
+    edtClienteClassificacao.Text := MascararTexto(DataModule1.qClientes.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtClienteDescricao.Text := DataModule1.qClientes.FieldByName('descricao').AsString;
+    edtClienteCodigo.Text := DataModule1.qClientes.FieldByName('codigo_externo').AsString;
+  end;
+end;
+
+procedure TfrmPrincipal.btnClienteNovoClick(Sender: TObject);
+begin
+  fEstadoCliente := taInclusao;
+
+  if Vazio(fCodigoClientes) then
+    MensagemAlerta('Por favor, escolha uma conta base antes.', 'Alerta')
+  else
+  begin
+    edtClienteClassificacao.Text := GerarClassificacaoCliente();
+    edtClienteDescricao.Text := '';
+    edtClienteCodigo.Text := ProximoCodigoPlanoConta();
+
+    edtClienteDescricao.Enabled := true;
+    edtClienteDescricao.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.btnClientePriorClick(Sender: TObject);
+begin
+  if (DataModule1.qClientes.Active) and not (DataModule1.qClientes.IsEmpty) then
+  begin
+    DataModule1.qClientes.Prior;
+    edtClienteClassificacao.Text := MascararTexto(DataModule1.qClientes.FieldByName('codigo').AsString, edtMascaraPlanoContas.Text);
+    edtClienteDescricao.Text := DataModule1.qClientes.FieldByName('descricao').AsString;
+    edtClienteCodigo.Text := DataModule1.qClientes.FieldByName('codigo_externo').AsString;
+  end;
 end;
 
 procedure TfrmPrincipal.btnEditarLayout1Click(Sender: TObject);

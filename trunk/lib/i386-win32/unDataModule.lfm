@@ -183,4 +183,16 @@ object DataModule1: TDataModule1
     left = 536
     top = 51
   end
+  object qClientes: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 432
+    top = 117
+  end
+  object dsClientes: TDatasource
+    DataSet = qClientes
+    left = 536
+    top = 117
+  end
 end

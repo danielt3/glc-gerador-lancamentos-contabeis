@@ -324,8 +324,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 23
                 Top = 4
                 Width = 128
-                Enabled = False
-                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                OnKeyDown = edtClienteClassificacaoKeyDown
                 TabOrder = 0
               end
               object Label46: TLabel
@@ -343,7 +342,6 @@ object frmPrincipal: TfrmPrincipal
                 Width = 256
                 CharCase = ecUppercase
                 Enabled = False
-                OnChange = edtClienteDescricaoChange
                 TabOrder = 1
               end
               object Label47: TLabel
@@ -369,6 +367,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 102
                 Width = 84
                 Caption = 'Novo'
+                OnClick = btnClienteNovoClick
                 TabOrder = 3
               end
               object btnClientePrior: TButton
@@ -377,6 +376,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 36
                 Caption = '<<'
+                OnClick = btnClientePriorClick
                 PopupMenu = popEmpresa
                 TabOrder = 4
               end
@@ -386,6 +386,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 8
                 Width = 40
                 Caption = '>>'
+                OnClick = btnClienteNextClick
                 PopupMenu = popEmpresa
                 TabOrder = 5
               end
@@ -395,6 +396,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 102
                 Width = 84
                 Caption = 'Gravar'
+                OnClick = btnClienteGravarClick
                 TabOrder = 6
               end
               object btnClienteCancelar: TButton
@@ -403,6 +405,7 @@ object frmPrincipal: TfrmPrincipal
                 Top = 102
                 Width = 84
                 Caption = 'Cancelar'
+                OnClick = btnClienteCancelarClick
                 TabOrder = 7
               end
             end

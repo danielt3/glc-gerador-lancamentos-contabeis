@@ -1,6 +1,6 @@
 UPDATE
   empresa
 SET
-  fornecedores = '21301'
+  clientes = '11201'
 WHERE
   chave = 3

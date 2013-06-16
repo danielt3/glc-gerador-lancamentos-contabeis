@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="1">
+      <Unit0>
+        <Filename Value="Ativador.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Ativador"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="125"/>
+        <CursorPos X="14" Y="147"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="Ativador.lpr"/>
+        <Caret Line="20" Column="20" TopLine="4"/>
+      </Position1>
+      <Position2>
+        <Filename Value="Ativador.lpr"/>
+        <Caret Line="21" Column="91" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="Ativador.lpr"/>
+        <Caret Line="30" Column="1" TopLine="10"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Ativador.lpr"/>
+        <Caret Line="32" Column="16" TopLine="14"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

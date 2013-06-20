@@ -1,7 +1,4 @@
-SELECT
-  MAX(CAST(codigo_externo AS INT)) as codigo
+SELECT FIRST 1
+  texto
 FROM
-  plano_contas a
-WHERE
-  empresa = 3 AND
-  codigo_externo <= '999999'
+  sistema

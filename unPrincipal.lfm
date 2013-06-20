@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pEmpresa
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Cadastro'
@@ -801,7 +801,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 251
                 Top = 64
                 Width = 258
-                Caption = 'Leiaute'
+                Caption = 'Mondes'
                 ClientHeight = 233
                 ClientWidth = 254
                 TabOrder = 4
@@ -945,7 +945,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 51
                 Top = 8
                 Width = 1008
-                Caption = 'Leiaute:.'
+                Caption = 'Mondes:.'
                 ClientHeight = 33
                 ClientWidth = 1004
                 PopupMenu = popLayout
@@ -1017,14 +1017,13 @@ object frmPrincipal: TfrmPrincipal
                 Enabled = False
                 ItemHeight = 15
                 TabOrder = 0
-                Text = 'cmbLayoutFilho'
               end
               object Label39: TLabel
                 Left = 12
                 Height = 16
                 Top = 51
-                Width = 68
-                Caption = 'Leiaute Filho'
+                Width = 73
+                Caption = 'Mondes Filho'
                 ParentColor = False
               end
               object Label40: TLabel
@@ -1044,14 +1043,13 @@ object frmPrincipal: TfrmPrincipal
                 ItemHeight = 15
                 OnChange = cmbLayoutPaiChange
                 TabOrder = 1
-                Text = 'cmbLayoutPai'
               end
               object Label41: TLabel
                 Left = 12
                 Height = 16
                 Top = 6
-                Width = 58
-                Caption = 'Leiaute Pai'
+                Width = 63
+                Caption = 'Mondes Pai'
                 ParentColor = False
               end
               object GroupBox16: TGroupBox
@@ -1071,12 +1069,12 @@ object frmPrincipal: TfrmPrincipal
                   Color = clWindow
                   Columns = <                  
                     item
-                      Title.Caption = 'Leiaute Pai'
+                      Title.Caption = 'Mondes Pai'
                       Width = 230
                       FieldName = 'nome_pai'
                     end                  
                     item
-                      Title.Caption = 'Leiaute Filho'
+                      Title.Caption = 'Mondes Filho'
                       Width = 240
                       FieldName = 'nome_filho'
                     end>
@@ -1431,7 +1429,7 @@ object frmPrincipal: TfrmPrincipal
               Height = 166
               Top = 220
               Width = 650
-              Caption = 'Leiautes'
+              Caption = 'Mondes'
               ClientHeight = 148
               ClientWidth = 646
               PopupMenu = popVinculador
@@ -1448,7 +1446,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 146
                 Top = -2
                 Width = 207
-                Caption = 'Leiautes Disponiveis:.'
+                Caption = 'Mondes Disponiveis:.'
                 ClientHeight = 128
                 ClientWidth = 203
                 PopupMenu = popVinculador
@@ -1478,7 +1476,7 @@ object frmPrincipal: TfrmPrincipal
                 Height = 146
                 Top = -2
                 Width = 207
-                Caption = 'Leiautes Utilizados:.'
+                Caption = 'Mondes Utilizados:.'
                 ClientHeight = 128
                 ClientWidth = 203
                 PopupMenu = popVinculador

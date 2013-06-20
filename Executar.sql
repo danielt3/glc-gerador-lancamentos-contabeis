@@ -1,6 +1,1 @@
-UPDATE
-  empresa
-SET
-  clientes = '11201'
-WHERE
-  chave = 3
+UPDATE sistema SET texto = 'TAB5215@0003SD@010ASDDDGGH091003882013'

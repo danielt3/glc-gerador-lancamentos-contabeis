@@ -1,1 +1,1 @@
-SELECT  chave,  codigo,  nome,  cnpj,  fornecedores,  clientes FROM  empresa WHERE  chave = 3
+SELECT  chave,  codigo,  nome,  cnpj,  fornecedores,  clientes FROM  empresa WHERE  chave = 1

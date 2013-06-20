@@ -418,6 +418,7 @@ type
     procedure GravarAnotacoes;
 
     procedure ConsultarFornecedores(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
+    function  getContaPai(Classificacao: String): String;
     function  GerarClassificacaoFornecedor: String;
     function  GravarInserirFornecedor: Boolean;
     procedure ConsultarClientes(Empresa: Integer; Classificacao: String; PlanoAtual: Integer = 0);
@@ -928,6 +929,30 @@ begin
   end;
 end;
 
+function TfrmPrincipal.getContaPai(Classificacao: String): String;
+var
+  lResposta: String;
+  i: Integer;
+begin
+  result := '';
+
+  if not Vazio(ApenasNumeros(Classificacao)) then
+  begin
+    lResposta := MascararTexto(Classificacao, edtMascaraPlanoContas.Text);
+
+    while not ENumero(lResposta[Length(lResposta)]) do
+      lResposta := Copy(lResposta, 1, Length(lResposta) - 1);
+
+    while ENumero(lResposta[Length(lResposta)]) do
+      lResposta := Copy(lResposta, 1, Length(lResposta) - 1);
+
+    while not ENumero(lResposta[Length(lResposta)]) do
+      lResposta := Copy(lResposta, 1, Length(lResposta) - 1);
+
+    Result := ApenasNumeros(lResposta);
+  end;
+end;
+
 function TfrmPrincipal.GerarClassificacaoFornecedor: String;
 var
   lCodigoFornecedores: Integer;
@@ -997,13 +1022,15 @@ begin
     DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtFornecedorCodigo.Text)) + ',');
     DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtFornecedorClassificacao.Text)) + ',');
     DataModule1.SQLBuilder.Add('' + QuotedStr(Trim(edtFornecedorDescricao.Text)) + ',');
-    DataModule1.SQLBuilder.Add('' + QuotedStr('S') + ')');
+    DataModule1.SQLBuilder.Add('' + QuotedStr('A') + ')');
     DataModule1.SQLBuilder.Add('');
     result := DataModule1.Executar();
 
     fEstadoFornecedor := taNada;
     edtFornecedorDescricao.Enabled := false;
     ConsultarFornecedores(fEmpresaAtual, fCodigoFornecedores, fPlanoAtual);
+    CarregarPlanoDeContas(fEmpresaAtual);
+    CarregarCombosPlano();
   end;
 end;
 
@@ -1149,13 +1176,15 @@ begin
     DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtClienteCodigo.Text)) + ',');
     DataModule1.SQLBuilder.Add('' + QuotedStr(ApenasNumeros(edtClienteClassificacao.Text)) + ',');
     DataModule1.SQLBuilder.Add('' + QuotedStr(Trim(edtClienteDescricao.Text)) + ',');
-    DataModule1.SQLBuilder.Add('' + QuotedStr('S') + ')');
+    DataModule1.SQLBuilder.Add('' + QuotedStr('A') + ')');
     DataModule1.SQLBuilder.Add('');
     result := DataModule1.Executar();
 
     fEstadoCliente := taNada;
     edtClienteDescricao.Enabled := false;
     ConsultarClientes(fEmpresaAtual, fCodigoClientes, fPlanoAtual);
+    CarregarPlanoDeContas(fEmpresaAtual);
+    CarregarCombosPlano();
   end;
 end;
 
@@ -5774,14 +5803,14 @@ begin
       try
         lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
         //lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
-        lConsultarPlano.AtivarValidacao(false);
+        lConsultarPlano.AtivarValidacao(true);
         lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
         lConsultarPlano.Consultar;
 
         if lConsultarPlano.ShowModal = mrOK then
         begin
           //edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
-          ConsultarClientes(fEmpresaAtual, lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString);
+          ConsultarClientes(fEmpresaAtual, getContaPai(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString));
         end;
       except on e:exception do
         MensagemErro(e.Message, 'Vinculador');
@@ -5915,14 +5944,14 @@ begin
       try
         lConsultarPlano.EmpresaSelecionada := fEmpresaAtual;
         //lConsultarPlano.onRegistroSelecionado := @ConsultarVinculadorDebito;
-        lConsultarPlano.AtivarValidacao(false);
+        lConsultarPlano.AtivarValidacao(true);
         lConsultarPlano.Mascara := edtMascaraPlanoContas.Text;
         lConsultarPlano.Consultar;
 
         if lConsultarPlano.ShowModal = mrOK then
         begin
           //edtFornecedorClassificacao.Text := MascararTexto(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString, lConsultarPlano.fMascara);
-          ConsultarFornecedores(fEmpresaAtual, lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString);
+          ConsultarFornecedores(fEmpresaAtual, getContaPai(lConsultarPlano.dbgConsulta.DataSource.DataSet.FieldByName('codigo').AsString));
         end;
       except on e:exception do
         MensagemErro(e.Message, 'Vinculador');
@@ -6004,23 +6033,31 @@ begin
 end;
 
 procedure TfrmPrincipal.btnImportarClick(Sender: TObject);
+var
+  lCursor: TCursor;
 begin
-  if FileExists(edtImportar.Text) then
-  begin
-    if (cmbConjuntoImportacao.ItemIndex = 0) then
+  Screen.Cursor := crHourGlass;
+
+  try
+    if FileExists(edtImportar.Text) then
     begin
-      if ImportarPlanoDeContas2(fEmpresaAtual, edtImportar.Text, nil) then
+      if (cmbConjuntoImportacao.ItemIndex = 0) then
       begin
-        MensagemSucesso('Plano de contas importado com sucesso!', 'Sucesso');
-      end;
-    end
-    else if (cmbConjuntoImportacao.ItemIndex = 1) then
-    begin
-      if ImportarTabelas(edtImportar.Text) then
+        if ImportarPlanoDeContas2(fEmpresaAtual, edtImportar.Text, nil) then
+        begin
+          MensagemSucesso('Plano de contas importado com sucesso!', 'Sucesso');
+        end;
+      end
+      else if (cmbConjuntoImportacao.ItemIndex = 1) then
       begin
-        MensagemSucesso('Dados da empresa importados com sucesso!', 'Sucesso');
+        if ImportarTabelas(edtImportar.Text) then
+        begin
+          MensagemSucesso('Dados da empresa importados com sucesso!', 'Sucesso');
+        end;
       end;
     end;
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 

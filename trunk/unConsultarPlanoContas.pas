@@ -52,10 +52,10 @@ implementation
 { TfrmConsultarPlanoContas }
 
 procedure TfrmConsultarPlanoContas.Consultar(PClassificacao: String; pDescricao: String);
-var
-  lComandoSQL: String;
+//var
+//  lComandoSQL: String;
 begin
-  lComandoSQL := 'SELECT' +  NewLine +
+  {lComandoSQL := 'SELECT' +  NewLine +
                  '  a.chave,' +  NewLine +
                  '  a.codigo_externo,' +  NewLine +
                  '  a.codigo,' +  NewLine +
@@ -78,9 +78,45 @@ begin
 
   lComandoSQL := lComandoSQL +
                  'ORDER BY' +  NewLine +
-                 '  a.codigo';
+                 '  a.codigo';}
 
-  DataModule1.NovaConsulta(NomeTabela, lComandoSQL);
+  DataModule1.SQLBuilder.Clear;
+  DataModule1.SQLBuilder.Add('SELECT DISTINCT');
+  DataModule1.SQLBuilder.Add('  a.chave,');
+  DataModule1.SQLBuilder.Add('  a.codigo,');
+  DataModule1.SQLBuilder.Add('  a.codigo_externo,');
+  DataModule1.SQLBuilder.Add('  a.descricao,');
+  DataModule1.SQLBuilder.Add('  a.sintetica');
+  DataModule1.SQLBuilder.Add('FROM');
+  DataModule1.SQLBuilder.Add('  plano_contas a');
+  DataModule1.SQLBuilder.Add('  JOIN (');
+  DataModule1.SQLBuilder.Add('    SELECT');
+  DataModule1.SQLBuilder.Add('      empresa,');
+  DataModule1.SQLBuilder.Add('      chave,');
+  DataModule1.SQLBuilder.Add('      codigo');
+  DataModule1.SQLBuilder.Add('    FROM');
+  DataModule1.SQLBuilder.Add('      plano_contas');
+  DataModule1.SQLBuilder.Add('    WHERE');
+  DataModule1.SQLBuilder.Add('      empresa = ' + IntToStr(EmpresaSelecionada));
+
+  if not Vazio(PClassificacao) then
+    DataModule1.SQLBuilder.Add('      AND codigo >= ' + QuotedStr(ApenasNumeros(PClassificacao)) +  NewLine);
+  if not Vazio(pDescricao) then
+    DataModule1.SQLBuilder.Add('      AND descricao LIKE ' + QuotedStr(Trim(pDescricao) + '%') +  NewLine);
+
+  if (cmbPlanoContasTipo2.ItemIndex = 1) then
+    DataModule1.SQLBuilder.Add('      AND sintetica = ' + QuotedStr('S') + NewLine)
+  else if (cmbPlanoContasTipo2.ItemIndex = 2) then
+    DataModule1.SQLBuilder.Add('      AND sintetica = ' + QuotedStr('A') + NewLine);
+
+  DataModule1.SQLBuilder.Add('        ) AS b ON (');
+  DataModule1.SQLBuilder.Add('    b.empresa = a.empresa');
+  DataModule1.SQLBuilder.Add('    AND b.chave <> a.chave');
+  DataModule1.SQLBuilder.Add('    AND a.codigo LIKE b.codigo || ' + QuotedStr('%') + ')');
+  DataModule1.SQLBuilder.Add('ORDER BY');
+  DataModule1.SQLBuilder.Add('  a.codigo');
+
+  DataModule1.NovaConsulta(NomeTabela, DataModule1.SQLBuilder.Text);
   dbgConsulta.DataSource := DataModule1.getDataSource(NomeTabela);
 end;
 

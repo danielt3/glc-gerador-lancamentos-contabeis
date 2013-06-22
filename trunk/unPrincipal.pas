@@ -515,6 +515,7 @@ type
     function  ValidarLancamento: Boolean;
     function getValue(pNomeCampo: String): String;
     procedure setValue(pNomeCampo: String); Overload;
+    function  CampoExiste(pNomeCampo: String): Boolean;
 
     procedure ToggleCliente;
     procedure AtivarModoContador;
@@ -733,7 +734,7 @@ begin
       CarregarLancamentoLayouts;
       GravarEmpresaPadrao(Empresa);
       lComando := DataModule1.qConsulta.FieldByName('fornecedores').AsString;
-      ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString)
+      ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -2313,7 +2314,7 @@ begin
   gbNomeLayout.Enabled := Habilitar and PodeAlterar;
   edtNomeLayout.Enabled := Habilitar and PodeAlterar;
   gbTabelasDisponiveis.Enabled := Habilitar and PodeAlterar;
-  gbTabelasUtilizadas.Enabled := Habilitar;
+  gbTabelasUtilizadas.Enabled := Habilitar and PodeAlterar;
   gdbCaracteristicas.Enabled := Habilitar and PodeAlterar;
   gdbOpcao.Enabled := Habilitar;
   gbInformacoes.Enabled := Habilitar;
@@ -3552,24 +3553,25 @@ var
 begin
   fLancamentoAtual := DataModule1.GerarChave('GEN_LANCAMENTOS');
 
-  lComandoSQL := 'INSERT INTO lancamentos (' + NewLine +
-                 '  chave,' + NewLine +
-                 '  empresa,' + NewLine +
-                 '  layout,' + NewLine;
 
-  for i := 0 to fListaCamposNome.Count - 1 do
-    lComandoSQL := lComandoSQL + '  ' + fListaCamposNome.Strings[i] + ',' + NewLine;
+    lComandoSQL := 'INSERT INTO lancamentos (' + NewLine +
+                   '  chave,' + NewLine +
+                   '  empresa,' + NewLine +
+                   '  layout,' + NewLine;
 
-  lComandoSQL := lComandoSQL + '  data_lanc)' + NewLine +
-                               'VALUES (' + NewLine +
-                               '  ' + IntToStr(fLancamentoAtual) + ',' + NewLine +
-                               '  ' + IntToStr(fEmpresaAtual) + ',' + NewLine +
-                               '  ' + IntToStr(fLancamentoLayoutAtual) + ',' + NewLine;
+    for i := 0 to fListaCamposNome.Count - 1 do
+      lComandoSQL := lComandoSQL + '  ' + fListaCamposNome.Strings[i] + ',' + NewLine;
 
-  for i := 0 to fListaCamposNome.Count - 1 do
-    lComandoSQL := lComandoSQL + '  ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+    lComandoSQL := lComandoSQL + '  data_lanc)' + NewLine +
+                                 'VALUES (' + NewLine +
+                                 '  ' + IntToStr(fLancamentoAtual) + ',' + NewLine +
+                                 '  ' + IntToStr(fEmpresaAtual) + ',' + NewLine +
+                                 '  ' + IntToStr(fLancamentoLayoutAtual) + ',' + NewLine;
 
-  lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
+    for i := 0 to fListaCamposNome.Count - 1 do
+      lComandoSQL := lComandoSQL + '  ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+
+    lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
 
   if DataModule1.Executar(lComandoSQL) then
     ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual);

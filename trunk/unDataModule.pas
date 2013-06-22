@@ -433,6 +433,7 @@ begin
   AddCampoLancamento('historico', ' Histórico', 'Caractere', '', 32, false, false);
   AddCampoLancamento('cliente', ' Cliente', 'Caractere', '', 32, false, false);
   AddCampoLancamento('valor', '*Valor', 'Decimal', '####.####,##', 8, false, false);
+  AddCampoLancamento('parcelas', ' Parcelas', 'Numeral', '##########', 10, false, false);
   //AddCampoLancamento('teste', ' Olá Mundo', 'Caractere', '', 32, false);
 end;
 

@@ -733,7 +733,7 @@ begin
       CarregarLancamentoLayouts;
       GravarEmpresaPadrao(Empresa);
       lComando := DataModule1.qConsulta.FieldByName('fornecedores').AsString;
-      ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString)
+      ConsultarFornecedores(fEmpresaAtual, DataModule1.qConsulta.FieldByName('fornecedores').AsString);
     end;
   except on e:exception do
     MensagemErro(e.Message, 'Alterar empresa.');
@@ -2313,7 +2313,7 @@ begin
   gbNomeLayout.Enabled := Habilitar and PodeAlterar;
   edtNomeLayout.Enabled := Habilitar and PodeAlterar;
   gbTabelasDisponiveis.Enabled := Habilitar and PodeAlterar;
-  gbTabelasUtilizadas.Enabled := Habilitar;
+  gbTabelasUtilizadas.Enabled := Habilitar and PodeAlterar;
   gdbCaracteristicas.Enabled := Habilitar and PodeAlterar;
   gdbOpcao.Enabled := Habilitar;
   gbInformacoes.Enabled := Habilitar;

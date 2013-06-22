@@ -1,1 +1,4 @@
-UPDATE sistema SET texto = 'TAB5215@0003SD@010ASDDDGGH091003882013'
+UPDATE layouts SET
+  nome = 'TESTE'
+WHERE
+  chave = 1

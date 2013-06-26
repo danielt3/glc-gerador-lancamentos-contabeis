@@ -1,12 +1,8 @@
 SELECT
-  a.chave,
-  a.nome
+  chave,
+  filho
 FROM
-  layouts a
-  JOIN vinculadores_layout b ON (
-    b.layout = a.chave)
+  processos
 WHERE
-  a.empresa = 1 AND
-  b.vinculador = 1
-ORDER BY
-  a.nome
+  empresa = 1
+  AND pai = 1

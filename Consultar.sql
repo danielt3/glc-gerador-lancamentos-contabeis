@@ -1,7 +1,1 @@
-SELECT
-  a.chave
-FROM
-  lancamentos a
-WHERE
-  a.empresa = 1
-  AND a.layout = 1
+SELECT  chave,  codigo,  nome,  cnpj,  fornecedores,  clientes FROM  empresa WHERE  chave = 1

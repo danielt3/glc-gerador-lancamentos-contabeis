@@ -514,6 +514,7 @@ type
     procedure GravarLancamentoAlterar;
     function  ValidarLancamento: Boolean;
     function getValue(pNomeCampo: String): String;
+    function getExtended(pNomeCampo: String): Extended;
     procedure setValue(pNomeCampo: String); Overload;
     function  CampoExiste(pNomeCampo: String): Boolean;
 
@@ -3550,9 +3551,42 @@ procedure TfrmPrincipal.GravarLancamentoInserir;
 var
   lComandoSQL: String;
   i: Integer;
+  lParcelas: Integer;
+  lParcelaAtual: Integer;
+  sParcela: String;
+  lsParcela: String;
+  lValorParcela: Extended;
+  lVencimento: TDateTime;
+  y: Integer;
 begin
-  fLancamentoAtual := DataModule1.GerarChave('GEN_LANCAMENTOS');
+  sParcela := getValue('parcelas');
+  lParcelas := StrToIntDef(sParcela, 1);
+  lParcelaAtual := 1;
 
+  lValorParcela := getExtended('valor');
+  sParcela := 'valor';
+  if (lValorParcela = 0) then
+  begin
+    lValorParcela := getExtended('entrada');
+    sParcela := 'entrada';
+  end;
+  if (lValorParcela = 0) then
+  begin
+    lValorParcela := getExtended('saida');
+    sParcela := 'saida';
+  end;
+
+  if (DataModule1.CampoLancamentoLocate('data_venc') > -1) then
+    lVencimento := TDateEdit(FindComponent('edtLanc_' + 'data_venc')).Date;
+
+  lValorParcela := lValorParcela / lParcelas;
+  lsParcela := FloatToStr(lValorParcela);
+  lsParcela := StringReplace(lsParcela, ThousandSeparator, '', [rfReplaceAll]);
+  lsParcela := StringReplace(lsParcela, DecimalSeparator, '.', [rfReplaceAll]);
+
+  for y := 1 to lParcelas do
+  begin
+    fLancamentoAtual := DataModule1.GerarChave('GEN_LANCAMENTOS');
 
     lComandoSQL := 'INSERT INTO lancamentos (' + NewLine +
                    '  chave,' + NewLine +
@@ -3569,12 +3603,25 @@ begin
                                  '  ' + IntToStr(fLancamentoLayoutAtual) + ',' + NewLine;
 
     for i := 0 to fListaCamposNome.Count - 1 do
-      lComandoSQL := lComandoSQL + '  ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+    begin
+      if (fListaCamposNome.Strings[i] = 'parcelas') then
+        lComandoSQL := lComandoSQL + '  ' + IntToStr(lParcelaAtual) + ',' + NewLine
+      else if (fListaCamposNome.Strings[i] = 'data_venc') then
+        lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', lVencimento)) + ',' + NewLine
+      else if (fListaCamposNome.Strings[i] = sParcela) then
+        lComandoSQL := lComandoSQL + '  ' + QuotedStr(lsParcela) + ',' + NewLine
+      else
+        lComandoSQL := lComandoSQL + '  ' + getValue(fListaCamposNome.Strings[i]) + ',' + NewLine;
+    end;
 
     lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
 
-  if DataModule1.Executar(lComandoSQL) then
-    ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual);
+    if DataModule1.Executar(lComandoSQL) then
+      ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual);
+
+    lParcelaAtual := lParcelaAtual + 1;
+    lVencimento := IncMonth(lVencimento, 1);
+  end;
 end;
 
 procedure TfrmPrincipal.GravarLancamentoAlterar;
@@ -3607,29 +3654,47 @@ end;
 
 function TfrmPrincipal.getValue(pNomeCampo: String): String;
 begin
+  if (DataModule1.CampoLancamentoLocate(pNomeCampo) > -1) then
+  begin
+    if (DataModule1.CampoLancamentoNome = 'vinculador') then
+      result := fVinculadoresLayout.Strings[TComboBox(FindComponent('edtLanc_' + pNomeCampo)).ItemIndex]
+    else if (DataModule1.CampoLancamentoDados) then
+      result := QuotedStr(TComboBox(FindComponent('edtLanc_' + pNomeCampo)).Text)
+    else if (DataModule1.CampoLancamentoType = ftString) then
+      result := QuotedStr(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text)
+    else if (DataModule1.CampoLancamentoType = ftInteger) then
+      result := TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text
+    else if (DataModule1.CampoLancamentoType = ftFloat) then
+    begin
+      if Vazio(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text) then
+        result := '0'
+      else
+      begin
+        result := StringReplace(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, ThousandSeparator, '', [rfReplaceAll]);
+        result := StringReplace(result, DecimalSeparator, '.', [rfReplaceAll]);
+        result := QuotedStr(result);
+      end;
+    end
+    else if (DataModule1.CampoLancamentoType = ftDateTime) then
+      result := QuotedStr(FormatDateTime('dd.mm.yyyy', TDateEdit(FindComponent('edtLanc_' + pNomeCampo)).Date));
+  end;
+end;
+
+function TfrmPrincipal.getExtended(pNomeCampo: String): Extended;
+begin
   DataModule1.CampoLancamentoLocate(pNomeCampo);
 
-  if (DataModule1.CampoLancamentoNome = 'vinculador') then
-    result := fVinculadoresLayout.Strings[TComboBox(FindComponent('edtLanc_' + pNomeCampo)).ItemIndex]
-  else if (DataModule1.CampoLancamentoDados) then
-    result := QuotedStr(TComboBox(FindComponent('edtLanc_' + pNomeCampo)).Text)
-  else if (DataModule1.CampoLancamentoType = ftString) then
-    result := QuotedStr(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text)
-  else if (DataModule1.CampoLancamentoType = ftInteger) then
-    result := QuotedStr(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text)
+  if (DataModule1.CampoLancamentoType = ftInteger) then
+    result := StrToIntDef(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, 0)
   else if (DataModule1.CampoLancamentoType = ftFloat) then
   begin
     if Vazio(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text) then
-      result := '0'
+      result := 0
     else
-    begin
-      result := StringReplace(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, ThousandSeparator, '', [rfReplaceAll]);
-      result := StringReplace(result, DecimalSeparator, '.', [rfReplaceAll]);
-      result := QuotedStr(result);
-    end;
+      result := StrToFloatDef(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, 0);
   end
-  else if (DataModule1.CampoLancamentoType = ftDateTime) then
-    result := QuotedStr(FormatDateTime('dd.mm.yyyy', TDateEdit(FindComponent('edtLanc_' + pNomeCampo)).Date));
+  else
+    result := 0;
 end;
 
 procedure TfrmPrincipal.setValue(pNomeCampo: String);
@@ -3659,6 +3724,11 @@ begin
     else
       TEdit(lField).Text := DataModule1.qLancamentos.FieldByName(DataModule1.CampoLancamentoNome).AsString  ;
   end;
+end;
+
+function TfrmPrincipal.CampoExiste(pNomeCampo: String): Boolean;
+begin
+
 end;
 
 procedure TfrmPrincipal.ToggleCliente;

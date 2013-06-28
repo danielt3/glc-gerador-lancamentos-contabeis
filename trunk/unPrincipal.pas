@@ -353,6 +353,7 @@ type
     procedure Timer1Timer(Sender: TObject);
   private
     //Geral
+    fTeste: String;
     fGarbageCollector: TGarbageCollector;
     //Empresa
     fEstadoEmpresa: TTipoAcao;
@@ -498,6 +499,8 @@ type
     procedure ConsultarLancamentos;
     function  ExisteLancamentos: Boolean;
     procedure CarregarListaDadosCampoLancamento(var pCombo: TComboBox; pNomeCampo: String); overload;
+    procedure CarregarListaFornecedores(var pCombo: TComboBox); overload;
+    procedure CarregarListaClientes(var pCombo: TComboBox); overload;
     procedure CarregarListaVinculadorCampoLancamento(var pCombo: TComboBox);
     procedure NovoLancamento;
     procedure EditarLancamento;
@@ -2713,14 +2716,13 @@ end;
 function TfrmPrincipal.CampoSendoUtilizado(pNomeCampo: String): Boolean;
 var
   i: Integer;
-  lTeste: String;
 begin
   result := false;
 
   for i := 0 to chkCamposUtilizados.Items.Count - 1 do
   begin
-    lTeste := chkCamposUtilizados.Items.Strings[i];
-    if (lTeste = pNomeCampo) then
+    fTeste := chkCamposUtilizados.Items.Strings[i];
+    if (fTeste = pNomeCampo) then
     begin
       result := true;
       break;
@@ -3012,9 +3014,11 @@ begin
 
   lColumn.Title.Caption := Copy(DataModule1.CampoLancamentoDescricao, 2, 100);
 
+  fTeste := DataModule1.CampoLancamentoNome;
+
   if (DataModule1.CampoLancamentoNome = 'vinculador') then
     CreateVinculadorField(fLeft, fTop, fLength)
-  else if (DataModule1.CampoLancamentoDados) or (DataModule1.CampoLancamentoNome = 'forma_pag') then
+  else if (DataModule1.CampoLancamentoDados) or (DataModule1.CampoLancamentoNome = 'forma_pag') or (DataModule1.CampoLancamentoNome = 'fornecedor') or (DataModule1.CampoLancamentoNome = 'cliente') then
     CreateComboField(fLeft, fTop, fLength)
   else if (DataModule1.CampoLancamentoType = ftString) then
     CreateStringField(fLeft, fTop, fLength)
@@ -3109,6 +3113,72 @@ begin
     pCombo.Items.Add(DataModule1.getQuery(lTabela).FieldByName('dado').AsString);
 
     DataModule1.getQuery(lTabela).Next;
+  end;
+end;
+
+procedure TfrmPrincipal.CarregarListaFornecedores(var pCombo: TComboBox);
+begin
+  pCombo.Items.Clear;
+
+  if not Vazio(fCodigoFornecedores) then
+  begin
+    DataModule1.SQLBuilder.Clear;
+    DataModule1.SQLBuilder.Add('SELECT');
+    DataModule1.SQLBuilder.Add('  chave,');
+    DataModule1.SQLBuilder.Add('  codigo,');
+    DataModule1.SQLBuilder.Add('  codigo_externo,');
+    DataModule1.SQLBuilder.Add('  descricao');
+    DataModule1.SQLBuilder.Add('FROM');
+    DataModule1.SQLBuilder.Add('  plano_contas');
+    DataModule1.SQLBuilder.Add('WHERE');
+    DataModule1.SQLBuilder.Add('  empresa = ' + IntToStr(fEmpresaAtual));
+    DataModule1.SQLBuilder.Add('  AND codigo LIKE ' + QuotedStr(fCodigoFornecedores + '%'));
+    DataModule1.SQLBuilder.Add('  AND codigo > ' + QuotedStr(fCodigoFornecedores));
+    DataModule1.SQLBuilder.Add('ORDER BY');
+    DataModule1.SQLBuilder.Add('  codigo');
+
+    DataModule1.NovaConsulta();
+
+    DataModule1.getQuery().First;
+    while not DataModule1.getQuery().EOF do
+    begin
+      pCombo.Items.Add(DataModule1.getQuery().FieldByName('descricao').AsString);
+
+      DataModule1.getQuery().Next;
+    end;
+  end;
+end;
+
+procedure TfrmPrincipal.CarregarListaClientes(var pCombo: TComboBox);
+begin
+  pCombo.Items.Clear;
+
+  if not Vazio(fCodigoClientes) then
+  begin
+    DataModule1.SQLBuilder.Clear;
+    DataModule1.SQLBuilder.Add('SELECT');
+    DataModule1.SQLBuilder.Add('  chave,');
+    DataModule1.SQLBuilder.Add('  codigo,');
+    DataModule1.SQLBuilder.Add('  codigo_externo,');
+    DataModule1.SQLBuilder.Add('  descricao');
+    DataModule1.SQLBuilder.Add('FROM');
+    DataModule1.SQLBuilder.Add('  plano_contas');
+    DataModule1.SQLBuilder.Add('WHERE');
+    DataModule1.SQLBuilder.Add('  empresa = ' + IntToStr(fEmpresaAtual));
+    DataModule1.SQLBuilder.Add('  AND codigo LIKE ' + QuotedStr(fCodigoClientes + '%'));
+    DataModule1.SQLBuilder.Add('  AND codigo > ' + QuotedStr(fCodigoClientes));
+    DataModule1.SQLBuilder.Add('ORDER BY');
+    DataModule1.SQLBuilder.Add('  codigo');
+
+    DataModule1.NovaConsulta();
+
+    DataModule1.getQuery().First;
+    while not DataModule1.getQuery().EOF do
+    begin
+      pCombo.Items.Add(DataModule1.getQuery().FieldByName('descricao').AsString);
+
+      DataModule1.getQuery().Next;
+    end;
   end;
 end;
 
@@ -3492,7 +3562,13 @@ begin
   lCombo.Name := 'edtLanc_' + DataModule1.CampoLancamentoNome;
   lCombo.Text := '';
   lCombo.Visible := true;
-  CarregarListaDadosCampoLancamento(lCombo, DataModule1.CampoLancamentoDescricao);
+
+  if (DataModule1.CampoLancamentoNome = 'fornecedor') then
+    CarregarListaFornecedores(lCombo)
+  else if (DataModule1.CampoLancamentoNome = 'cliente') then
+    CarregarListaClientes(lCombo)
+  else
+    CarregarListaDadosCampoLancamento(lCombo, DataModule1.CampoLancamentoDescricao);
 
   if lCombo.Items.Count > 0 then
   begin
@@ -3654,7 +3730,7 @@ end;
 
 function TfrmPrincipal.getValue(pNomeCampo: String): String;
 begin
-  if (DataModule1.CampoLancamentoLocate(pNomeCampo) > -1) then
+  if (DataModule1.CampoLancamentoLocate(pNomeCampo) > -1) and Assigned(FindComponent('edtLanc_' + pNomeCampo)) then
   begin
     if (DataModule1.CampoLancamentoNome = 'vinculador') then
       result := fVinculadoresLayout.Strings[TComboBox(FindComponent('edtLanc_' + pNomeCampo)).ItemIndex]

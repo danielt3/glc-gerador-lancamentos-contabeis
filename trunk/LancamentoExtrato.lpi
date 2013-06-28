@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="21"/>
+      <BuildNr Value="22"/>
       <Language Value="0416"/>
       <StringTable CompanyName="Dharma Project" OriginalFilename="Soleil" ProductVersion=""/>
     </VersionInfo>
@@ -69,7 +69,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="LancamentoExtrato.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -89,13 +89,15 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3582"/>
-        <CursorPos X="62" Y="3595"/>
+        <TopLine Value="3675"/>
+        <CursorPos X="41" Y="3691"/>
         <UsageCount Value="208"/>
-        <Bookmarks Count="3">
-          <Item0 X="23" Y="4563" ID="9"/>
-          <Item1 X="3" Y="6216" ID="4"/>
-          <Item2 X="20" Y="3580" ID="1"/>
+        <Bookmarks Count="5">
+          <Item0 X="23" Y="4639" ID="9"/>
+          <Item1 X="2" Y="3571" ID="2"/>
+          <Item2 X="3" Y="3125" ID="3"/>
+          <Item3 X="50" Y="892" ID="4"/>
+          <Item4 X="3" Y="3733" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -107,15 +109,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="unDataModule"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="402"/>
-        <CursorPos X="32" Y="426"/>
+        <TopLine Value="65"/>
+        <CursorPos X="14" Y="83"/>
         <UsageCount Value="208"/>
-        <Bookmarks Count="3">
+        <Bookmarks Count="1">
           <Item0 X="3" Y="443" ID="8"/>
-          <Item1 X="34" Y="421" ID="2"/>
-          <Item2 X="3" Y="475" ID="3"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -124,7 +124,7 @@
         <Filename Value="unListaCodigo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unListaCodigo"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="3" Y="39"/>
@@ -144,7 +144,7 @@
         <Filename Value="unUtilitario.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="unUtilitario"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="18" Y="14"/>
@@ -170,7 +170,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unNovoCampo"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="15"/>
         <CursorPos X="54" Y="24"/>
@@ -185,7 +185,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unConsultar"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="47"/>
         <CursorPos X="29" Y="73"/>
@@ -200,10 +200,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unConsultarPlanoContas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="93"/>
-        <CursorPos X="52" Y="113"/>
+        <CursorPos X="20" Y="102"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -214,21 +214,23 @@
         <WindowIndex Value="0"/>
         <TopLine Value="813"/>
         <CursorPos X="53" Y="830"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="33"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="14"/>
+        <TopLine Value="3215"/>
+        <CursorPos X="28" Y="3244"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="MemoryTable.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MemoryTable"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="95"/>
         <CursorPos X="18" Y="117"/>
@@ -240,7 +242,7 @@
         <UnitName Value="ZDbcInterbase6Utils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="814"/>
-        <CursorPos X="35" Y="833"/>
+        <CursorPos X="56" Y="832"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
@@ -259,7 +261,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1549"/>
         <CursorPos X="34" Y="1569"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="20"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\lazarus\fpc\2.6.2\source\packages\fcl-db\src\base\db.pas"/>
@@ -267,7 +269,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
         <CursorPos X="3" Y="110"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\components\ZEOSDBO-7.0.3-stable\src\component\ZAbstractRODataset.pas"/>
@@ -275,130 +277,138 @@
         <WindowIndex Value="0"/>
         <TopLine Value="840"/>
         <CursorPos X="34" Y="849"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="C:\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit18>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3614" Column="1" TopLine="3586"/>
+        <Caret Line="3143" Column="1" TopLine="3112"/>
       </Position1>
       <Position2>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3616" Column="1" TopLine="3586"/>
+        <Caret Line="3121" Column="2" TopLine="3112"/>
       </Position2>
       <Position3>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3618" Column="1" TopLine="3588"/>
+        <Caret Line="3156" Column="3" TopLine="3150"/>
       </Position3>
       <Position4>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3544" Column="21" TopLine="3526"/>
+        <Caret Line="3125" Column="1" TopLine="3106"/>
       </Position4>
       <Position5>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3577" Column="7" TopLine="3557"/>
+        <Caret Line="3119" Column="18" TopLine="3106"/>
       </Position5>
       <Position6>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3682" Column="17" TopLine="3675"/>
+        <Caret Line="3123" Column="9" TopLine="3106"/>
       </Position6>
       <Position7>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3580" Column="20" TopLine="3545"/>
+        <Caret Line="6175" Column="3" TopLine="6173"/>
       </Position7>
       <Position8>
-        <Filename Value="unDataModule.pas"/>
-        <Caret Line="475" Column="3" TopLine="456"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="3614" Column="3" TopLine="3610"/>
       </Position8>
       <Position9>
-        <Filename Value="unDataModule.pas"/>
-        <Caret Line="421" Column="34" TopLine="402"/>
+        <Filename Value="unPrincipal.pas"/>
+        <Caret Line="3638" Column="1" TopLine="3631"/>
       </Position9>
       <Position10>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3580" Column="20" TopLine="3549"/>
+        <Caret Line="3639" Column="22" TopLine="3631"/>
       </Position10>
       <Position11>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3676" Column="56" TopLine="3650"/>
+        <Caret Line="3733" Column="3" TopLine="3729"/>
       </Position11>
       <Position12>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3609" Column="51" TopLine="3592"/>
+        <Caret Line="3638" Column="1" TopLine="3619"/>
       </Position12>
       <Position13>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3679" Column="17" TopLine="3653"/>
+        <Caret Line="3733" Column="46" TopLine="3714"/>
       </Position13>
       <Position14>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3608" Column="100" TopLine="3589"/>
+        <Caret Line="3735" Column="1" TopLine="3714"/>
       </Position14>
       <Position15>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3581" Column="31" TopLine="3561"/>
+        <Caret Line="3737" Column="1" TopLine="3714"/>
       </Position15>
       <Position16>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3579" Column="59" TopLine="3552"/>
+        <Caret Line="3739" Column="1" TopLine="3714"/>
       </Position16>
       <Position17>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3580" Column="68" TopLine="3553"/>
+        <Caret Line="3741" Column="1" TopLine="3714"/>
       </Position17>
       <Position18>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3609" Column="12" TopLine="3582"/>
+        <Caret Line="3742" Column="1" TopLine="3714"/>
       </Position18>
       <Position19>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3617" Column="1" TopLine="3582"/>
+        <Caret Line="3739" Column="51" TopLine="3714"/>
       </Position19>
       <Position20>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3619" Column="1" TopLine="3582"/>
+        <Caret Line="3638" Column="1" TopLine="3619"/>
       </Position20>
       <Position21>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3620" Column="1" TopLine="3582"/>
+        <Caret Line="3733" Column="1" TopLine="3714"/>
       </Position21>
       <Position22>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3622" Column="1" TopLine="3582"/>
+        <Caret Line="3757" Column="1" TopLine="3739"/>
       </Position22>
       <Position23>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3623" Column="1" TopLine="3582"/>
+        <Caret Line="3639" Column="1" TopLine="3620"/>
       </Position23>
       <Position24>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3617" Column="1" TopLine="3582"/>
+        <Caret Line="3640" Column="1" TopLine="3620"/>
       </Position24>
       <Position25>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3619" Column="1" TopLine="3582"/>
+        <Caret Line="3642" Column="1" TopLine="3620"/>
       </Position25>
       <Position26>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3620" Column="1" TopLine="3582"/>
+        <Caret Line="3643" Column="1" TopLine="3620"/>
       </Position26>
       <Position27>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3622" Column="1" TopLine="3582"/>
+        <Caret Line="3644" Column="1" TopLine="3620"/>
       </Position27>
       <Position28>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3617" Column="1" TopLine="3582"/>
+        <Caret Line="3649" Column="1" TopLine="3620"/>
       </Position28>
       <Position29>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3619" Column="1" TopLine="3582"/>
+        <Caret Line="3638" Column="3" TopLine="3624"/>
       </Position29>
       <Position30>
         <Filename Value="unPrincipal.pas"/>
-        <Caret Line="3620" Column="1" TopLine="3582"/>
+        <Caret Line="3733" Column="1" TopLine="3714"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -430,14 +440,14 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="1736"/>
+        <Line Value="1739"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="unPrincipal.pas"/>
-        <Line Value="3617"/>
+        <Line Value="3156"/>
       </Item2>
     </BreakPoints>
     <Watches Count="16">

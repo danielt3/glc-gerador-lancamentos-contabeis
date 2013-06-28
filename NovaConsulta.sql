@@ -1,8 +1,4 @@
-SELECT
-  chave,
-  filho
+SELECT FIRST 1
+  texto
 FROM
-  processos
-WHERE
-  empresa = 1
-  AND pai = 1
+  sistema

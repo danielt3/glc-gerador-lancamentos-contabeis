@@ -3652,7 +3652,7 @@ begin
     sParcela := 'saida';
   end;
 
-  if (DataModule1.CampoLancamentoLocate('data_venc') > -1) then
+  if Assigned(FindComponent('edtLanc_' + 'data_venc')) then
     lVencimento := TDateEdit(FindComponent('edtLanc_' + 'data_venc')).Date;
 
   lValorParcela := lValorParcela / lParcelas;

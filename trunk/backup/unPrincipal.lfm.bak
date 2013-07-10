@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1044
-    ActivePage = pClientes
+    ActivePage = pContador
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Administrador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pEmpresa
+        ActivePage = pLeiaute
         Align = alClient
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Cadastro'
@@ -711,9 +711,9 @@ object frmPrincipal: TfrmPrincipal
             Height = 475
             Top = 0
             Width = 1028
-            ActivePage = pLayoutCadastro
+            ActivePage = pProcesso
             Align = alClient
-            TabIndex = 0
+            TabIndex = 1
             TabOrder = 0
             object pLayoutCadastro: TTabSheet
               Caption = 'Cadastro'
@@ -1089,7 +1089,7 @@ object frmPrincipal: TfrmPrincipal
               object btnGravarLayout1: TButton
                 Left = 276
                 Height = 25
-                Top = 328
+                Top = 338
                 Width = 75
                 Caption = 'Gravar'
                 OnClick = btnGravarLayout1Click
@@ -1098,7 +1098,7 @@ object frmPrincipal: TfrmPrincipal
               object btnCancelarLayout1: TButton
                 Left = 188
                 Height = 25
-                Top = 328
+                Top = 338
                 Width = 75
                 Caption = 'Cancelar'
                 OnClick = btnCancelarLayout1Click
@@ -1107,7 +1107,7 @@ object frmPrincipal: TfrmPrincipal
               object btnEditarLayout1: TButton
                 Left = 100
                 Height = 25
-                Top = 328
+                Top = 338
                 Width = 75
                 Caption = 'Editar'
                 OnClick = btnEditarLayout1Click
@@ -1116,7 +1116,7 @@ object frmPrincipal: TfrmPrincipal
               object cmbCondicoes: TComboBox
                 Left = 135
                 Height = 23
-                Top = 208
+                Top = 206
                 Width = 39
                 Enabled = False
                 ItemHeight = 15
@@ -1135,7 +1135,7 @@ object frmPrincipal: TfrmPrincipal
               object btnGravarCondicao: TButton
                 Left = 266
                 Height = 25
-                Top = 190
+                Top = 188
                 Width = 43
                 Caption = 'Gravar'
                 Enabled = False
@@ -1145,7 +1145,7 @@ object frmPrincipal: TfrmPrincipal
               object btnApagarCondicao: TButton
                 Left = 266
                 Height = 25
-                Top = 222
+                Top = 220
                 Width = 43
                 Caption = 'Apagar'
                 Enabled = False
@@ -1154,7 +1154,7 @@ object frmPrincipal: TfrmPrincipal
               end
               object chkCamposProcessos: TCheckListBox
                 Left = 12
-                Height = 204
+                Height = 196
                 Top = 120
                 Width = 116
                 Font.CharSet = ANSI_CHARSET
@@ -1172,7 +1172,7 @@ object frmPrincipal: TfrmPrincipal
               end
               object sgCondicoes: TStringGrid
                 Left = 314
-                Height = 204
+                Height = 196
                 Top = 120
                 Width = 194
                 ColCount = 3
@@ -1190,7 +1190,7 @@ object frmPrincipal: TfrmPrincipal
               object btnNovoProcesso: TButton
                 Left = 12
                 Height = 25
-                Top = 328
+                Top = 338
                 Width = 75
                 Caption = 'Novo'
                 OnClick = btnNovoProcessoClick
@@ -1199,7 +1199,7 @@ object frmPrincipal: TfrmPrincipal
               object cmbValorCondicao: TComboBox
                 Left = 181
                 Height = 23
-                Top = 208
+                Top = 206
                 Width = 80
                 Enabled = False
                 ItemHeight = 15
@@ -1216,7 +1216,7 @@ object frmPrincipal: TfrmPrincipal
               object edtValorCondicao: TEdit
                 Left = 181
                 Height = 23
-                Top = 208
+                Top = 206
                 Width = 80
                 Enabled = False
                 TabOrder = 9
@@ -1592,9 +1592,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pLancamentos
+        ActivePage = TabSheet3
         Align = alClient
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         object pLancamentos: TTabSheet
           Caption = 'Lançamentos'

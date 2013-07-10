@@ -3652,7 +3652,7 @@ begin
     sParcela := 'saida';
   end;
 
-  if (DataModule1.CampoLancamentoLocate('data_venc') > -1) then
+  if Assigned(FindComponent('edtLanc_' + 'data_venc')) then
     lVencimento := TDateEdit(FindComponent('edtLanc_' + 'data_venc')).Date;
 
   lValorParcela := lValorParcela / lParcelas;
@@ -3730,7 +3730,7 @@ end;
 
 function TfrmPrincipal.getValue(pNomeCampo: String): String;
 begin
-  if (DataModule1.CampoLancamentoLocate(pNomeCampo) > -1) then
+  if (DataModule1.CampoLancamentoLocate(pNomeCampo) > -1) and Assigned(FindComponent('edtLanc_' + pNomeCampo)) then
   begin
     if (DataModule1.CampoLancamentoNome = 'vinculador') then
       result := fVinculadoresLayout.Strings[TComboBox(FindComponent('edtLanc_' + pNomeCampo)).ItemIndex]

@@ -5190,7 +5190,7 @@ begin
                             lValoresTransposicao + ')';
 
                     if DataModule1.Executar(lSQL) then
-                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento, 1, Now);
+                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento, 1, pVencimento);
                   end;
                 end;
               end;

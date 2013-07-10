@@ -1,0 +1,198 @@
+object DataModule1: TDataModule1
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  Height = 404
+  HorizontalOffset = 364
+  VerticalOffset = 157
+  Width = 750
+  object Conexao: TZConnection
+    ControlsCodePage = cCP_UTF8
+    UTF8StringsAsWideField = False
+    AutoEncodeStrings = False
+    ClientCodepage = 'UNICODE_FSS'
+    Properties.Strings = (
+      'AutoEncodeStrings=ON'
+      'codepage=UNICODE_FSS'
+    )
+    Port = 0
+    Database = 'database.fdb'
+    User = 'sysdba'
+    Password = 'masterkey'
+    Protocol = 'firebird-2.0'
+    left = 60
+    top = 44
+  end
+  object qConsulta: TZQuery
+    Connection = Conexao
+    Params = <>
+    left = 126
+    top = 51
+  end
+  object qExecutar: TZQuery
+    Connection = Conexao
+    Params = <>
+    left = 128
+    top = 120
+  end
+  object Datasource1: TDatasource
+    left = 128
+    top = 200
+  end
+  object dsPlanoContas: TDatasource
+    DataSet = qPlanoContas
+    left = 304
+    top = 51
+  end
+  object qPlanoContas: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 208
+    top = 51
+    object qPlanoContascodigo1: TStringField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'codigo'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 10
+    end
+    object qPlanoContasdescricao1: TStringField
+      DisplayWidth = 40
+      FieldKind = fkData
+      FieldName = 'descricao'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 40
+    end
+    object qPlanoContassintetica1: TStringField
+      DisplayWidth = 1
+      FieldKind = fkData
+      FieldName = 'sintetica'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 1
+    end
+    object qPlanoContasclassificacao1: TStringField
+      DisplayWidth = 20
+      FieldKind = fkData
+      FieldName = 'classificacao'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = qPlanoContasclassificacao1GetText
+    end
+    object qPlanoContaschave1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'chave'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+  end
+  object qVinculadores: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 200
+    top = 117
+  end
+  object dsVinculadores: TDatasource
+    DataSet = qVinculadores
+    left = 304
+    top = 112
+  end
+  object qLayouts: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 200
+    top = 181
+  end
+  object dsLayouts: TDatasource
+    DataSet = qLayouts
+    left = 304
+    top = 176
+  end
+  object qLancamentos2: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 328
+    top = 277
+    object qLancamentos2no_vinculador: TStringField
+      DisplayWidth = 100
+      FieldKind = fkCalculated
+      FieldName = 'no_vinculador'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 100
+    end
+  end
+  object dsLancamentos: TDatasource
+    DataSet = qLancamentos
+    left = 432
+    top = 272
+  end
+  object qLancamentos: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 224
+    top = 288
+  end
+  object qProcessos: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 360
+    top = 341
+  end
+  object dsProcessos: TDatasource
+    DataSet = qProcessos
+    left = 464
+    top = 336
+  end
+  object qFornecedores: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 432
+    top = 51
+  end
+  object dsFornecedores: TDatasource
+    DataSet = qFornecedores
+    left = 536
+    top = 51
+  end
+  object qClientes: TZQuery
+    Connection = Conexao
+    AutoCalcFields = False
+    Params = <>
+    left = 432
+    top = 117
+  end
+  object dsClientes: TDatasource
+    DataSet = qClientes
+    left = 536
+    top = 117
+  end
+end

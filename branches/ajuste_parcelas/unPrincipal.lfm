@@ -1,0 +1,2170 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 302
+  Height = 592
+  Top = 88
+  Width = 1044
+  Caption = 'Soleil'
+  ClientHeight = 592
+  ClientWidth = 1044
+  FormStyle = fsMDIForm
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.0.8.0'
+  object PageControl: TPageControl
+    Left = 0
+    Height = 531
+    Top = 0
+    Width = 1044
+    ActivePage = pContador
+    Align = alTop
+    TabIndex = 0
+    TabOrder = 0
+    object pContador: TTabSheet
+      Caption = 'Administrador'
+      ClientHeight = 503
+      ClientWidth = 1036
+      object PageControl2: TPageControl
+        Left = 0
+        Height = 503
+        Top = 0
+        Width = 1036
+        ActivePage = pPlanoContas
+        Align = alClient
+        TabIndex = 1
+        TabOrder = 0
+        object pEmpresa: TTabSheet
+          Caption = 'Cadastro'
+          ClientHeight = 475
+          ClientWidth = 1028
+          object GroupBox6: TGroupBox
+            Left = 8
+            Height = 455
+            Top = 4
+            Width = 456
+            Caption = 'Empresa'
+            ClientHeight = 437
+            ClientWidth = 452
+            PopupMenu = popEmpresa
+            TabOrder = 0
+            object edtCodigoEmpresa: TEdit
+              Left = 89
+              Height = 23
+              Top = 8
+              Width = 56
+              Enabled = False
+              PopupMenu = popEmpresa
+              TabOrder = 0
+            end
+            object Label1: TLabel
+              Left = 9
+              Height = 16
+              Top = 13
+              Width = 46
+              Caption = 'Código:.'
+              ParentColor = False
+              PopupMenu = popEmpresa
+            end
+            object edtNomeEmpresa: TEdit
+              Left = 89
+              Height = 23
+              Top = 40
+              Width = 296
+              CharCase = ecUppercase
+              Enabled = False
+              PopupMenu = popEmpresa
+              TabOrder = 1
+            end
+            object Label3: TLabel
+              Left = 9
+              Height = 16
+              Top = 47
+              Width = 58
+              Caption = 'Descrição:.'
+              ParentColor = False
+              PopupMenu = popEmpresa
+            end
+            object edtCNPJEmpresa: TEdit
+              Left = 89
+              Height = 23
+              Top = 73
+              Width = 144
+              Enabled = False
+              MaxLength = 18
+              OnKeyPress = edtCNPJEmpresaKeyPress
+              PopupMenu = popEmpresa
+              TabOrder = 2
+            end
+            object Label6: TLabel
+              Left = 11
+              Height = 16
+              Top = 80
+              Width = 35
+              Caption = 'CNPJ:.'
+              ParentColor = False
+              PopupMenu = popEmpresa
+            end
+            object btnNovaEmpresa: TButton
+              Left = 25
+              Height = 25
+              Top = 128
+              Width = 75
+              Caption = 'Novo'
+              OnClick = btnNovaEmpresaClick
+              TabOrder = 3
+            end
+            object btnEditarEmpresa: TButton
+              Left = 121
+              Height = 25
+              Top = 128
+              Width = 75
+              Caption = 'Editar'
+              OnClick = btnEditarEmpresaClick
+              TabOrder = 4
+            end
+            object btnGravarEmpresa: TButton
+              Left = 310
+              Height = 25
+              Top = 128
+              Width = 75
+              Caption = 'Gravar'
+              OnClick = btnGravarEmpresaClick
+              TabOrder = 5
+            end
+            object btnGravarEmpresa1: TButton
+              Left = 217
+              Height = 25
+              Top = 128
+              Width = 75
+              Caption = 'Cancelar'
+              OnClick = btnGravarEmpresa1Click
+              TabOrder = 6
+            end
+            object Button3: TButton
+              Left = 233
+              Height = 19
+              Top = 8
+              Width = 40
+              Caption = '>>'
+              OnClick = EmpresaProxima
+              PopupMenu = popEmpresa
+              TabOrder = 7
+            end
+            object Button1: TButton
+              Left = 177
+              Height = 19
+              Top = 8
+              Width = 36
+              Caption = '<<'
+              OnClick = EmpresaAnterior
+              PopupMenu = popEmpresa
+              TabOrder = 8
+            end
+            object GroupBox9: TGroupBox
+              Left = 7
+              Height = 144
+              Top = 272
+              Width = 441
+              Caption = 'Anotações'
+              ClientHeight = 126
+              ClientWidth = 437
+              TabOrder = 9
+              object memAnotacoes: TMemo
+                Left = 6
+                Height = 104
+                Top = 8
+                Width = 424
+                Font.CharSet = ANSI_CHARSET
+                Font.Height = -13
+                Font.Name = 'Courier New'
+                Font.Pitch = fpFixed
+                Font.Quality = fqDraft
+                OnExit = memAnotacoesExit
+                ParentFont = False
+                TabOrder = 0
+              end
+            end
+          end
+          object GroupBox7: TGroupBox
+            Left = 528
+            Height = 447
+            Top = 12
+            Width = 472
+            Caption = 'Status'
+            ClientHeight = 429
+            ClientWidth = 468
+            TabOrder = 1
+            object GroupBox10: TGroupBox
+              Left = 14
+              Height = 160
+              Top = 8
+              Width = 441
+              Caption = 'Fornecedores'
+              ClientHeight = 142
+              ClientWidth = 437
+              TabOrder = 0
+              object Label42: TLabel
+                Left = 9
+                Height = 16
+                Top = 11
+                Width = 75
+                Caption = 'Classificação:.'
+                ParentColor = False
+              end
+              object edtFornecedorClassificacao: TEdit
+                Left = 81
+                Height = 23
+                Top = 4
+                Width = 128
+                OnKeyDown = edtFornecedorClassificacaoKeyDown
+                TabOrder = 0
+              end
+              object Label43: TLabel
+                Left = 9
+                Height = 16
+                Top = 43
+                Width = 58
+                Caption = 'Descrição:.'
+                ParentColor = False
+              end
+              object edtFornecedorDescricao: TEdit
+                Left = 81
+                Height = 23
+                Top = 35
+                Width = 256
+                CharCase = ecUppercase
+                Enabled = False
+                TabOrder = 1
+              end
+              object edtFornecedorCodigo: TEdit
+                Left = 81
+                Height = 23
+                Top = 68
+                Width = 128
+                Enabled = False
+                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                TabOrder = 2
+              end
+              object Label44: TLabel
+                Left = 9
+                Height = 16
+                Top = 75
+                Width = 43
+                Caption = 'Código:'
+                ParentColor = False
+              end
+              object btnFornecedorNovo: TButton
+                Left = 6
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Novo'
+                OnClick = btnFornecedorNovoClick
+                TabOrder = 3
+              end
+              object btnFornecedorPrior: TButton
+                Left = 230
+                Height = 19
+                Top = 8
+                Width = 36
+                Caption = '<<'
+                OnClick = btnFornecedorPriorClick
+                PopupMenu = popEmpresa
+                TabOrder = 4
+              end
+              object btnFornecedorNext: TButton
+                Left = 286
+                Height = 19
+                Top = 8
+                Width = 40
+                Caption = '>>'
+                OnClick = btnFornecedorNextClick
+                PopupMenu = popEmpresa
+                TabOrder = 5
+              end
+              object btnFornecedorGravar: TButton
+                Left = 182
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Gravar'
+                OnClick = btnFornecedorGravarClick
+                TabOrder = 6
+              end
+              object btnFornecedorCancelar: TButton
+                Left = 94
+                Height = 25
+                Top = 108
+                Width = 84
+                Caption = 'Cancelar'
+                OnClick = btnFornecedorCancelarClick
+                TabOrder = 7
+              end
+            end
+            object GroupBox11: TGroupBox
+              Left = 14
+              Height = 160
+              Top = 222
+              Width = 441
+              Caption = 'Clientes'
+              ClientHeight = 142
+              ClientWidth = 437
+              TabOrder = 1
+              OnClick = GroupBox11Click
+              object Label45: TLabel
+                Left = 9
+                Height = 16
+                Top = 11
+                Width = 75
+                Caption = 'Classificação:.'
+                ParentColor = False
+              end
+              object edtClienteClassificacao: TEdit
+                Left = 81
+                Height = 23
+                Top = 4
+                Width = 128
+                OnKeyDown = edtClienteClassificacaoKeyDown
+                TabOrder = 0
+              end
+              object Label46: TLabel
+                Left = 9
+                Height = 16
+                Top = 43
+                Width = 58
+                Caption = 'Descrição:.'
+                ParentColor = False
+              end
+              object edtClienteDescricao: TEdit
+                Left = 81
+                Height = 23
+                Top = 35
+                Width = 256
+                CharCase = ecUppercase
+                Enabled = False
+                TabOrder = 1
+              end
+              object Label47: TLabel
+                Left = 9
+                Height = 16
+                Top = 75
+                Width = 43
+                Caption = 'Código:'
+                ParentColor = False
+              end
+              object edtClienteCodigo: TEdit
+                Left = 81
+                Height = 23
+                Top = 68
+                Width = 128
+                Enabled = False
+                OnKeyPress = edtPlanoContasClassificacaoKeyPress
+                TabOrder = 2
+              end
+              object btnClienteNovo: TButton
+                Left = 6
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Novo'
+                OnClick = btnClienteNovoClick
+                TabOrder = 3
+              end
+              object btnClientePrior: TButton
+                Left = 230
+                Height = 19
+                Top = 8
+                Width = 36
+                Caption = '<<'
+                OnClick = btnClientePriorClick
+                PopupMenu = popEmpresa
+                TabOrder = 4
+              end
+              object btnClienteNext: TButton
+                Left = 286
+                Height = 19
+                Top = 8
+                Width = 40
+                Caption = '>>'
+                OnClick = btnClienteNextClick
+                PopupMenu = popEmpresa
+                TabOrder = 5
+              end
+              object btnClienteGravar: TButton
+                Left = 182
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Gravar'
+                OnClick = btnClienteGravarClick
+                TabOrder = 6
+              end
+              object btnClienteCancelar: TButton
+                Left = 94
+                Height = 25
+                Top = 102
+                Width = 84
+                Caption = 'Cancelar'
+                OnClick = btnClienteCancelarClick
+                TabOrder = 7
+              end
+            end
+          end
+        end
+        object pPlanoContas: TTabSheet
+          Caption = 'Plano de Contas'
+          ClientHeight = 475
+          ClientWidth = 1028
+          object GroupBox4: TGroupBox
+            Left = 8
+            Height = 160
+            Top = 260
+            Width = 352
+            Caption = 'Mascara Contas'
+            ClientHeight = 142
+            ClientWidth = 348
+            TabOrder = 0
+            object Label14: TLabel
+              Left = 8
+              Height = 16
+              Top = 55
+              Width = 99
+              Caption = 'Mascara Contábil:.'
+              ParentColor = False
+            end
+            object edtMascaraPlanoContas: TEdit
+              Left = 102
+              Height = 23
+              Top = 48
+              Width = 152
+              OnChange = edtMascaraPlanoContasChange
+              TabOrder = 0
+              Text = 'X.X.X.XX.XXX.XXX'
+            end
+          end
+          object GroupBox5: TGroupBox
+            Left = 376
+            Height = 473
+            Top = 4
+            Width = 649
+            Caption = 'Plano de Contas'
+            ClientHeight = 455
+            ClientWidth = 645
+            TabOrder = 1
+            object dbgPlano: TDBGrid
+              Left = 10
+              Height = 334
+              Top = 112
+              Width = 610
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'Cód. Reduzido'
+                  Width = 84
+                  FieldName = 'codigo'
+                end              
+                item
+                  Title.Caption = 'Classificação'
+                  Width = 124
+                  FieldName = 'classificacao'
+                end              
+                item
+                  Title.Caption = 'Descrição'
+                  Width = 325
+                  FieldName = 'descricao'
+                end              
+                item
+                  Title.Caption = 'Sintética'
+                  Width = 54
+                  FieldName = 'sintetica'
+                end>
+              FixedCols = 0
+              Font.CharSet = ARABIC_CHARSET
+              Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              ParentFont = False
+              ReadOnly = True
+              TabOrder = 0
+              TitleFont.CharSet = ARABIC_CHARSET
+              OnDrawColumnCell = dbgPlanoDrawColumnCell
+              OnMouseUp = dbgPlanoMouseUp
+            end
+            object Label17: TLabel
+              Left = 486
+              Height = 16
+              Top = 0
+              Width = 31
+              Caption = 'Tipo:.'
+              ParentColor = False
+            end
+            object Label27: TLabel
+              Left = 14
+              Height = 16
+              Top = 0
+              Width = 75
+              Caption = 'Classificação:.'
+              ParentColor = False
+            end
+            object edtPlanoContasClassificacao2: TEdit
+              Left = 14
+              Height = 23
+              Top = 24
+              Width = 184
+              OnChange = edtPlanoContasClassificacao2Change
+              OnKeyPress = edtPlanoContasClassificacao2KeyPress
+              TabOrder = 1
+            end
+            object Label28: TLabel
+              Left = 230
+              Height = 16
+              Top = 0
+              Width = 58
+              Caption = 'Descrição:.'
+              ParentColor = False
+            end
+            object edtPlanoContasDescricao2: TEdit
+              Left = 230
+              Height = 23
+              Top = 24
+              Width = 184
+              CharCase = ecUppercase
+              OnChange = edtPlanoContasDescricao2Change
+              TabOrder = 2
+            end
+            object Label29: TLabel
+              Left = 14
+              Height = 16
+              Top = 56
+              Width = 100
+              Caption = 'Ordem Alfabetica:.'
+              ParentColor = False
+            end
+            object ComboBox3: TComboBox
+              Left = 14
+              Height = 23
+              Top = 80
+              Width = 100
+              ItemHeight = 15
+              ItemIndex = 0
+              Items.Strings = (
+                'Crescente'
+                'Decrescente'
+              )
+              OnChange = ComboBox3Change
+              TabOrder = 3
+              Text = 'Crescente'
+            end
+            object ComboBox4: TComboBox
+              Left = 158
+              Height = 23
+              Top = 80
+              Width = 100
+              ItemHeight = 15
+              ItemIndex = 0
+              Items.Strings = (
+                'Crescente'
+                'Decrescente'
+              )
+              OnChange = ComboBox4Change
+              TabOrder = 4
+              Text = 'Crescente'
+            end
+            object Label30: TLabel
+              Left = 158
+              Height = 16
+              Top = 56
+              Width = 99
+              Caption = 'Ordem Númerica:.'
+              ParentColor = False
+            end
+            object cmbPlanoContasTipo2: TDBLookupComboBox
+              Left = 486
+              Height = 23
+              Top = 24
+              Width = 124
+              ListFieldIndex = 0
+              LookupCache = False
+              TabOrder = 5
+            end
+          end
+          object GroupBox3: TGroupBox
+            Left = 8
+            Height = 224
+            Top = 4
+            Width = 352
+            Caption = 'Conta'
+            ClientHeight = 206
+            ClientWidth = 348
+            PopupMenu = popPlanoContas
+            TabOrder = 2
+            object edtPlanoContasCodigo: TEdit
+              Left = 78
+              Height = 23
+              Top = 8
+              Width = 80
+              Enabled = False
+              TabOrder = 0
+            end
+            object Label9: TLabel
+              Left = 9
+              Height = 16
+              Top = 15
+              Width = 29
+              Caption = 'Cod:.'
+              ParentColor = False
+            end
+            object Label10: TLabel
+              Left = 6
+              Height = 16
+              Top = 80
+              Width = 75
+              Caption = 'Classificação:.'
+              ParentColor = False
+            end
+            object edtPlanoContasClassificacao: TEdit
+              Left = 78
+              Height = 23
+              Top = 73
+              Width = 128
+              Enabled = False
+              OnKeyPress = edtPlanoContasClassificacaoKeyPress
+              TabOrder = 1
+            end
+            object edtPlanoContasDescricao: TEdit
+              Left = 78
+              Height = 23
+              Top = 104
+              Width = 256
+              CharCase = ecUppercase
+              Enabled = False
+              TabOrder = 2
+            end
+            object Label11: TLabel
+              Left = 6
+              Height = 16
+              Top = 112
+              Width = 58
+              Caption = 'Descrição:.'
+              ParentColor = False
+            end
+            object Label12: TLabel
+              Left = 6
+              Height = 16
+              Top = 48
+              Width = 31
+              Caption = 'Tipo:.'
+              ParentColor = False
+            end
+            object Button7: TButton
+              Left = 270
+              Height = 25
+              Top = 152
+              Width = 75
+              Caption = 'Gravar'
+              OnClick = Button7Click
+              TabOrder = 3
+            end
+            object Button8: TButton
+              Left = 94
+              Height = 25
+              Top = 152
+              Width = 75
+              Caption = 'Editar'
+              OnClick = Button8Click
+              TabOrder = 4
+            end
+            object Button9: TButton
+              Left = 6
+              Height = 25
+              Top = 152
+              Width = 75
+              Caption = 'Novo'
+              OnClick = Button9Click
+              TabOrder = 5
+            end
+            object Button10: TButton
+              Left = 182
+              Height = 25
+              Top = 152
+              Width = 75
+              Caption = 'Cancelar'
+              OnClick = Button10Click
+              TabOrder = 6
+            end
+            object cmbPlanoContasTipo: TDBLookupComboBox
+              Left = 78
+              Height = 23
+              Top = 41
+              Width = 124
+              Enabled = False
+              ListFieldIndex = 0
+              LookupCache = False
+              TabOrder = 7
+            end
+          end
+        end
+        object pLeiaute: TTabSheet
+          Caption = 'Mondes'
+          ClientHeight = 475
+          ClientWidth = 1028
+          object PageControl3: TPageControl
+            Left = 0
+            Height = 475
+            Top = 0
+            Width = 1028
+            ActivePage = pProcesso
+            Align = alClient
+            TabIndex = 1
+            TabOrder = 0
+            object pLayoutCadastro: TTabSheet
+              Caption = 'Cadastro'
+              ClientHeight = 447
+              ClientWidth = 1020
+              object gbTabelasDisponiveis: TGroupBox
+                Left = 8
+                Height = 232
+                Top = 64
+                Width = 306
+                Caption = 'Tabelas Disponíveis'
+                ClientHeight = 214
+                ClientWidth = 302
+                Enabled = False
+                PopupMenu = popVinculador
+                TabOrder = 0
+                object chkCamposDisponiveis: TCheckListBox
+                  Left = 14
+                  Height = 204
+                  Top = 4
+                  Width = 274
+                  Font.CharSet = ANSI_CHARSET
+                  Font.Height = -12
+                  Font.Name = 'Lucida Console'
+                  Font.Pitch = fpFixed
+                  Font.Quality = fqDraft
+                  ItemHeight = 0
+                  MultiSelect = True
+                  OnClick = chkCamposDisponiveisClick
+                  ParentFont = False
+                  PopupMenu = popLayout
+                  Style = lbOwnerDrawFixed
+                  TabOrder = 0
+                end
+              end
+              object gbTabelasUtilizadas: TGroupBox
+                Left = 426
+                Height = 232
+                Top = 64
+                Width = 296
+                Caption = 'Tabelas Utilizadas'
+                ClientHeight = 214
+                ClientWidth = 292
+                Enabled = False
+                PopupMenu = popLayout
+                TabOrder = 1
+                object chkCamposUtilizados: TCheckListBox
+                  Left = 14
+                  Height = 204
+                  Top = 4
+                  Width = 264
+                  Font.CharSet = ANSI_CHARSET
+                  Font.Height = -12
+                  Font.Name = 'Lucida Console'
+                  Font.Pitch = fpFixed
+                  Font.Quality = fqDraft
+                  ItemHeight = 0
+                  MultiSelect = True
+                  OnClick = chkCamposUtilizadosClick
+                  ParentFont = False
+                  PopupMenu = popLayout
+                  Style = lbOwnerDrawFixed
+                  TabOrder = 0
+                end
+              end
+              object Arrow1: TArrow
+                Left = 352
+                Height = 26
+                Top = 104
+                Width = 41
+                ArrowType = atRight
+                OnClick = Arrow1Click
+                PopupMenu = popVinculador
+              end
+              object Arrow2: TArrow
+                Left = 352
+                Height = 26
+                Top = 152
+                Width = 41
+                OnClick = Arrow2Click
+                PopupMenu = popVinculador
+              end
+              object GroupBox14: TGroupBox
+                Left = 760
+                Height = 251
+                Top = 64
+                Width = 258
+                Caption = 'Mondes'
+                ClientHeight = 233
+                ClientWidth = 254
+                TabOrder = 4
+                object dbgLayouts: TDBGrid
+                  Left = 6
+                  Height = 210
+                  Top = 14
+                  Width = 240
+                  Color = clWindow
+                  Columns = <                  
+                    item
+                      Title.Caption = 'Nome'
+                      Width = 205
+                      FieldName = 'nome'
+                    end>
+                  PopupMenu = popLayout
+                  ReadOnly = True
+                  TabOrder = 0
+                  OnMouseUp = dbgLayoutsMouseUp
+                end
+              end
+              object gbInformacoes: TGroupBox
+                Left = 8
+                Height = 103
+                Top = 298
+                Width = 714
+                Caption = 'Informações'
+                ClientHeight = 85
+                ClientWidth = 710
+                Enabled = False
+                PopupMenu = popPlanoContas
+                TabOrder = 5
+                object gdbCaracteristicas: TGroupBox
+                  Left = 6
+                  Height = 83
+                  Top = -1
+                  Width = 472
+                  Caption = 'Características'
+                  ClientHeight = 65
+                  ClientWidth = 468
+                  TabOrder = 0
+                  object Label13: TLabel
+                    Left = 6
+                    Height = 16
+                    Top = 25
+                    Width = 31
+                    Caption = 'Tipo:.'
+                    ParentColor = False
+                  end
+                  object Label15: TLabel
+                    Left = 150
+                    Height = 16
+                    Top = 25
+                    Width = 52
+                    Caption = 'Formato:.'
+                    ParentColor = False
+                  end
+                  object Label31: TLabel
+                    Left = 318
+                    Height = 16
+                    Top = 25
+                    Width = 34
+                    Caption = 'Tam.:.'
+                    ParentColor = False
+                  end
+                  object edtTipoCampo: TEdit
+                    Left = 38
+                    Height = 23
+                    Top = 19
+                    Width = 100
+                    Enabled = False
+                    PopupMenu = popLayout
+                    TabOrder = 0
+                  end
+                  object edtFormatoCampo: TEdit
+                    Left = 206
+                    Height = 23
+                    Top = 19
+                    Width = 100
+                    Enabled = False
+                    PopupMenu = popLayout
+                    TabOrder = 1
+                  end
+                  object edtTamanhoCampo: TEdit
+                    Left = 358
+                    Height = 23
+                    Top = 19
+                    Width = 100
+                    Enabled = False
+                    PopupMenu = popLayout
+                    TabOrder = 2
+                  end
+                end
+                object gdbOpcao: TGroupBox
+                  Left = 486
+                  Height = 83
+                  Top = -1
+                  Width = 216
+                  Caption = 'Opção'
+                  ClientHeight = 65
+                  ClientWidth = 212
+                  TabOrder = 1
+                  object btnAdicionarDadosCampo: TButton
+                    Left = 6
+                    Height = 25
+                    Top = 2
+                    Width = 32
+                    Caption = '+'
+                    Enabled = False
+                    OnClick = btnAdicionarDadosCampoClick
+                    PopupMenu = popVinculador
+                    TabOrder = 0
+                  end
+                  object dbgDadosCampos: TDBGrid
+                    Left = 46
+                    Height = 63
+                    Top = 2
+                    Width = 160
+                    Color = clWindow
+                    Columns = <>
+                    FixedCols = 0
+                    Options = [dgEditing, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                    ReadOnly = True
+                    TabOrder = 1
+                  end
+                  object btnExcluirDadosCampo: TButton
+                    Left = 6
+                    Height = 25
+                    Top = 32
+                    Width = 32
+                    Caption = '-'
+                    Enabled = False
+                    OnClick = btnExcluirDadosCampoClick
+                    PopupMenu = popVinculador
+                    TabOrder = 2
+                  end
+                end
+              end
+              object gbNomeLayout: TGroupBox
+                Left = 8
+                Height = 51
+                Top = 8
+                Width = 1008
+                Caption = 'Mondes:.'
+                ClientHeight = 33
+                ClientWidth = 1004
+                PopupMenu = popLayout
+                TabOrder = 6
+                object Label23: TLabel
+                  Left = 8
+                  Height = 16
+                  Top = 6
+                  Width = 40
+                  Caption = 'Nome:.'
+                  ParentColor = False
+                end
+                object edtNomeLayout: TEdit
+                  Left = 54
+                  Height = 23
+                  Top = 3
+                  Width = 392
+                  CharCase = ecUppercase
+                  Enabled = False
+                  TabOrder = 0
+                end
+              end
+              object btnGravarLayout: TButton
+                Left = 288
+                Height = 25
+                Top = 410
+                Width = 75
+                Caption = 'Gravar'
+                OnClick = btnGravarLayoutClick
+                TabOrder = 7
+              end
+              object btnCancelarLayout: TButton
+                Left = 200
+                Height = 25
+                Top = 410
+                Width = 75
+                Caption = 'Cancelar'
+                OnClick = btnCancelarLayoutClick
+                TabOrder = 8
+              end
+              object btnEditarLayout: TButton
+                Left = 112
+                Height = 25
+                Top = 410
+                Width = 75
+                Caption = 'Editar'
+                OnClick = btnEditarLayoutClick
+                TabOrder = 9
+              end
+              object btnNovoLayout: TButton
+                Left = 24
+                Height = 25
+                Top = 410
+                Width = 75
+                Caption = 'Novo'
+                OnClick = btnNovoLayoutClick
+                TabOrder = 10
+              end
+            end
+            object pProcesso: TTabSheet
+              Caption = 'Processos'
+              ClientHeight = 447
+              ClientWidth = 1020
+              object cmbLayoutFilho: TComboBox
+                Left = 12
+                Height = 23
+                Top = 71
+                Width = 496
+                Enabled = False
+                ItemHeight = 15
+                TabOrder = 0
+              end
+              object Label39: TLabel
+                Left = 12
+                Height = 16
+                Top = 51
+                Width = 73
+                Caption = 'Mondes Filho'
+                ParentColor = False
+              end
+              object Label40: TLabel
+                Left = 12
+                Height = 16
+                Top = 97
+                Width = 52
+                Caption = 'Condição'
+                ParentColor = False
+              end
+              object cmbLayoutPai: TComboBox
+                Left = 12
+                Height = 23
+                Top = 25
+                Width = 496
+                Enabled = False
+                ItemHeight = 15
+                OnChange = cmbLayoutPaiChange
+                TabOrder = 1
+              end
+              object Label41: TLabel
+                Left = 12
+                Height = 16
+                Top = 6
+                Width = 63
+                Caption = 'Mondes Pai'
+                ParentColor = False
+              end
+              object GroupBox16: TGroupBox
+                Left = 516
+                Height = 424
+                Top = 16
+                Width = 498
+                Caption = 'Vínculos'
+                ClientHeight = 406
+                ClientWidth = 494
+                TabOrder = 2
+                object dbgProcessos: TDBGrid
+                  Left = 5
+                  Height = 386
+                  Top = 16
+                  Width = 480
+                  Color = clWindow
+                  Columns = <                  
+                    item
+                      Title.Caption = 'Mondes Pai'
+                      Width = 230
+                      FieldName = 'nome_pai'
+                    end                  
+                    item
+                      Title.Caption = 'Mondes Filho'
+                      Width = 240
+                      FieldName = 'nome_filho'
+                    end>
+                  Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                  PopupMenu = popLayout
+                  ReadOnly = True
+                  TabOrder = 0
+                  OnCellClick = dbgProcessosCellClick
+                  OnMouseUp = dbgLayoutsMouseUp
+                end
+              end
+              object btnGravarLayout1: TButton
+                Left = 276
+                Height = 25
+                Top = 338
+                Width = 75
+                Caption = 'Gravar'
+                OnClick = btnGravarLayout1Click
+                TabOrder = 3
+              end
+              object btnCancelarLayout1: TButton
+                Left = 188
+                Height = 25
+                Top = 338
+                Width = 75
+                Caption = 'Cancelar'
+                OnClick = btnCancelarLayout1Click
+                TabOrder = 4
+              end
+              object btnEditarLayout1: TButton
+                Left = 100
+                Height = 25
+                Top = 338
+                Width = 75
+                Caption = 'Editar'
+                OnClick = btnEditarLayout1Click
+                TabOrder = 5
+              end
+              object cmbCondicoes: TComboBox
+                Left = 135
+                Height = 23
+                Top = 206
+                Width = 39
+                Enabled = False
+                ItemHeight = 15
+                ItemIndex = 0
+                Items.Strings = (
+                  '  ='
+                  '  >'
+                  '  <'
+                  '  >='
+                  '  <='
+                  'LIKE'
+                )
+                TabOrder = 6
+                Text = '  ='
+              end
+              object btnGravarCondicao: TButton
+                Left = 266
+                Height = 25
+                Top = 188
+                Width = 43
+                Caption = 'Gravar'
+                Enabled = False
+                OnClick = btnGravarCondicaoClick
+                TabOrder = 7
+              end
+              object btnApagarCondicao: TButton
+                Left = 266
+                Height = 25
+                Top = 220
+                Width = 43
+                Caption = 'Apagar'
+                Enabled = False
+                OnClick = btnApagarCondicaoClick
+                TabOrder = 8
+              end
+              object chkCamposProcessos: TCheckListBox
+                Left = 12
+                Height = 196
+                Top = 120
+                Width = 116
+                Font.CharSet = ANSI_CHARSET
+                Font.Height = -12
+                Font.Name = 'Lucida Console'
+                Font.Pitch = fpFixed
+                Font.Quality = fqDraft
+                ItemHeight = 0
+                MultiSelect = True
+                OnClick = chkCamposProcessosClick
+                ParentFont = False
+                PopupMenu = popLayout
+                Style = lbOwnerDrawFixed
+                TabOrder = 10
+              end
+              object sgCondicoes: TStringGrid
+                Left = 314
+                Height = 196
+                Top = 120
+                Width = 194
+                ColCount = 3
+                FixedCols = 0
+                FixedRows = 0
+                Options = [goFixedVertLine, goFixedHorzLine, goRangeSelect, goRowSelect, goSmoothScroll]
+                ScrollBars = ssNone
+                TabOrder = 11
+                ColWidths = (
+                  75
+                  22
+                  94
+                )
+              end
+              object btnNovoProcesso: TButton
+                Left = 12
+                Height = 25
+                Top = 338
+                Width = 75
+                Caption = 'Novo'
+                OnClick = btnNovoProcessoClick
+                TabOrder = 12
+              end
+              object cmbValorCondicao: TComboBox
+                Left = 181
+                Height = 23
+                Top = 206
+                Width = 80
+                Enabled = False
+                ItemHeight = 15
+                ItemIndex = 0
+                Items.Strings = (
+                  'A VISTA'
+                  'A PRAZO'
+                  'OUTROS'
+                )
+                OnChange = cmbLayoutPaiChange
+                TabOrder = 13
+                Text = 'A VISTA'
+              end
+              object edtValorCondicao: TEdit
+                Left = 181
+                Height = 23
+                Top = 206
+                Width = 80
+                Enabled = False
+                TabOrder = 9
+              end
+            end
+            object TabSheet1: TTabSheet
+              Caption = 'Histórico'
+              ClientHeight = 447
+              ClientWidth = 1020
+              TabVisible = False
+              object gdbHistorico: TGroupBox
+                Left = 4
+                Height = 121
+                Top = 8
+                Width = 712
+                Caption = 'Configuração de Históricos'
+                ClientHeight = 103
+                ClientWidth = 708
+                TabOrder = 0
+                object cmbTabelas: TComboBox
+                  Left = 54
+                  Height = 23
+                  Top = 5
+                  Width = 134
+                  ItemHeight = 15
+                  ItemIndex = 0
+                  Items.Strings = (
+                    ''
+                  )
+                  TabOrder = 0
+                end
+                object Label7: TLabel
+                  Left = 8
+                  Height = 16
+                  Top = 8
+                  Width = 41
+                  Caption = 'Tabelas'
+                  ParentColor = False
+                end
+                object memConfHistorico: TMemo
+                  Left = 8
+                  Height = 58
+                  Top = 33
+                  Width = 686
+                  TabOrder = 1
+                end
+                object edtTabelas: TEdit
+                  Left = 198
+                  Height = 23
+                  Top = 5
+                  Width = 160
+                  TabOrder = 2
+                end
+                object btnAdicionarDadosCampo1: TButton
+                  Left = 366
+                  Height = 25
+                  Top = 5
+                  Width = 32
+                  Caption = '+'
+                  Enabled = False
+                  OnClick = btnAdicionarDadosCampoClick
+                  PopupMenu = popVinculador
+                  TabOrder = 3
+                end
+              end
+            end
+          end
+        end
+        object pVinculador: TTabSheet
+          Caption = 'Vinculador'
+          ClientHeight = 475
+          ClientWidth = 1028
+          object Splitter1: TSplitter
+            Left = 0
+            Height = 475
+            Top = 0
+            Width = 5
+          end
+          object GroupBox12: TGroupBox
+            Left = 8
+            Height = 449
+            Top = 4
+            Width = 688
+            Caption = 'Cadastro de Lançamentos'
+            ClientHeight = 431
+            ClientWidth = 684
+            PopupMenu = popVinculador
+            TabOrder = 1
+            object edtCodigoVinculador: TEdit
+              Left = 73
+              Height = 23
+              Top = 8
+              Width = 56
+              Enabled = False
+              TabOrder = 0
+            end
+            object Label20: TLabel
+              Left = 11
+              Height = 16
+              Top = 13
+              Width = 40
+              Caption = 'Código'
+              ParentColor = False
+            end
+            object edtNomeVinculador: TEdit
+              Left = 73
+              Height = 23
+              Top = 48
+              Width = 596
+              CharCase = ecUppercase
+              Enabled = False
+              TabOrder = 1
+            end
+            object Label21: TLabel
+              Left = 11
+              Height = 16
+              Top = 55
+              Width = 52
+              Caption = 'Descrição'
+              ParentColor = False
+            end
+            object Label22: TLabel
+              Left = 14
+              Height = 16
+              Top = 95
+              Width = 42
+              Caption = 'Débitar:'
+              ParentColor = False
+            end
+            object btnNovaEmpresa1: TButton
+              Left = 15
+              Height = 25
+              Top = 396
+              Width = 75
+              Caption = 'Novo'
+              OnClick = btnNovaEmpresa1Click
+              TabOrder = 5
+            end
+            object btnEditarEmpresa1: TButton
+              Left = 123
+              Height = 25
+              Top = 396
+              Width = 75
+              Caption = 'Editar'
+              OnClick = btnEditarEmpresa1Click
+              TabOrder = 6
+            end
+            object btnGravarEmpresa2: TButton
+              Left = 334
+              Height = 25
+              Top = 396
+              Width = 75
+              Caption = 'Gravar'
+              OnClick = btnGravarEmpresa2Click
+              TabOrder = 7
+            end
+            object btnGravarEmpresa3: TButton
+              Left = 227
+              Height = 25
+              Top = 396
+              Width = 75
+              Caption = 'Cancelar'
+              OnClick = btnGravarEmpresa3Click
+              TabOrder = 8
+            end
+            object Button11: TButton
+              Left = 633
+              Height = 19
+              Top = 8
+              Width = 36
+              Caption = '>>'
+              OnClick = Button11Click
+              TabOrder = 9
+            end
+            object Button12: TButton
+              Left = 558
+              Height = 19
+              Top = 8
+              Width = 36
+              Caption = '<<'
+              OnClick = Button12Click
+              TabOrder = 10
+            end
+            object Label25: TLabel
+              Left = 11
+              Height = 16
+              Top = 136
+              Width = 49
+              Caption = 'Creditar:.'
+              ParentColor = False
+            end
+            object edtHistorico: TEdit
+              Left = 73
+              Height = 23
+              Top = 168
+              Width = 596
+              Enabled = False
+              TabOrder = 4
+            end
+            object Label26: TLabel
+              Left = 11
+              Height = 16
+              Top = 175
+              Width = 55
+              Caption = 'Histórico:.'
+              ParentColor = False
+            end
+            object GroupBox20: TGroupBox
+              Left = 11
+              Height = 166
+              Top = 220
+              Width = 650
+              Caption = 'Mondes'
+              ClientHeight = 148
+              ClientWidth = 646
+              PopupMenu = popVinculador
+              TabOrder = 11
+              object Arrow3: TArrow
+                Left = 313
+                Height = 30
+                Top = 88
+                Width = 41
+                OnClick = Arrow3Click
+              end
+              object GroupBox21: TGroupBox
+                Left = 14
+                Height = 146
+                Top = -2
+                Width = 207
+                Caption = 'Mondes Disponiveis:.'
+                ClientHeight = 128
+                ClientWidth = 203
+                PopupMenu = popVinculador
+                TabOrder = 1
+                object chkLayoutsDisponiveis: TCheckListBox
+                  Left = 9
+                  Height = 116
+                  Top = 3
+                  Width = 184
+                  Enabled = False
+                  ItemHeight = 0
+                  MultiSelect = True
+                  Style = lbOwnerDrawFixed
+                  TabOrder = 0
+                end
+              end
+              object Arrow4: TArrow
+                Left = 313
+                Height = 30
+                Top = 24
+                Width = 41
+                ArrowType = atRight
+                OnClick = Arrow4Click
+              end
+              object GroupBox22: TGroupBox
+                Left = 422
+                Height = 146
+                Top = -2
+                Width = 207
+                Caption = 'Mondes Utilizados:.'
+                ClientHeight = 128
+                ClientWidth = 203
+                PopupMenu = popVinculador
+                TabOrder = 3
+                object chkLayoutsUtilizados: TCheckListBox
+                  Left = 9
+                  Height = 116
+                  Top = 3
+                  Width = 180
+                  Enabled = False
+                  ItemHeight = 0
+                  MultiSelect = True
+                  Style = lbOwnerDrawFixed
+                  TabOrder = 0
+                end
+              end
+            end
+            object edtCodigoDebitar: TEdit
+              Left = 73
+              Height = 23
+              Top = 88
+              Width = 56
+              Enabled = False
+              OnExit = edtCodigoDebitarExit
+              OnKeyDown = edtCodigoDebitarKeyDown
+              OnKeyPress = edtCodigoDebitarKeyPress
+              TabOrder = 2
+            end
+            object edtCodigoCreditar: TEdit
+              Left = 73
+              Height = 23
+              Top = 129
+              Width = 56
+              Enabled = False
+              OnExit = edtCodigoCreditarExit
+              OnKeyDown = edtCodigoCreditarKeyDown
+              OnKeyPress = edtCodigoCreditarKeyPress
+              TabOrder = 3
+            end
+            object edtClassificacaoDebitar: TEdit
+              Left = 142
+              Height = 23
+              Top = 88
+              Width = 248
+              Enabled = False
+              TabOrder = 12
+            end
+            object edtClassificacaoCreditar: TEdit
+              Left = 142
+              Height = 23
+              Top = 129
+              Width = 248
+              Enabled = False
+              TabOrder = 13
+            end
+            object edtNomeDebitar: TEdit
+              Left = 399
+              Height = 23
+              Top = 88
+              Width = 270
+              Enabled = False
+              TabOrder = 14
+            end
+            object edtNomeCreditar: TEdit
+              Left = 399
+              Height = 23
+              Top = 129
+              Width = 270
+              Enabled = False
+              TabOrder = 15
+            end
+          end
+          object GroupBox15: TGroupBox
+            Left = 728
+            Height = 447
+            Top = 4
+            Width = 286
+            Caption = 'Lançamentos'
+            ClientHeight = 429
+            ClientWidth = 282
+            TabOrder = 2
+            object dbgPlano1: TDBGrid
+              Left = 0
+              Height = 434
+              Top = 0
+              Width = 316
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'Código'
+                  FieldName = 'codigo'
+                end              
+                item
+                  Title.Caption = 'Descrição'
+                  Width = 229
+                  FieldName = 'descricao'
+                end>
+              FixedCols = 0
+              Options = [dgEditing, dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              TabOrder = 0
+              OnMouseUp = dbgPlano1MouseUp
+            end
+          end
+        end
+      end
+    end
+    object pClientes: TTabSheet
+      Caption = 'Cliente'
+      ClientHeight = 503
+      ClientWidth = 1036
+      object PageControl1: TPageControl
+        Left = 0
+        Height = 503
+        Top = 0
+        Width = 1036
+        ActivePage = TabSheet3
+        Align = alClient
+        TabIndex = 1
+        TabOrder = 0
+        object pLancamentos: TTabSheet
+          Caption = 'Lançamentos'
+          ClientHeight = 475
+          ClientWidth = 1028
+          object GroupBox17: TGroupBox
+            Left = 8
+            Height = 236
+            Top = 232
+            Width = 1008
+            Caption = 'Lançamentos'
+            ClientHeight = 218
+            ClientWidth = 1004
+            ParentFont = False
+            TabOrder = 0
+            object dbgLancamento: TDBGrid
+              Left = 14
+              Height = 185
+              Top = 8
+              Width = 976
+              Color = clWindow
+              Columns = <>
+              FixedCols = 0
+              Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+              PopupMenu = popLancamentos
+              ReadOnly = True
+              TabOrder = 0
+              OnDrawColumnCell = dbgLancamentoDrawColumnCell
+              OnDblClick = dbgLancamentoDblClick
+            end
+            object Label38: TLabel
+              Left = 782
+              Height = 23
+              Top = 192
+              Width = 45
+              Caption = 'Total'
+              Font.CharSet = ANSI_CHARSET
+              Font.Height = -19
+              Font.Name = 'Cambria'
+              Font.Pitch = fpVariable
+              Font.Quality = fqDraft
+              Font.Style = [fsBold, fsItalic]
+              ParentColor = False
+              ParentFont = False
+            end
+            object lblTotalLancamento: TLabel
+              Left = 844
+              Height = 24
+              Top = 192
+              Width = 125
+              Alignment = taRightJustify
+              AutoSize = False
+              Caption = 'Total'
+              Font.CharSet = ANSI_CHARSET
+              Font.Height = -19
+              Font.Name = 'Cambria'
+              Font.Pitch = fpVariable
+              Font.Quality = fqDraft
+              Font.Style = [fsBold, fsItalic]
+              ParentColor = False
+              ParentFont = False
+            end
+          end
+          object gbLancamentos: TGroupBox
+            Left = 16
+            Height = 218
+            Top = 6
+            Width = 1008
+            Caption = 'Leiaute a ser Utilizado:.'
+            ClientHeight = 200
+            ClientWidth = 1004
+            PopupMenu = popLancamentos
+            TabOrder = 1
+            object Label16: TLabel
+              Left = 16
+              Height = 16
+              Top = 18
+              Width = 45
+              Caption = 'Leiaute:.'
+              ParentColor = False
+            end
+            object cmbLancamentoLayout: TComboBox
+              Left = 65
+              Height = 21
+              Top = 11
+              Width = 319
+              ItemHeight = 15
+              OnChange = cmbLancamentoLayoutChange
+              ReadOnly = True
+              Style = csOwnerDrawFixed
+              TabOrder = 0
+            end
+            object Edit1: TEdit
+              Left = 16
+              Height = 23
+              Top = 70
+              Width = 80
+              TabOrder = 1
+              Text = 'Edit1'
+              Visible = False
+            end
+            object Label24: TLabel
+              Left = 16
+              Height = 16
+              Top = 48
+              Width = 41
+              Caption = 'Label24'
+              ParentColor = False
+              Visible = False
+            end
+            object btnGravarLancamento: TButton
+              Left = 118
+              Height = 25
+              Top = 70
+              Width = 136
+              Caption = 'Gravar'
+              OnClick = btnGravarLancamentoClick
+              TabOrder = 2
+              Visible = False
+            end
+          end
+        end
+        object TabSheet3: TTabSheet
+          Caption = 'Consultas'
+        end
+      end
+    end
+    object pIntegracao: TTabSheet
+      Caption = 'Integração'
+      ClientHeight = 503
+      ClientWidth = 1036
+      object GroupBox1: TGroupBox
+        Left = 12
+        Height = 190
+        Top = 16
+        Width = 1008
+        Caption = 'Importar'
+        ClientHeight = 172
+        ClientWidth = 1004
+        TabOrder = 0
+        object edtImportar: TEdit
+          Left = 14
+          Height = 23
+          Top = 132
+          Width = 389
+          TabOrder = 0
+          Text = 'C:\A\teste.txt'
+        end
+        object Label4: TLabel
+          Left = 14
+          Height = 16
+          Top = 111
+          Width = 49
+          Caption = 'Arquivo:.'
+          ParentColor = False
+        end
+        object Button2: TButton
+          Left = 413
+          Height = 21
+          Top = 132
+          Width = 25
+          Caption = '...'
+          OnClick = Button2Click
+          TabOrder = 1
+        end
+        object btnImportar: TButton
+          Left = 445
+          Height = 24
+          Top = 130
+          Width = 85
+          Caption = 'Importar'
+          OnClick = btnImportarClick
+          TabOrder = 2
+        end
+        object cmbTipoImportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 25
+          Width = 100
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'TXT'
+            'EXCEL'
+          )
+          TabOrder = 3
+          Text = 'TXT'
+        end
+        object Label5: TLabel
+          Left = 14
+          Height = 16
+          Top = 3
+          Width = 31
+          Caption = 'Tipo:.'
+          ParentColor = False
+        end
+        object cmbConjuntoImportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 78
+          Width = 389
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'Plano de Contas'
+            'Empresas'
+          )
+          TabOrder = 4
+          Text = 'Plano de Contas'
+        end
+        object Label32: TLabel
+          Left = 14
+          Height = 16
+          Top = 56
+          Width = 83
+          Caption = 'Tipo de Dados:.'
+          ParentColor = False
+        end
+      end
+      object GroupBox2: TGroupBox
+        Left = 12
+        Height = 192
+        Top = 208
+        Width = 1008
+        Caption = 'Exportar'
+        ClientHeight = 174
+        ClientWidth = 1004
+        TabOrder = 1
+        object btnExportar: TButton
+          Left = 445
+          Height = 22
+          Top = 136
+          Width = 85
+          Caption = 'Exportar'
+          OnClick = btnExportarClick
+          TabOrder = 0
+        end
+        object edtExportar: TEdit
+          Left = 14
+          Height = 23
+          Top = 136
+          Width = 389
+          TabOrder = 1
+          Text = 'C:\A\teste.txt'
+        end
+        object Button5: TButton
+          Left = 413
+          Height = 21
+          Top = 136
+          Width = 25
+          Caption = '...'
+          OnClick = Button5Click
+          TabOrder = 2
+        end
+        object Label8: TLabel
+          Left = 14
+          Height = 16
+          Top = 112
+          Width = 49
+          Caption = 'Arquivo:.'
+          ParentColor = False
+        end
+        object cmbConjuntoExportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 78
+          Width = 389
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'Lançamentos'
+            'Empresas'
+            'Plano de Contas'
+          )
+          TabOrder = 3
+          Text = 'Lançamentos'
+        end
+        object Label33: TLabel
+          Left = 14
+          Height = 16
+          Top = 56
+          Width = 83
+          Caption = 'Tipo de Dados:.'
+          ParentColor = False
+        end
+        object cmbTipoExportacao: TComboBox
+          Left = 14
+          Height = 23
+          Top = 25
+          Width = 100
+          ItemHeight = 15
+          ItemIndex = 0
+          Items.Strings = (
+            'TXT'
+            'EXCEL'
+          )
+          OnChange = cmbTipoExportacaoChange
+          TabOrder = 4
+          Text = 'TXT'
+        end
+        object Label34: TLabel
+          Left = 14
+          Height = 16
+          Top = 3
+          Width = 31
+          Caption = 'Tipo:.'
+          ParentColor = False
+        end
+        object dhInicio: TDateEdit
+          Left = 122
+          Height = 23
+          Top = 25
+          Width = 80
+          CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
+          OKCaption = 'OK'
+          CancelCaption = 'Cancel'
+          DateOrder = doNone
+          ButtonWidth = 23
+          CharCase = ecNormal
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D69E
+            72C4D3996EF4D19668FFCE9263FFCB8E5EFFC98A5BFFC78756FFC38452FFC384
+            52FFC38452FFC38452FFC38452FFC38452FFBB7742B0FFFFFF00FFFFFF00D7A1
+            75FFF8F2EDFFF7F0EAFFF6EDE6FFF4EAE2FFF3E7DEFFF1E4DBFFF0E2D8FFEAD6
+            C8FFF2E5DCFFFAF4F1FFF9F3F0FFFAF5F2FFC58A5DFDFFFFFF00FFFFFF00D9A4
+            7AFFF9F3EEFFEBD2BEFFFFFFFFFFEBD3BFFFFFFFFFFFEBD3C0FFFFFFFFFFEAC7
+            ADFFECD9CDFFF1E4DBFFF9F3F0FFF9F2EFFFC68C5FFFFFFFFF00FFFFFF00DDA8
+            7EFFF9F3EFFFEBD0BAFFEBD0BBFF75B57AFF75B57AFF75B57AFFEBD1BDFFEACD
+            B5FFFAF4F0FFEBD9CCFFF1E4DBFFFAF4F1FFC68A5CFFFFFFFF00FFFFFF00DFAA
+            82FFF9F3EFFFEACEB7FFFFFFFFFF75B57AFF94D49BFF74B579FFFFFFFFFFEACF
+            BAFFFBF6F2FFFAF3F0FFEBD8CBFFF2E6DDFFC88D5FFFFFFFFF00FFFFFF00E1AE
+            87FFFAF4F0FFEACBB2FFEACCB3FF75B57AFF74B579FF73B478FFEACEB7FF70B3
+            75FF6FB274FF6EB172FFE8C8AEFFEAD7C9FFC48654FFFFFFFF00FFFFFF00E3B1
+            8CFFFAF6F1FFEAC9AEFFFFFFFFFFEAC9B0FFFFFFFFFFE9CBB3FFFFFFFFFF6FB1
+            73FF8ED295FF6BAF6FFFFFFFFFFFF1E5DBFFC68655FFFFFFFF00FFFFFF00E5B4
+            8FFFFAF6F2FFE9C6AAFFE9C6ACFFEAC7ACFFE9C7ADFFE9C9AEFFE9C9B0FF6CB0
+            71FF6AAF6EFF68AD6DFFE8CCB5FFF2E7DEFFC88A59FFFFFFFF00FFFFFF00E7B7
+            94FFFBF7F4FFE9C3A6FFFFFFFFFFE8C4A9FFFFFFFFFFE9C6AAFFFFFFFFFFE8C7
+            ACFFFFFFFFFFE8C8B0FFFFFFFFFFF7F1EBFFCB8F5FFFFFFFFF00FFFFFF00E9BA
+            98FFFBF7F4FF65A4FFFF64A3FFFF62A2FFFF61A1FFFF5F9FFFFF5C9DFFFF5A9A
+            FFFF5798FFFF5495FFFF5294FFFFFBF7F4FFCE9364FFFFFFFF00FFFFFF00EBBD
+            9BFFFBF7F4FF64A4FFFF79BDFFFF75BBFFFF71B9FFFF6DB8FFFF68B3FFFF61B0
+            FFFF5AABFFFF54A7FFFF3B7DFFFFFBF7F4FFD1976AFFFFFFFF00FFFFFF00ECBF
+            9EFFFBF7F4FF65A4FFFF64A3FFFF60A0FFFF5D9EFFFF5899FFFF5496FFFF4D90
+            FFFF478BFFFF4284FFFF3D7FFFFFFBF7F4FFD49B6FFFFFFFFF00FFFFFF00EEC1
+            A1EBFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7
+            F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFD7A074F8FFFFFF00FFFFFF00EFC2
+            A37EEFC1A2E3EDC09FFFEBBE9DFFEBBC9AFFE9BA96FFE7B793FFE6B590FFE4B2
+            8CFFE2AF88FFE0AC84FFDDA980FFDCA57DFFDAA37ACAFFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          NumGlyphs = 0
+          MaxLength = 0
+          TabOrder = 5
+        end
+        object dhFim: TDateEdit
+          Left = 232
+          Height = 23
+          Top = 26
+          Width = 80
+          CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
+          OKCaption = 'OK'
+          CancelCaption = 'Cancel'
+          DateOrder = doNone
+          ButtonWidth = 23
+          CharCase = ecNormal
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D69E
+            72C4D3996EF4D19668FFCE9263FFCB8E5EFFC98A5BFFC78756FFC38452FFC384
+            52FFC38452FFC38452FFC38452FFC38452FFBB7742B0FFFFFF00FFFFFF00D7A1
+            75FFF8F2EDFFF7F0EAFFF6EDE6FFF4EAE2FFF3E7DEFFF1E4DBFFF0E2D8FFEAD6
+            C8FFF2E5DCFFFAF4F1FFF9F3F0FFFAF5F2FFC58A5DFDFFFFFF00FFFFFF00D9A4
+            7AFFF9F3EEFFEBD2BEFFFFFFFFFFEBD3BFFFFFFFFFFFEBD3C0FFFFFFFFFFEAC7
+            ADFFECD9CDFFF1E4DBFFF9F3F0FFF9F2EFFFC68C5FFFFFFFFF00FFFFFF00DDA8
+            7EFFF9F3EFFFEBD0BAFFEBD0BBFF75B57AFF75B57AFF75B57AFFEBD1BDFFEACD
+            B5FFFAF4F0FFEBD9CCFFF1E4DBFFFAF4F1FFC68A5CFFFFFFFF00FFFFFF00DFAA
+            82FFF9F3EFFFEACEB7FFFFFFFFFF75B57AFF94D49BFF74B579FFFFFFFFFFEACF
+            BAFFFBF6F2FFFAF3F0FFEBD8CBFFF2E6DDFFC88D5FFFFFFFFF00FFFFFF00E1AE
+            87FFFAF4F0FFEACBB2FFEACCB3FF75B57AFF74B579FF73B478FFEACEB7FF70B3
+            75FF6FB274FF6EB172FFE8C8AEFFEAD7C9FFC48654FFFFFFFF00FFFFFF00E3B1
+            8CFFFAF6F1FFEAC9AEFFFFFFFFFFEAC9B0FFFFFFFFFFE9CBB3FFFFFFFFFF6FB1
+            73FF8ED295FF6BAF6FFFFFFFFFFFF1E5DBFFC68655FFFFFFFF00FFFFFF00E5B4
+            8FFFFAF6F2FFE9C6AAFFE9C6ACFFEAC7ACFFE9C7ADFFE9C9AEFFE9C9B0FF6CB0
+            71FF6AAF6EFF68AD6DFFE8CCB5FFF2E7DEFFC88A59FFFFFFFF00FFFFFF00E7B7
+            94FFFBF7F4FFE9C3A6FFFFFFFFFFE8C4A9FFFFFFFFFFE9C6AAFFFFFFFFFFE8C7
+            ACFFFFFFFFFFE8C8B0FFFFFFFFFFF7F1EBFFCB8F5FFFFFFFFF00FFFFFF00E9BA
+            98FFFBF7F4FF65A4FFFF64A3FFFF62A2FFFF61A1FFFF5F9FFFFF5C9DFFFF5A9A
+            FFFF5798FFFF5495FFFF5294FFFFFBF7F4FFCE9364FFFFFFFF00FFFFFF00EBBD
+            9BFFFBF7F4FF64A4FFFF79BDFFFF75BBFFFF71B9FFFF6DB8FFFF68B3FFFF61B0
+            FFFF5AABFFFF54A7FFFF3B7DFFFFFBF7F4FFD1976AFFFFFFFF00FFFFFF00ECBF
+            9EFFFBF7F4FF65A4FFFF64A3FFFF60A0FFFF5D9EFFFF5899FFFF5496FFFF4D90
+            FFFF478BFFFF4284FFFF3D7FFFFFFBF7F4FFD49B6FFFFFFFFF00FFFFFF00EEC1
+            A1EBFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7
+            F4FFFBF7F4FFFBF7F4FFFBF7F4FFFBF7F4FFD7A074F8FFFFFF00FFFFFF00EFC2
+            A37EEFC1A2E3EDC09FFFEBBE9DFFEBBC9AFFE9BA96FFE7B793FFE6B590FFE4B2
+            8CFFE2AF88FFE0AC84FFDDA980FFDCA57DFFDAA37ACAFFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          NumGlyphs = 0
+          MaxLength = 0
+          TabOrder = 6
+        end
+        object edtLote: TEdit
+          Left = 344
+          Height = 23
+          Top = 26
+          Width = 59
+          Alignment = taRightJustify
+          OnKeyPress = edtLoteKeyPress
+          TabOrder = 7
+          Text = '1'
+        end
+        object Label35: TLabel
+          Left = 344
+          Height = 16
+          Top = 3
+          Width = 30
+          Caption = 'Lote:.'
+          ParentColor = False
+        end
+        object Label36: TLabel
+          Left = 122
+          Height = 16
+          Top = 3
+          Width = 36
+          Caption = 'Início:.'
+          ParentColor = False
+        end
+        object Label37: TLabel
+          Left = 232
+          Height = 16
+          Top = 3
+          Width = 27
+          Caption = 'Fim:.'
+          ParentColor = False
+        end
+        object cmbExportacaoLayout: TComboBox
+          Left = 413
+          Height = 21
+          Top = 27
+          Width = 319
+          ItemHeight = 15
+          OnChange = cmbLancamentoLayoutChange
+          ReadOnly = True
+          Style = csOwnerDrawFixed
+          TabOrder = 8
+        end
+        object Label18: TLabel
+          Left = 413
+          Height = 16
+          Top = 3
+          Width = 45
+          Caption = 'Leiaute:.'
+          ParentColor = False
+        end
+        object btnExportar2: TButton
+          Left = 742
+          Height = 22
+          Top = 24
+          Width = 205
+          Caption = 'Gerar Executável do Cliente'
+          OnClick = btnExportar2Click
+          TabOrder = 9
+        end
+        object Button4: TButton
+          Left = 910
+          Height = 25
+          Top = 132
+          Width = 75
+          Caption = 'Gerar Chave'
+          OnClick = Button4Click
+          TabOrder = 10
+          Visible = False
+        end
+      end
+    end
+    object pAjuda: TTabSheet
+      Caption = 'Ajuda'
+    end
+  end
+  object Label2: TLabel
+    Left = 16
+    Height = 16
+    Top = 543
+    Width = 46
+    Caption = 'Empresa'
+    ParentColor = False
+  end
+  object cmbEmpresa: TComboBox
+    Left = 63
+    Height = 23
+    Top = 536
+    Width = 289
+    ItemHeight = 15
+    OnChange = cmbEmpresaChange
+    Style = csDropDownList
+    TabOrder = 1
+  end
+  object Conexao: TZConnection
+    ControlsCodePage = cCP_UTF8
+    UTF8StringsAsWideField = False
+    AutoEncodeStrings = False
+    Properties.Strings = (
+      'AutoEncodeStrings='
+    )
+    Port = 0
+    Database = 'database.fdb'
+    User = 'sysdba'
+    Password = 'masterkey'
+    Protocol = 'firebird-2.0'
+    left = 1376
+    top = 32
+  end
+  object popEmpresa: TPopupMenu
+    left = 648
+    top = 544
+    object MenuItem1: TMenuItem
+      Caption = 'Excluir Empresa'
+      OnClick = MenuItem1Click
+    end
+  end
+  object popPlanoContas: TPopupMenu
+    left = 736
+    top = 544
+    object MenuItem2: TMenuItem
+      Caption = 'Exclusão Conta'
+      OnClick = MenuItem2Click
+    end
+  end
+  object popVinculador: TPopupMenu
+    left = 832
+    top = 544
+    object MenuItem3: TMenuItem
+      Caption = 'Excluir Vinculador'
+      OnClick = MenuItem3Click
+    end
+  end
+  object popLayout: TPopupMenu
+    left = 920
+    top = 544
+    object MenuItem4: TMenuItem
+      Caption = 'Excluir Leiaute'
+      OnClick = MenuItem4Click
+    end
+  end
+  object popLancamentos: TPopupMenu
+    left = 1000
+    top = 544
+    object MenuItem5: TMenuItem
+      Caption = 'Excluir Lancamento'
+      OnClick = MenuItem5Click
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    left = 604
+    top = 500
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 2000
+    OnTimer = Timer1Timer
+    left = 465
+    top = 102
+  end
+end

@@ -555,7 +555,7 @@ type
     procedure ConsultarProcessos(pEmpresa5: Integer);
     procedure CarregarProcesso;
 
-    procedure ExecutarProcesso(pEmpresa6, pLayout, pLancamento: Integer);
+    procedure ExecutarProcesso(pEmpresa6, pLayout, pLancamento, pParcelas: Integer; pVencimento: TDateTime);
     function  FieldToSQL(Campo: TField): String;
   public
     { public declarations }
@@ -3628,7 +3628,6 @@ var
   lComandoSQL: String;
   i: Integer;
   lParcelas: Integer;
-  lParcelaAtual: Integer;
   sParcela: String;
   lsParcela: String;
   lValorParcela: Extended;
@@ -3637,7 +3636,6 @@ var
 begin
   sParcela := getValue('parcelas');
   lParcelas := StrToIntDef(sParcela, 1);
-  lParcelaAtual := 1;
 
   lValorParcela := getExtended('valor');
   sParcela := 'valor';
@@ -3655,13 +3653,11 @@ begin
   if Assigned(FindComponent('edtLanc_' + 'data_venc')) then
     lVencimento := TDateEdit(FindComponent('edtLanc_' + 'data_venc')).Date;
 
-  lValorParcela := lValorParcela / lParcelas;
+  lValorParcela := lValorParcela;
   lsParcela := FloatToStr(lValorParcela);
   lsParcela := StringReplace(lsParcela, ThousandSeparator, '', [rfReplaceAll]);
   lsParcela := StringReplace(lsParcela, DecimalSeparator, '.', [rfReplaceAll]);
 
-  for y := 1 to lParcelas do
-  begin
     fLancamentoAtual := DataModule1.GerarChave('GEN_LANCAMENTOS');
 
     lComandoSQL := 'INSERT INTO lancamentos (' + NewLine +
@@ -3681,7 +3677,7 @@ begin
     for i := 0 to fListaCamposNome.Count - 1 do
     begin
       if (fListaCamposNome.Strings[i] = 'parcelas') then
-        lComandoSQL := lComandoSQL + '  ' + IntToStr(lParcelaAtual) + ',' + NewLine
+        lComandoSQL := lComandoSQL + '  ' + IntToStr(lParcelas) + ',' + NewLine
       else if (fListaCamposNome.Strings[i] = 'data_venc') then
         lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', lVencimento)) + ',' + NewLine
       else if (fListaCamposNome.Strings[i] = sParcela) then
@@ -3693,11 +3689,7 @@ begin
     lComandoSQL := lComandoSQL + '  ' + QuotedStr(FormatDateTime('dd.mm.yyyy', Now)) + ')';
 
     if DataModule1.Executar(lComandoSQL) then
-      ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual);
-
-    lParcelaAtual := lParcelaAtual + 1;
-    lVencimento := IncMonth(lVencimento, 1);
-  end;
+      ExecutarProcesso(fEmpresaAtual, fLancamentoLayoutAtual, fLancamentoAtual, lParcelas, lVencimento);
 end;
 
 procedure TfrmPrincipal.GravarLancamentoAlterar;
@@ -5018,8 +5010,7 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.ExecutarProcesso(pEmpresa6, pLayout, pLancamento: Integer
-  );
+procedure TfrmPrincipal.ExecutarProcesso(pEmpresa6, pLayout, pLancamento, pParcelas: Integer; pVencimento: TDateTime);
 const
   lProcessos = 'Processos';
   lConsulta = 'Consulta';
@@ -5199,7 +5190,7 @@ begin
                             lValoresTransposicao + ')';
 
                     if DataModule1.Executar(lSQL) then
-                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento);
+                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento, 1, Now);
                   end;
                 end;
               end;

@@ -16,9 +16,9 @@ object frmPrincipal: TfrmPrincipal
     Height = 531
     Top = 0
     Width = 1044
-    ActivePage = pContador
+    ActivePage = pClientes
     Align = alTop
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object pContador: TTabSheet
       Caption = 'Administrador'
@@ -29,9 +29,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = pLeiaute
+        ActivePage = pPlanoContas
         Align = alClient
-        TabIndex = 2
+        TabIndex = 1
         TabOrder = 0
         object pEmpresa: TTabSheet
           Caption = 'Cadastro'
@@ -1592,9 +1592,9 @@ object frmPrincipal: TfrmPrincipal
         Height = 503
         Top = 0
         Width = 1036
-        ActivePage = TabSheet3
+        ActivePage = pLancamentos
         Align = alClient
-        TabIndex = 1
+        TabIndex = 0
         TabOrder = 0
         object pLancamentos: TTabSheet
           Caption = 'Lançamentos'

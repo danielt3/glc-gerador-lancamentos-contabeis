@@ -3767,7 +3767,7 @@ begin
     if Vazio(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text) then
       result := 0
     else
-      result := StrToFloatDef(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, 0);
+      result := StrToFloatDef(Copy(TEdit(FindComponent('edtLanc_' + pNomeCampo)).Text, ThousandSeparator, '', [rfReplaceAll]), 0);
   end
   else
     result := 0;

@@ -1,9 +1,4 @@
-SELECT
-  a.vinculador,
-  b.descricao
+SELECT FIRST 1
+  texto
 FROM
-  vinculadores_layout a
-  JOIN vinculadores b ON (
-    b.chave = a.vinculador)
-WHERE
-  a.layout = 7
+  sistema

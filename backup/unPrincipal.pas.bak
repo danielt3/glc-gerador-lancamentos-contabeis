@@ -5032,6 +5032,8 @@ var
   lCampo: String;
   ltCondicao: String;
   lValor: String;
+
+  lParcelaAtual: Extended;
 begin
   lLancamentoAtual := pLancamento;
   lEmpresaAtual := pEmpresa6;
@@ -5162,7 +5164,7 @@ begin
                     begin
                       if (lListaCamposPai.IndexOf(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString) > -1) then
                       begin
-                        lCamposTransposicao := lCamposTransposicao + lAND + '  ' + DataModule1.getQuery(lConsulta).FieldByName('campo').AsString;// + ' = ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString));
+                        lCamposTransposicao := lCamposTransposicao + lAND + '  ' + DataModule1.getQuery(lConsulta).FieldByName('campo').AsString;
                         lValoresTransposicao := lValoresTransposicao + lAND + '  ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString));
                         lAND := ',' + NewLine;
                       end;
@@ -5190,7 +5192,7 @@ begin
                             lValoresTransposicao + ')';
 
                     if DataModule1.Executar(lSQL) then
-                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento, 1, Now);
+                      ExecutarProcesso(lEmpresaAtual, DataModule1.getQuery(lProcessos).FieldByName('filho').AsInteger, lNovoLancamento, 1, pVencimento);
                   end;
                 end;
               end;

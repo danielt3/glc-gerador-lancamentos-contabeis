@@ -556,7 +556,7 @@ type
     procedure CarregarProcesso;
 
     procedure ExecutarProcesso(pEmpresa6, pLayout, pLancamento, pParcelas: Integer; pVencimento: TDateTime);
-    function  FieldToSQL(Campo: TField): String;
+    function  FieldToSQL(Campo: TField; TotalParcelas: Integer = 1): String;
   public
     { public declarations }
   end; 
@@ -5032,6 +5032,8 @@ var
   lCampo: String;
   ltCondicao: String;
   lValor: String;
+
+  lParcelaAtual: Extended;
 begin
   lLancamentoAtual := pLancamento;
   lEmpresaAtual := pEmpresa6;
@@ -5162,7 +5164,7 @@ begin
                     begin
                       if (lListaCamposPai.IndexOf(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString) > -1) then
                       begin
-                        lCamposTransposicao := lCamposTransposicao + lAND + '  ' + DataModule1.getQuery(lConsulta).FieldByName('campo').AsString;// + ' = ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lProcessos).FieldByName('campo').AsString));
+                        lCamposTransposicao := lCamposTransposicao + lAND + '  ' + DataModule1.getQuery(lConsulta).FieldByName('campo').AsString;
                         lValoresTransposicao := lValoresTransposicao + lAND + '  ' + FieldToSQL(DataModule1.getQuery(lLancamento).FieldByName(DataModule1.getQuery(lConsulta).FieldByName('campo').AsString));
                         lAND := ',' + NewLine;
                       end;
@@ -5208,11 +5210,12 @@ begin
   end;
 end;
 
-function TfrmPrincipal.FieldToSQL(Campo: TField): String;
+function TfrmPrincipal.FieldToSQL(Campo: TField; TotalParcelas: Integer
+  ): String;
 begin
   case Campo.DataType of
     ftString: result := QuotedStr(Trim(Campo.AsString));
-    ftFloat: result := StringReplace(StringReplace(Campo.AsString, DecimalSeparator, '', [rfReplaceAll]), DecimalSeparator, '.', [rfReplaceAll]);
+    ftFloat: result := StringReplace(StringReplace(FloatToStr(Campo.AsFloat / TotalParcelas), DecimalSeparator, '', [rfReplaceAll]), DecimalSeparator, '.', [rfReplaceAll]);
     ftInteger: result := Campo.AsString;
     ftDate: result := QuotedStr(StringReplace(Campo.AsString, '/', '.', [rfReplaceAll]));
     ftDatetime: result := QuotedStr(FormatDateTime('dd.mm.yyyy', Campo.AsDateTime));
